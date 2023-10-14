@@ -1,0 +1,32 @@
+#!/bin/sh
+
+
+out_path="w_samples/"
+ext01=".was"
+ext02=".o"
+
+path=$1
+
+python vVc "$path"
+
+
+name="${path##*/}"
+name="${name%.*}"
+
+output="${out_path}${name}${ext01}"
+
+
+
+output2="${out_path}${name}${ext02}"
+
+echo
+
+echo "${out_path}${output}"
+echo "${out_path}${output2}"
+echo "${out_path}${name}"
+
+nasm -f elf64 "$output" -l w_samples/tmp/lookup.txt
+
+
+ld -o "${output%.*}" "$output2"
+

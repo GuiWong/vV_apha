@@ -1,0 +1,120 @@
+%include "vVc/assembly/w_runtime/wio.asm"		
+%include "vVc/assembly/w_runtime/w_runtime.asm"	
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+
+w_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: (0)
+; PUSH opcode 
+
+	mov DWORD [r15] , 0 
+	add r15 , 4 
+
+ ;OpADR: (1)
+; PUSH opcode 
+
+	mov DWORD [r15] , 1 
+	add r15 , 4 
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: (2)
+; DUP opcode (2)			
+
+	mov ecx , 2			
+	lea rsi , [r15-8]	
+	mov rdi , r15				
+
+	rep movsd				
+
+	add r15 , 8		
+
+ ;OpADR: (3)
+; ADD opcode 					
+
+	mov eax , [r15 - 8]			
+	add eax , [r15-4]			
+	mov [r15-8] , eax			
+
+	sub r15 , 4		
+
+ ;OpADR: (4)
+; DUP opcode (1)			
+
+	mov ecx , 1			
+	lea rsi , [r15-4]	
+	mov rdi , r15				
+
+	rep movsd				
+
+	add r15 , 4		
+
+ ;OpADR: (5)
+; OUT opcode (0)			
+
+						
+	call wio_out				
+						
+
+ ;OpADR: (6)
+; DUP opcode (1)			
+
+	mov ecx , 1			
+	lea rsi , [r15-4]	
+	mov rdi , r15				
+
+	rep movsd				
+
+	add r15 , 4		
+
+ ;OpADR: (7)
+; PUSH opcode 
+
+	mov DWORD [r15] , 2147483647 
+	add r15 , 4 
+
+ ;OpADR: (8)
+; LESS opcode					
+
+	mov eax , [r15-4]			
+	cmp DWORD[r15-8] , eax			
+
+	jae short 0xb				
+
+			mov DWORD[r15-8] , -1	
+
+	jmp short 0x9				
+
+			mov DWORD[r15-8] , 0	
+
+	sub r15 , 4				
+
+ ;OpADR: (9)
+; WHILE opcode					
+
+	sub r15 , 4				
+	or DWORD[r15] , 0			
+	jne wblock_0	
+		
+		ret
+
+;Transpiled from w with wcs version 0.0.1 
+		
+		
