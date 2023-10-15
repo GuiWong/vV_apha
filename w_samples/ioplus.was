@@ -1,0 +1,87 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/wio.asm"			
+%include "vVc/assembly/w_runtime/w_runtime.asm"		
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+
+w_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: (0)
+; OUT opcode (0)			
+
+						
+	call wio_get				
+						
+
+ ;OpADR: (1)
+; OUT opcode (0)			
+
+						
+	call wio_get				
+						
+
+ ;OpADR: (2)
+; OUT opcode (0)			
+
+						
+	call wio_get				
+						
+
+ ;OpADR: (3)
+; OUT opcode (0)			
+
+						
+	call wio_get				
+						
+
+ ;OpADR: (4)
+; ADD opcode 					
+
+	mov eax , [r15 - 8]			
+	add eax , [r15-4]			
+	mov [r15-8] , eax			
+
+	sub r15 , 4		
+
+ ;OpADR: (5)
+; ADD opcode 					
+
+	mov eax , [r15 - 8]			
+	add eax , [r15-4]			
+	mov [r15-8] , eax			
+
+	sub r15 , 4		
+
+ ;OpADR: (6)
+; ADD opcode 					
+
+	mov eax , [r15 - 8]			
+	add eax , [r15-4]			
+	mov [r15-8] , eax			
+
+	sub r15 , 4		
+
+ ;OpADR: (7)
+; OUT opcode (0)			
+
+						
+	call wio_out				
+						
+		
+		ret
+
+;Transpiled from vV with vVc version 0.0.1 
+		
+		

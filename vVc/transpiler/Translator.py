@@ -64,8 +64,10 @@ class Translator:
 	
 	
 		self.output+= '\
-%include "'+self.lib_path+'wio.asm"		\n\
-%include "'+self.lib_path+'w_runtime.asm"	\n'
+%include "'+self.lib_path+'vV_defines.asm"		\n\
+%include "'+self.lib_path+'wio.asm"			\n\
+%include "'+self.lib_path+'w_runtime.asm"		\n'
+
 
 		self.output+= '''
 
@@ -112,7 +114,7 @@ w_entry_point:
 		
 		ret
 
-;Transpiled from w with wcs version 0.0.1 
+;Transpiled from vV with vVc version 0.0.1 
 		
 		'''
 		
@@ -134,10 +136,11 @@ w_entry_point:
 		if op == OP.PUSH:
 			txt = '\
 ; PUSH opcode \n\n\
-	mov DWORD [r15] , '+str(arg) +' \n\
-	add r15 , 4 \n\
 \
-'
+	vV_push '+str(arg) +' \n\
+\n'
+
+
 			
 			
 		elif op == OP.SWAP:
@@ -145,10 +148,9 @@ w_entry_point:
 			txt = '\
 ; SWAP opcode \n\n\
 \
-	mov rax, [r15-8]	\n\
-	mov rdx, [r15-4]	\n\
-	mov [r15-8] , rdx	\n\
-	mov [r15-4] , rax	\n'
+\n\
+	vV_swap		\n\
+\n'
 	
 	
 
@@ -158,7 +160,7 @@ w_entry_point:
 			txt = '\
 ; DROP opcode \n\n\
 \
-	sub r15 , 4	\n'
+	sub vVsp , 4	\n'
 				
 			
 		elif op == OP.DUP:
@@ -170,13 +172,8 @@ w_entry_point:
 			txt = '\
 ; DUP opcode ('+str(arg)+')			\n\
 \n\
-	mov ecx , '+str(arg)+'			\n\
-	lea rsi , [r15-'+str(arg*4)+']	\n\
-	mov rdi , r15				\n\
-\n\
-	rep movsd				\n\
-\n\
-	add r15 , '+str(arg*4)+'		\n'
+\
+	vV_dup '+str(arg)+'			\n\n'
 		
 					
 		elif op == OP.OUT:
@@ -393,7 +390,35 @@ w_entry_point:
 	or DWORD[r15] , 0			\n\
 	jne '+self.label_names[arg]+'	\n'
 			
-		self.output += txt
+
 			
+
+
+
+		elif op == OP.GET:
+
+			txt = '\
+; OUT opcode ('+str(arg)+')			\n\
+\n\
+						\n\
+	call wio_get				\n\
+						\n'
+
+
+
+
+
+
+
+
+
+
+
+		self.output += txt
+
+
+
+
+
 
 

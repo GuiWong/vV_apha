@@ -10,7 +10,7 @@ NOP = 1
 PUSH = 5
 SWAP = 6
 DROP = 7 	# 
-OUT  = 8	#  Will Need a w runtime for compiled version
+#OUT  = 8	#  Will Need a w runtime for compiled version
 
 DUP = 22
  #|
@@ -92,7 +92,14 @@ WHILE = 75		#sameopcode as an if, but jumps backwards
 
 
 
+#-----------------------------------------------------------------------------------
+#------------------------------ Section --------------------------------------------
+#----------------------------------------------------------------------------------
+#------------------------------  I/O  ---------------------------------------------
 
+
+OUT  = 96
+GET = 97
 
 
 
@@ -237,6 +244,8 @@ direct_op = {
 	XOR : "^",		#meh...
 		#ENdblock is a virtual opcode
 				#for ifs statements (not for while
+				
+	GET : "get",
 }
 
 

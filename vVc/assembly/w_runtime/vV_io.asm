@@ -41,6 +41,136 @@ segment .data
 segment .text 
 
 
+vV_i_parse_num:		;eax: number of char to read
+
+
+								;use esi as counter/offset in string
+								;concatenate result in eax
+								;parse digit in cl
+								
+								;use r8 for base
+								;use r9 for max_value
+	mov edi , eax					
+	dec edi
+	xor esi, esi
+	xor rax , rax
+	xor rcx , rcx
+	
+	mov r8 , 10
+	mov r9 , 58
+	
+	.start_loop:
+	
+		mov cl , [w_input_buffer + esi]
+		
+		
+	;	cmp cl , 0xa					;Check for newline?
+	;							;may use character count only
+	;		je .end
+	;
+	
+		;Check for format here, direct jump to 
+	
+			
+		cmp cl , r9b
+		
+			jae .unvalid
+		
+		cmp cl , 48
+		
+			jb .unvalid
+			
+		sub cl , 48
+		
+		clc
+		
+		mul r8d
+		
+		jc .overflow
+		
+		add eax , ecx
+		
+		inc esi
+		
+		cmp esi , edi
+		
+		jb .start_loop
+		
+		;jmp .start_loop
+		
+	;.end:
+		
+		ret			; result should be in eax
+		
+	.unvalid:
+	
+		mov rax , 24;	#TODO: Defined Errors code/ data in file
+		xor rdx , rdx
+		mov dl , cl
+		
+		call w_forced_exit
+		
+	.overflow:
+	
+		mov rax , 25;	#TODO: Defined Errors code/ data in file
+		;xor rdx , rdx
+		;mov dl , cl
+		
+		call w_forced_exit
+	
+	
+	
+	
+vV_o_decimal:					;value in eax
+
+
+
+	xor ecx , ecx
+	mov r8d , 1
+	
+	;xor edx , edx
+	
+	mov esi , 10
+	
+	.loop01:
+	
+		xor rdx , rdx
+		
+		div esi
+		
+		
+		add dl , '0'
+		push rdx
+		
+		inc ecx
+		
+		cmp eax , 10
+		
+		jae .loop01
+	
+	add al , '0'	
+	mov [w_output_buffer] , al
+		
+	inc ecx
+		
+	.loop02:
+	
+		pop rdx
+		mov BYTE[w_output_buffer + r8d] , dl
+		inc r8d
+			
+		cmp r8d , ecx
+		
+		jb .loop02
+	
+	
+	mov eax , ecx
+		
+	ret	
+	
+
+
+
 convert_to_string:				; arg: rax  result: w_number_buffer
 
 	mov r8 , 0			;set couner to 0
@@ -68,46 +198,6 @@ convert_to_string:				; arg: rax  result: w_number_buffer
 	
 	
 	
-
-convert_to_int:			;convert string from w_number_buffer to int value in rax
-
-					;	Input: rax->digit_number
-
-	mov r9 , rax 	;		number of digits
-	
-	mov rbx , 10				;our awfull human base
-	
-	dec r9					; since starting from 0
-	
-	xor r8 , r8				; count number of digits processed
-	
-	mov rsi , w_number_buffer		;adress of string to numerize
-	
-	xor rax , rax
-	xor rdx , rdx
-
-	.start:
-	
-	mov dl , [rsi]				;fetch char ascii
-	sub edx , '0'				;convert to value
-	add eax , edx				;add to output
-
-	inc r8					;increment counter
-	inc rsi				;and pointer		(maybe one is enough)
-	
-	cmp r8 , r9				;check if finished
-	je .end
-	
-	mul ebx				;move one column to the left
-	
-	jmp .start				;proceed to next digit
-	
-	
-	.end:
-	
-	
-	ret
-	
 	
 	
 
@@ -121,11 +211,15 @@ convert_to_int:			;convert string from w_number_buffer to int value in rax
 		
 		
 		
-		call convert_to_string				;get str repr of rax in w_number_buffer
+		call vV_o_decimal				;get str repr of rax in w_number_buffer
 		
 		
-		mov edx , 11				;string lenght		#TODO: remove leading 0
-		mov rsi , w_number_buffer		;strng ptr
+		mov BYTE[w_output_buffer + eax] , 0xa
+		
+		inc eax
+		
+		mov edx , eax				;string lenght		#TODO: remove leading 0
+		mov rsi , w_output_buffer		;strng ptr
 		mov rdi , 1				;file descriptor, stdout
 		mov rax , 1				; Write sysCall
 		syscall
@@ -136,8 +230,8 @@ convert_to_int:			;convert string from w_number_buffer to int value in rax
 	wio_get:
 	
 	
-		mov rsi , w_number_buffer		;ptr to string destination	
-		mov edx , 10				;string lenght		#TODO: handle multiple lenght numbers
+		mov rsi , w_input_buffer		;ptr to string destination	
+		mov edx , 255				;string lenght		#TODO: handle multiple lenght numbers
 		mov rdi , 0				;file descriptor, stdin
 		mov rax , 0				; read sysCall
 		
@@ -148,12 +242,12 @@ convert_to_int:			;convert string from w_number_buffer to int value in rax
 
 
 
-		cmp eax , 10
+		cmp eax , 255
 		
 		jb .no_overflow
 		
 		
-		cmp BYTE[w_number_buffer+9] , 0xa
+		cmp BYTE[w_input_buffer +254] , 0xa
 		
 		je .no_overflow
 		
@@ -167,8 +261,7 @@ convert_to_int:			;convert string from w_number_buffer to int value in rax
 ;----------------------------------------------
 
 
-
-		call convert_to_int
+		call vV_i_parse_num
 		
 		mov [r15] , eax
 		

@@ -16,11 +16,6 @@ global wio_get_str_nline
 global wio_move_in_to_out
 
 
-segment .bss 
-	ALIGN 32
-	test: resb 4
-
-
 	
 segment .data 
 
@@ -143,31 +138,6 @@ convert_to_int:			;convert string from w_number_buffer to int value in rax
 		
 		syscall
 		
-		
-;-------------Buffer_Overflow_Execption  (experiment) [Working for now]
-
-
-
-		cmp eax , 10
-		
-		jb .no_overflow
-		
-		
-		cmp BYTE[w_number_buffer+9] , 0xa
-		
-		je .no_overflow
-		
-			mov rax , 12		;placeholder value for now, 
-						;TODO: Make ERRORS constants
-		
-			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
-		
-		.no_overflow:
-		
-;----------------------------------------------
-
-
-
 		call convert_to_int
 		
 		mov [r15] , eax
@@ -242,10 +212,6 @@ convert_to_int:			;convert string from w_number_buffer to int value in rax
 		mov rax , 0				; read sysCall
 		
 		syscall
-		
-		
-		
-		
 		
 		;dec eax
 		
