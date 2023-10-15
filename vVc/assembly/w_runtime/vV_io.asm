@@ -118,19 +118,75 @@ vV_i_parse_num:		;eax: number of char to read
 		
 		call w_forced_exit
 	
+
+
+
+
+vV_o_hex:					;value in eax
+						;dest in rdi
+
+
+
+	xor ecx , ecx	
+	
+	mov esi , 16
+
+	
+	.loop01:
+	
+		xor rdx , rdx
+		
+		div esi
+		
+		
+		cmp dl , 10
+		
+		jb .dec
+		
+			add dl , 7
+		
+		.dec:
+		
+			add dl , '0'
+		
+		
+		push rdx
+		
+		inc ecx
+		
+		cmp eax , esi
+		
+		jae .loop01
+	
+	
+	cmp al , 10
+		
+		jb .dec2
+		
+			add al , 7
+		
+		.dec2:
+		
+			add al , '0'	
+	mov [rdi] , al
+	
+	jmp vV_o_pop_digits
+		
 	
 	
 	
 vV_o_decimal:					;value in eax
+						;dest in rdi
+						;max_dest_size in r9d
 
 
 
-	xor ecx , ecx
-	mov r8d , 1
-	
-	;xor edx , edx
+	xor ecx , ecx	
 	
 	mov esi , 10
+	
+
+
 	
 	.loop01:
 	
@@ -149,57 +205,80 @@ vV_o_decimal:					;value in eax
 		jae .loop01
 	
 	add al , '0'	
-	mov [w_output_buffer] , al
+	mov [rdi] , al
 		
-	inc ecx
-		
-	.loop02:
 	
-		pop rdx
-		mov BYTE[w_output_buffer + r8d] , dl
-		inc r8d
+		
+	vV_o_pop_digits:			; Need nb of digits currently on stack(ecx)
+						;dest in rdi
+		mov r8d , 1
+		inc ecx
+		
+		cmp ecx , r9d
+		
+		jb .loopstart
+		
+	
+			mov rax , 26;	#TODO: Defined Errors code/ data in file
+			xor rdx , rdx
+			mov edx , ecx
+			mov ecx , r9d
+		
+			call w_forced_exit
+		
+						
+		.loopstart:
+		
+			pop rdx
+			mov BYTE[edi + r8d] , dl
+			inc r8d
 			
-		cmp r8d , ecx
+			cmp r8d , ecx
 		
-		jb .loop02
+		jb .loopstart
 	
 	
-	mov eax , ecx
+		mov eax , ecx
 		
-	ret	
+		ret	
 	
+	
+vV_o_binary:					;value in eax, 
+						;base in esi
 
 
+	xor ecx , ecx
+	
+	
+	.loop01:
+	
+		
+		shr eax , 1
+		
+		jc .one
+		
+			mov dl , '0'
+			push rdx
+			
+		jmp .next
+		.one:
+			
+			mov dl , '1'
+			push rdx
+		
+		.next:
+		
+		inc ecx
+		
+		cmp eax , 1
+		
+		jae .loop01
+	
+	add al , '1'	
+	mov [rdi] , al
+	
+	jmp vV_o_pop_digits
 
-convert_to_string:				; arg: rax  result: w_number_buffer
-
-	mov r8 , 0			;set couner to 0
-	mov r9 , 10			;set max to 10
-	
-	.loop:
-	
-	xor rdx , rdx					;ero out rdx
-	
-	div dword [divisorTable + r8 * 4]		;div rax by consecutive power of 10
-	
-	add rax , '0'					;convert result to ascii
-	
-	mov [w_number_buffer + r8] , al		;
-	
-	mov rax, rdx
-	
-	inc r8
-	
-	cmp r8, r9
-	
-	jne .loop
-	
-	ret 
-	
-	
-	
-	
-	
 
 
 
@@ -211,7 +290,10 @@ convert_to_string:				; arg: rax  result: w_number_buffer
 		
 		
 		
-		call vV_o_decimal				;get str repr of rax in w_number_buffer
+		mov edi , w_output_buffer
+		mov r9 , 255
+		
+		call vV_o_hex;vV_o_binary;vV_o_decimal				;get str repr of rax in w_number_buffer
 		
 		
 		mov BYTE[w_output_buffer + eax] , 0xa
