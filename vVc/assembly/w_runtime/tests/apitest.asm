@@ -110,9 +110,10 @@ w_entry_point:
 	
 	
 	
-	vV_push 63
+	vV_push 123
+	vV_push 24
 	
-	vV_pop eax
+	;vV_pop eax
 	
 
 	

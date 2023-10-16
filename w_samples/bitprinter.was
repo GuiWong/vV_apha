@@ -1,5 +1,6 @@
-%include "wcs/assembly/w_runtime/wio.asm"		
-%include "wcs/assembly/w_runtime/w_runtime.asm"	
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/w_runtime.asm"		
 
 
 global w_entry_point
@@ -20,14 +21,14 @@ w_entry_point:
  ;OpADR: (0)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 0 
-	add r15 , 4 
+	vV_push 0 
+
 
  ;OpADR: (1)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 24 
-	add r15 , 4 
+	vV_push 24 
+
 
 
 	wblock_0:		
@@ -38,16 +39,15 @@ w_entry_point:
  ;OpADR: (2)
 ; SWAP opcode 
 
-	mov rax, [r15-8]	
-	mov rdx, [r15-4]	
-	mov [r15-8] , rdx	
-	mov [r15-4] , rax	
+
+	vV_swap		
+
 
  ;OpADR: (3)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 1 
-	add r15 , 4 
+	vV_push 1 
+
 
  ;OpADR: (4)
 ; ADD opcode 					
@@ -61,27 +61,21 @@ w_entry_point:
  ;OpADR: (5)
 ; SWAP opcode 
 
-	mov rax, [r15-8]	
-	mov rdx, [r15-4]	
-	mov [r15-8] , rdx	
-	mov [r15-4] , rax	
+
+	vV_swap		
+
 
  ;OpADR: (6)
 ; DUP opcode (1)			
 
-	mov ecx , 1			
-	lea rsi , [r15-4]	
-	mov rdi , r15				
+	vV_dup 1			
 
-	rep movsd				
-
-	add r15 , 4		
 
  ;OpADR: (7)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 1 
-	add r15 , 4 
+	vV_push 1 
+
 
  ;OpADR: (8)
 ; OR opcode					
@@ -106,19 +100,14 @@ w_entry_point:
  ;OpADR: (11)
 ; DUP opcode (1)			
 
-	mov ecx , 1			
-	lea rsi , [r15-4]	
-	mov rdi , r15				
+	vV_dup 1			
 
-	rep movsd				
-
-	add r15 , 4		
 
  ;OpADR: (12)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 4294967295 
-	add r15 , 4 
+	vV_push 4294967295 
+
 
  ;OpADR: (13)
 ; OR opcode					
@@ -138,7 +127,7 @@ w_entry_point:
  ;OpADR: (15)
 ; DROP opcode 
 
-	sub r15 , 4	
+	sub vV_sp , 4	
 
 
 	wblock_1:		
@@ -149,8 +138,8 @@ w_entry_point:
  ;OpADR: (16)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 0 
-	add r15 , 4 
+	vV_push 0 
+
 
  ;OpADR: (17)
 ; OUT opcode (0)			
@@ -162,8 +151,8 @@ w_entry_point:
  ;OpADR: (18)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 1 
-	add r15 , 4 
+	vV_push 1 
+
 
  ;OpADR: (19)
 ; ADD opcode 					
@@ -177,19 +166,14 @@ w_entry_point:
  ;OpADR: (20)
 ; DUP opcode (1)			
 
-	mov ecx , 1			
-	lea rsi , [r15-4]	
-	mov rdi , r15				
+	vV_dup 1			
 
-	rep movsd				
-
-	add r15 , 4		
 
  ;OpADR: (21)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 8 
-	add r15 , 4 
+	vV_push 8 
+
 
  ;OpADR: (22)
 ; LESS opcode					
@@ -217,11 +201,11 @@ w_entry_point:
  ;OpADR: (24)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 0 
-	add r15 , 4 
+	vV_push 0 
+
 		
 		ret
 
-;Transpiled from w with wcs version 0.0.1 
+;Transpiled from vV with vVc version 0.0.1.5
 		
 		

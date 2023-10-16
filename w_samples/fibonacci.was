@@ -1,5 +1,6 @@
-%include "vVc/assembly/w_runtime/wio.asm"		
-%include "vVc/assembly/w_runtime/w_runtime.asm"	
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/w_runtime.asm"		
 
 
 global w_entry_point
@@ -20,14 +21,14 @@ w_entry_point:
  ;OpADR: (0)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 0 
-	add r15 , 4 
+	vV_push 0 
+
 
  ;OpADR: (1)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 1 
-	add r15 , 4 
+	vV_push 1 
+
 
 
 	wblock_0:		
@@ -38,13 +39,8 @@ w_entry_point:
  ;OpADR: (2)
 ; DUP opcode (2)			
 
-	mov ecx , 2			
-	lea rsi , [r15-8]	
-	mov rdi , r15				
+	vV_dup 2			
 
-	rep movsd				
-
-	add r15 , 8		
 
  ;OpADR: (3)
 ; ADD opcode 					
@@ -58,13 +54,8 @@ w_entry_point:
  ;OpADR: (4)
 ; DUP opcode (1)			
 
-	mov ecx , 1			
-	lea rsi , [r15-4]	
-	mov rdi , r15				
+	vV_dup 1			
 
-	rep movsd				
-
-	add r15 , 4		
 
  ;OpADR: (5)
 ; OUT opcode (0)			
@@ -76,19 +67,14 @@ w_entry_point:
  ;OpADR: (6)
 ; DUP opcode (1)			
 
-	mov ecx , 1			
-	lea rsi , [r15-4]	
-	mov rdi , r15				
+	vV_dup 1			
 
-	rep movsd				
-
-	add r15 , 4		
 
  ;OpADR: (7)
 ; PUSH opcode 
 
-	mov DWORD [r15] , 2147483647 
-	add r15 , 4 
+	vV_push 2147483647 
+
 
  ;OpADR: (8)
 ; LESS opcode					
@@ -115,6 +101,6 @@ w_entry_point:
 		
 		ret
 
-;Transpiled from w with wcs version 0.0.1 
+;Transpiled from vV with vVc version 0.0.1.5
 		
 		

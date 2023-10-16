@@ -30,9 +30,9 @@
 5.0 To implement:
  
  
- 	get	[read input, send int data tostack]
+ DONE	get	[read input, send int data tostack]
  	
- 	(out) .  [top of stack to output as str repr]
+ DONE	(out) .  [top of stack to output as str repr]
  	
  	
  ------------------------------------------------------

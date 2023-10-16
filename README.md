@@ -20,17 +20,17 @@ Planned Updates:
 
 	0.0.2:		I/O Update
 	
-		-buffered 32b unsigned int input		|	Done/unimplemented yet
-		-buffered 32b unsigned int output		|	Done/unimplemeted yet
+		-buffered 32b unsigned int input		|	Done/implemented 
+		-buffered 32b unsigned int output		|	Done/implemeted 
 		-Basic Errors (exit code!=0)			|	TODO: define errors somewhere
 		-Rewrite the transpiler to use nasm macros	|	In progress
 		
 		todo:
 		
-		-format for u_int I/O (hex, bin, decimal)
+		-format for u_int I/O (hex, bin, decimal)	Done
 		- "char" I/O
 		-" PackedChar" I/O
-		- Rename labels, update some names
+		- Rename labels, update some names		In progress
 
 
 

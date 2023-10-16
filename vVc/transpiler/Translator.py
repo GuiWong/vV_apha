@@ -65,7 +65,7 @@ class Translator:
 	
 		self.output+= '\
 %include "'+self.lib_path+'vV_defines.asm"		\n\
-%include "'+self.lib_path+'wio.asm"			\n\
+%include "'+self.lib_path+'vV_io.asm"			\n\
 %include "'+self.lib_path+'w_runtime.asm"		\n'
 
 
@@ -114,7 +114,7 @@ w_entry_point:
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.1 
+;Transpiled from vV with vVc version 0.0.1.5
 		
 		'''
 		
@@ -160,7 +160,7 @@ w_entry_point:
 			txt = '\
 ; DROP opcode \n\n\
 \
-	sub vVsp , 4	\n'
+	sub vV_sp , 4	\n'
 				
 			
 		elif op == OP.DUP:
