@@ -86,6 +86,8 @@ segment .text
 		
 		mov DWORD [endofline] , 0xa
 		
+		mov DWORD[vV_sys_format_mode] , vV_ascii_int_to_dec
+		
 		ret
 		
 		

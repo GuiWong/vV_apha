@@ -15,7 +15,7 @@ vV_ascii_as_hex2:						;Jumped to from parse_num OR called
 								;use r9 for max_value
 								
 							
-	mov r8 , 16	
+	;mov r8 , 16	
 	
 	.start_loop:
 	
@@ -38,12 +38,16 @@ vV_ascii_as_hex2:						;Jumped to from parse_num OR called
 			
 				jb vV_ascii_unvalid
 				
-			sub cl , 7
+			sub cl , 39
 				
 			
 		.pass_int:	
 			
-		sub cl , 48
+		sub cl , '0'
+		
+		
+		
+		xor edx , edx
 		
 		clc
 		
@@ -60,10 +64,7 @@ vV_ascii_as_hex2:						;Jumped to from parse_num OR called
 		cmp edi , ebx
 		
 		jb .start_loop
-		
-		;jmp .start_loop
-		
-	;.end:
+
 		
 		ret	
 		
@@ -128,6 +129,10 @@ vV_ascii_change_to_hex:
 		cmp eax , 0
 			
 			jne vV_ascii_unvalid
+			
+		mov r8 , 16
+		xor rcx , rcx
+		xor rax ,rax
 				
 		inc edi
 		jmp vV_ascii_as_hex2		
@@ -345,7 +350,7 @@ vV_ascii_pop_digits:			; Need nb of digits currently on stack(ecx)
 	
 	
 vV_ascii_int_to_bin:					;value in eax, 
-							;base in esi
+							
 
 
 	xor ecx , ecx
@@ -375,8 +380,8 @@ vV_ascii_int_to_bin:					;value in eax,
 		
 		jae .loop01
 	
-	add al , '1'	
-	mov [rdi] , al
+	;add al , '1'	
+	;mov [rdi] , al
 	
 	jmp vV_ascii_pop_digits
 	

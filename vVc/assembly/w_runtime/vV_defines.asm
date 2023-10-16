@@ -3,7 +3,24 @@
 
 %deftok vV_spS 'r14'
 
+%deftok vV_sdir '-'
+
+
 %define cell(a) (a*4)
+
+
+%define vV_top [vV_sp vV_sdir %+ cell(1)]
+%define vV_2nd [vV_sp vV_sdir %+ cell(2)]
+
+%define vV_stack_v(a) ([vV_sp vV_sdir %+ cell(a)])
+
+
+
+%deftok vV_FORMAT_BIN "vV_ascii_int_to_bin"
+%deftok vV_FORMAT_DEC "vV_ascii_int_to_dec"
+%deftok vV_FORMAT_HEX "vV_ascii_int_to_hex"
+
+
 
 %macro vV_push 1
 
@@ -37,6 +54,13 @@
 	rep movsd
 	
 	add vV_sp , cell(%1)
+	
+%endmacro
+
+
+%macro vV_dec_sp 1
+
+	sub vV_sp , cell(%1)
 	
 %endmacro
 	

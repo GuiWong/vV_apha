@@ -31,9 +31,40 @@
  
  
  DONE	get	[read input, send int data tostack]
+ 
+ 	Auto FORMAT (0x,0b, 0d)
  	
  DONE	(out) .  [top of stack to output as str repr]
+
+
+
+	Format: 	-d:Deciamal		-c: char
+			-x/-h: hex		-w: packed char
+ 			-b: bin
  	
+ 	
+ Syntax??????
+ 
+ 
+ 		get	\
+ 	 /	(dget)	|
+ 	 |	(sget)	|	Done
+ Implicit|	(xget)	|
+ 	  \	(bget)	/
+ 		
+ 		getc
+ 		getw
+ 
+ 
+   28	 	out	\		out_
+ 		dout	|		dout_
+ 		sout	|done		sout_
+ 		xout	|		xout_
+ 		bout	/		bout_
+ 		
+ 		cout			cout_
+ 		wout			wout_
+ 
  	
  ------------------------------------------------------
  

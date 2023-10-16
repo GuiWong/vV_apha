@@ -183,6 +183,9 @@ class Operation_Decoder:
 #03: affixed Ops
 
 	#03.1:prefx
+	
+	#03.1.1: digit_prefix
+	
 		elif cmd[0].isdigit():
 		
 			if cmd[1:] in OP.int_prefixed.values():
@@ -190,14 +193,13 @@ class Operation_Decoder:
 				opcode.value = OP.get_virual_opcode_by_string(cmd[1:])
 				opcode.arg = int(cmd[0])
 	
-	
-		elif cmd[0] in OP.prefixes_op:
-		
-		
+	#03.1.2: format prefix
+		elif cmd[0] in OP.format_prefixes.keys():
 			
-			pass
+			if cmd[1:] in OP.format_prefixed.values():
 
-
+				opcode.value = OP.get_virual_opcode_by_string(cmd[1:])
+				opcode.arg = OP.format_prefixes[cmd[0]]
 
 
 	#03.2:suffix

@@ -99,7 +99,9 @@ WHILE = 75		#sameopcode as an if, but jumps backwards
 
 
 OUT  = 96
-GET = 97
+BUFF_OUT = 97
+FLUSH = 98
+GET = 99
 
 
 
@@ -178,10 +180,35 @@ suffixes_op= {
 
 
 	IF : '?',
-	DUP :':',
 	NOP : NOP
 	
 	
+}
+
+class Format:
+
+	NONE = 0
+	DEC = 1
+	#SIG = 2
+	HEX = 3
+	BIN = 4
+	
+format_prefixed = {
+
+	#GET : 'get',
+	OUT : 'out',
+	BUFF_OUT : 'out_'
+	
+	}
+
+format_prefixes = {
+
+	'd': Format.DEC,
+	'x': Format.HEX,
+	'h': Format.HEX,
+	'b': Format.BIN,
+	
+
 }
 
 prefixes_op = {
@@ -222,7 +249,6 @@ direct_op = {
 	DUP : "dup",
 	SWAP: "swp",
 	DROP: "drp",
-	OUT: ".",
 	ADD: "+",
 	SUB: "-",
 	MUL: "*",
@@ -246,6 +272,11 @@ direct_op = {
 				#for ifs statements (not for while
 				
 	GET : "get",
+	
+	OUT: "out",
+	BUFF_OUT:"out_",
+	
+	FLUSH : "flush"
 }
 
 

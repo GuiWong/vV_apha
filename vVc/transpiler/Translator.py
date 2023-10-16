@@ -175,39 +175,29 @@ w_entry_point:
 \
 	vV_dup '+str(arg)+'			\n\n'
 		
-					
-		elif op == OP.OUT:
-
-			txt = '\
-; OUT opcode ('+str(arg)+')			\n\
-\n\
-						\n\
-	call wio_out				\n\
-						\n'	
-	
-				
+									
 			
 		elif op == OP.ADD:
 		
 			txt = '\
 ; ADD opcode 					\n\
 \n\
-	mov eax , [r15 - 8]			\n\
-	add eax , [r15-4]			\n\
-	mov [r15-8] , eax			\n\
+	mov eax , vV_2nd			\n\
+	add eax , vV_top			\n\
+	mov vV_2nd , eax			\n\
 \n\
-	sub r15 , 4		\n'
+	vV_dec_sp 1		\n'
 			
 		elif op == OP.SUB:
 		
 			txt = '\
 ; SUB opcode 					\n\
 \n\
-	mov eax , [r15 - 8]			\n\
-	add eax , [r15-4]			\n\
-	mov [r15-8] , eax			\n\
+	mov eax , vV_2nd			\n\
+	add eax , vV_top			\n\
+	mov vV_2nd, eax			\n\
 \n\
-	sub r15 , 4		\n'
+	vV_dec_sp 1		\n'
 			
 		elif op == OP.MUL:
 		
@@ -215,11 +205,11 @@ w_entry_point:
 ; MUL opcode 					\n\
 \n\
 \n\
-	mov eax , [r15 - 8]			\n\
-	mul DWORD[r15-4]			\n\
-	mov [r15-8] , eax			\n\
+	mov eax , vV_2nd			\n\
+	mul DWORD vV_top			\n\
+	mov vV_2nd , eax			\n\
 \n\
-	sub r15 , 4				\n\
+	vV_dec_sp 1				\n\
 						\n'
 			
 		elif op == OP.DIV:
@@ -228,18 +218,18 @@ w_entry_point:
 ; DIV opcode 					\n\
 \n\
 	xor edx , edx				\n\
-	mov eax , [r15 - 8]			\n\
-	div DWORD[r15-4]			\n\
-	mov [r15-8] , eax			\n\
+	mov eax , vV_2nd			\n\
+	div DWORD vV_top			\n\
+	mov vV_2nd , eax			\n\
 \n\
-	sub r15 , 4				\n'
+	vV_dec_sp 1				\n'
 	
 			
 		elif op == OP.NEG:
 			txt = '\
-; NOT opcode 					\n\
+; NEG opcode 					\n\
 \n\
-	neg DWORD[r15-4]			\n'
+	neg DWORD vV_top			\n'
 			
 		elif op == OP.MOD:
 		
@@ -247,9 +237,9 @@ w_entry_point:
 ; MOD opcode 					\n\
 \n\
 	xor edx , edx				\n\
-	mov eax , [r15 - 8]			\n\
-	div DWORD[r15-4]			\n\
-	mov [r15-8] , edx			\n\
+	mov eax , vV_2nd			\n\
+	div DWORD vV_top			\n\
+	mov vV_2nd , edx			\n\
 \n\
 	sub r15 , 4				\n'
 			
@@ -260,31 +250,31 @@ w_entry_point:
 			txt = '\
 ; LSH opcode 					\n\
 \n\
-	shl DWORD[r15-4] , 1			\n'
+	shl DWORD vV_top , 1			\n'
 			
 		elif op == OP.RSH:
 		
 			txt = '\
 ; RSH opcode 					\n\
 \n\
-	shr DWORD[r15-4] , 1			\n'
+	shr DWORD vV_top , 1			\n'
 		
 		elif op == OP.NOT:
 		
 			txt = '\
 ; NOT opcode 					\n\
 \n\
-	not DWORD[r15-4]			\n'
+	not DWORD vV_top			\n'
 			
 		elif op == OP.OR:
 		
 			txt = '\
 ; AND opcode					\n\
 \n\
-	mov eax , [r15-4]			\n\
-	or DWORD[r15-8] , eax			\n\
+	mov eax , vV_top			\n\
+	or DWORD vV_2nd , eax			\n\
 \n\
-	sub r15 , 4				\n'
+	vV_dec_sp 1				\n'
 			
 
 		elif op == OP.AND:
@@ -292,20 +282,20 @@ w_entry_point:
 			txt = '\
 ; OR opcode					\n\
 \n\
-	mov eax , [r15-4]			\n\
-	and DWORD[r15-8] , eax			\n\
+	mov eax , vV_top			\n\
+	and DWORD vV_2nd , eax			\n\
 \n\
-	sub r15 , 4				\n'
+	vV_dec_sp 1				\n'
 			
 		elif op == OP.XOR:
 		
 			txt = '\
 ; XOR opcode					\n\
 \n\
-	mov eax , [r15-4]			\n\
-	xor DWORD[r15-8] , eax			\n\
+	mov eax , vV_top			\n\
+	xor DWORD vV_2nd , eax			\n\
 \n\
-	sub r15 , 4				\n'
+	vV_dec_sp 1				\n'
 			
 			
 		elif op == OP.LESS:		#WARNING TODO WARNING
@@ -314,18 +304,18 @@ w_entry_point:
 			txt = '\
 ; LESS opcode					\n\
 \n\
-	mov eax , [r15-4]			\n\
-	cmp DWORD[r15-8] , eax			\n\
+	mov eax , vV_top			\n\
+	cmp DWORD vV_2nd , eax			\n\
 \n\
 	jae short 0xb				\n\
 \n\
-			mov DWORD[r15-8] , -1	\n\
+			mov DWORD vV_2nd , -1	\n\
 \n\
 	jmp short 0x9				\n\
 \n\
-			mov DWORD[r15-8] , 0	\n\
+			mov DWORD vV_2nd , 0	\n\
 \n\
-	sub r15 , 4				\n'
+	vV_dec_sp 1				\n'
 	
 				
 		elif op == OP.MORE:
@@ -333,18 +323,18 @@ w_entry_point:
 			txt = '\
 ; MORE opcode					\n\
 \n\
-	mov eax , [r15-4]			\n\
-	cmp DWORD[r15-8] , eax			\n\
+	mov eax , vV_top			\n\
+	cmp DWORD vV_2nd , eax			\n\
 \n\
 	jbe short 0xb				\n\
 \n\
-			mov DWORD[r15-8] , -1	\n\
+			mov DWORD vV_2nd , -1	\n\
 \n\
 	jmp short 0x9				\n\
 \n\
-			mov DWORD[r15-8] , 0	\n\
+			mov DWORD vV_2nd , 0	\n\
 \n\
-	sub r15 , 4				\n'
+	vV_dec_sp 1				\n'
 			
 			
 		elif op == OP.EQUAL:
@@ -352,26 +342,26 @@ w_entry_point:
 			txt = '\
 ; EQUAL opcode					\n\
 \n\
-	mov eax , [r15-4]			\n\
-	cmp DWORD[r15-8] , eax			\n\
+	mov eax , vV_top			\n\
+	cmp DWORD vV_2nd , eax			\n\
 \n\
 	jnz short 0xb				\n\
 \n\
-			mov DWORD[r15-8] , -1	\n\
+			mov DWORD vV_2nd , -1	\n\
 \n\
 	jmp short 0x9				\n\
 \n\
-			mov DWORD[r15-8] , 0	\n\
+			mov DWORD vV_2nd , 0	\n\
 \n\
-	sub r15 , 4				\n'
+	vV_dec_sp 1				\n'
 				
 				
 		elif op == OP.IF:		#Becomes a jump
 			txt = '\
 ; IF opcode					\n\
 \n\
-	sub r15 , 4				\n\
-	xor DWORD[r15] , -1			\n\
+	vV_dec_sp 1			\n\
+	xor DWORD[vV_sp] , -1			\n\
 	jne '+self.label_names[arg]+'	\n'
 				
 				
@@ -386,28 +376,104 @@ w_entry_point:
 			txt = '\
 ; WHILE opcode					\n\
 \n\
-	sub r15 , 4				\n\
-	or DWORD[r15] , 0			\n\
+	vV_dec_sp 1				\n\
+	or DWORD[vV_sp] , 0			\n\
 	jne '+self.label_names[arg]+'	\n'
 			
 
 			
+		elif op== OP.GET:
+		
+			txt = '\
+; GET opcode ('+str(arg)+')			\n\
+\n\
+		call wio_get			\n'	
+			
 
 
-
-		elif op == OP.GET:
+		elif op == OP.OUT:
 
 			txt = '\
 ; OUT opcode ('+str(arg)+')			\n\
-\n\
-						\n\
-	call wio_get				\n\
+\n'
+
+			if arg == OP.Format.NONE:
+			
+				txt+='\
+	call vV_io_out_default			\n\
 						\n'
+			
+			elif arg == OP.Format.DEC:
+			
+				txt+='\
+	mov r10d , vV_FORMAT_DEC		\n\
+	call vV_io_out				\n\
+						\n'
+						
+			elif arg == OP.Format.HEX:
+			
+				txt+='\
+	mov r10d , vV_FORMAT_HEX		\n\
+	call vV_io_out				\n\
+						\n'
+						
+			elif arg == OP.Format.BIN:
+			
+				txt+='\
+	mov r10d , vV_FORMAT_BIN		\n\
+	call vV_io_out				\n\
+						\n'	
+						
+			else:
+			
+				assert False, " FATAL ERROR, Format for out not valid"
 
 
 
+		elif op == OP.BUFF_OUT:
+
+			txt = '\
+; BUFF_OUT opcode ('+str(arg)+')			\n\
+\n'
+
+			if arg == OP.Format.NONE:
+			
+				txt+='\
+	call vV_io_out_buffer_default			\n\
+						\n'
+			
+			elif arg == OP.Format.DEC:
+			
+				txt+='\
+	mov r10d , vV_FORMAT_DEC		\n\
+	call vV_io_out_buffer				\n\
+						\n'
+						
+			elif arg == OP.Format.HEX:
+			
+				txt+='\
+	mov r10d , vV_FORMAT_HEX		\n\
+	call vV_io_out_buffer				\n\
+						\n'
+						
+			elif arg == OP.Format.BIN:
+			
+				txt+='\
+	mov r10d , vV_FORMAT_BIN		\n\
+	call vV_io_out_buffer				\n\
+						\n'	
+						
+			else:
+			
+				assert False, " FATAL ERROR, Format for out not valid"
 
 
+		elif op == OP.FLUSH:
+
+			txt = '\
+; FLUSH opcode					\n\
+\n\
+		call vV_io_flush	\n'
 
 
 

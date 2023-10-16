@@ -46,8 +46,13 @@ w_entry_point:
 	
 	call wio_get
 	
-	call wio_out
-	call wio_out
+	mov r10d , vV_ascii_int_to_bin
+	
+	call vV_io_out
+	
+	call vV_io_out
+	
+	call vV_flush
 	
 	vV_swap
 	
@@ -55,7 +60,7 @@ w_entry_point:
 	
 	vV_pop eax 
 	
-	mul DWORD[vV_sp-4]
+	mul DWORD [vV_sp-4]
 	
 	jc .Overflow
 	
