@@ -366,11 +366,15 @@ w_entry_point:
 	jne '+self.label_names[arg]+'	\n'
 				
 				
-		elif op in [ OP.ELSE]:		#Becomes a jump
+		elif op in [ OP.ELSE ]:		#Becomes a jump
 			txt = '\
-; ELSE opcode					\n\
+; ELIF opcode					\n\
 \n\
 	jmp '+self.label_names[arg]+'	\n'
+	
+	
+
+	
 			
 		elif op == OP.WHILE:
 		

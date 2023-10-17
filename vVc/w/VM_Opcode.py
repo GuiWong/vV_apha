@@ -82,7 +82,8 @@ EQUAL = 50
 END_BLOCK = 64		#Virtual for Ifs, maybe not used
 IF = 65		#Map to jmp if, 1 instruction
 ELSE = 66		#Map to jmp(end) , 
-		# End:	#is just a dest for last jump, no opcode should be added
+ELIF = 67
+ELIF2 = 68		# End:	#is just a dest for last jump, no opcode should be added
 
 #REPEAT = 73;
 DO = 74		#transparent, just adress for while [But start Block]
@@ -107,6 +108,9 @@ GET = 99
 
 
 
+
+SQUOTES = 250
+DQUOTES = 251
 
 TAB = 252
 N_LINE = 253
@@ -134,6 +138,14 @@ class Opcode_descriptor:
 	name = ''
 	
 '''
+
+
+quotes = {
+
+	"'" : SQUOTES,
+	'"' : DQUOTES
+	
+	}
 	
 separator = {
 
@@ -148,6 +160,7 @@ block_op ={		#WARNING: Need virual ops
 
 	IF : "if",
 	ELSE : "el" ,
+	#ELIF : "elif",
 	
 	END_BLOCK : ",",
 	
@@ -164,9 +177,10 @@ class Block_Type:
 	NONE = 0
 	IF = 1
 	ELSE = 2
-	END = 3
-	DO = 4
-	WHILE = 5
+	ELIF = 3
+	END = 4
+	DO = 5
+	WHILE = 6
 	#REPEAT=6
 	
 	BREAK = 8
@@ -178,7 +192,8 @@ block_type= {
 	END_BLOCK : Block_Type.END,
 	DO : Block_Type.DO,
 	WHILE : Block_Type.WHILE,
-	BREAK : Block_Type.BREAK
+	BREAK : Block_Type.BREAK,
+	#ELIF : Block_Type.ELIF
 
 }
 
@@ -247,6 +262,7 @@ virtual_op = {
 	dummy_equal : '=',
 	IF : "if",
 	ELSE : "el" ,
+	#ELIF : "elif",
 	
 	END_BLOCK : ",",
 	DO : 'do',

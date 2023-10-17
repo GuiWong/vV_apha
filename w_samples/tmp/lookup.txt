@@ -1916,7 +1916,7 @@
    379                              <1> 
    380                                  
    381                                  
-   382                                   ;OpADR: [62]  ; ELSE opcode					
+   382                                   ;OpADR: [62]  ; ELIF opcode					
    383                                  
    384 00000718 E9BB000000              	jmp wblock_6	
    385                                  
@@ -1995,7 +1995,7 @@
    435                                  
    436 00000774 E81FFAFFFF              		call vV_io_flush	
    437                                  
-   438                                   ;OpADR: [70]  ; ELSE opcode					
+   438                                   ;OpADR: [70]  ; ELIF opcode					
    439                                  
    440 00000779 EB5D                    	jmp wblock_6	
    441                                  

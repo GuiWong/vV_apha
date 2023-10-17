@@ -19,8 +19,8 @@ class Format:
 argflag = {
 
 
-#	'-v' : VERBOSE			#more output during compile time
-	'-p' : PREPROCESS_ONLY		#st
+	'-v' : VERBOSE			#more output during compile time
+#	'-p' : PREPROCESS_ONLY		#st
 #	'-a' : ASSEMBLE_ONLY
 	
 	

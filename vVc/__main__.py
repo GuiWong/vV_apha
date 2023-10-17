@@ -63,9 +63,9 @@ else:
 	
 		if arg[0] == '-':
 		
-			if arg in O.argflag:
+			if arg in O.argflag.keys():
 			
-				flags = flags | O.argflags
+				flags = flags | O.argflag[arg]
 				
 			elif arg in O.argarg:
 			
@@ -150,7 +150,7 @@ print'	press enter to proceed to precompile step'
 
 pre_compiler = Precompiler.Pre_Compiler()
 
-pre_compiler.setup_startup(0)
+pre_compiler.setup_startup(flags)
 
 
 pre_compiler.open_main_file(source_file)

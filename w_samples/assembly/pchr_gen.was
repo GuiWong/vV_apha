@@ -379,7 +379,7 @@ w_entry_point:
 	vV_push 0 
 
 
- ;OpADR: [62]  ; ELSE opcode					
+ ;OpADR: [62]  ; ELIF opcode					
 
 	jmp wblock_6	
 
@@ -435,7 +435,7 @@ w_entry_point:
 
 		call vV_io_flush	
 
- ;OpADR: [70]  ; ELSE opcode					
+ ;OpADR: [70]  ; ELIF opcode					
 
 	jmp wblock_6	
 

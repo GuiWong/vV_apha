@@ -14,17 +14,22 @@ class Location:
 		
 	def __str__(self):
 	
-		if path !=0:
-			return path + self.file + '::'+str(self.line) +':'+str(self.col)
+		if self.path !=0:
+			return self.path + self.file + '::'+str(self.line) +':'+str(self.col)
 		else:
 			return ''
 	
 
 class W_ERROR(Exception):
 
+	location=0
 	def __init__(self,message,location):
 	
+		self.location = location
+	
 		super(W_ERROR, self).__init__(message)
+		
+		
 		
 	def __str__(self):
 	
@@ -67,6 +72,11 @@ class ParserError(W_ERROR):
 	def __init__(self,message,location):
 	
 		super(ParserError, self).__init__(message,location)
+		
+		
+	def __str__(self):
+	
+		return 'Unspecified Parser Error at : ' + str(self.location)
 		
 		
 class InvalidSymbol(ParserError):

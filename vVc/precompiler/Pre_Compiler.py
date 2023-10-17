@@ -2,7 +2,7 @@ import w.VM_Opcode as OP
 import WErrors
 import Pre_Compiler_states as State
 import Opcode
-
+import options as O
 
 
 
@@ -24,6 +24,65 @@ class Block:
 		self.b_type = b_t
 		self.filepos = f_p
 		self.sub_blocks = []
+		
+		
+def check_numeric_format(txt):
+
+	v = 0
+
+	try:
+		v = int(txt,10)
+		return [True,v]
+		
+	except ValueError:
+	
+		pass
+		
+	try:
+		v = int(txt,2)
+		return [True,v]
+		
+	except ValueError:
+	
+		pass
+		
+	try:
+		v = int(txt,16)
+		return [True,v]
+		
+	except ValueError:
+	
+		pass
+		
+	if txt[0] in ["'" , '"' ] and txt[-1] == txt[0] and len(txt) <= 6:
+	
+		v = 0
+	
+		if len(txt) > 2 :
+		
+			v = ord(txt[1])
+			
+		if len(txt) >3 :
+		
+			v += ord(txt[2]) << 8
+			
+		if len(txt) >4 :
+		
+			v += ord(txt[3]) << 16
+		if len(txt) == 6 :
+		
+			v += ord(txt[4]) << 24
+			
+			
+		print "\n\n "+ str(v) + "\n\n"
+			
+		return [True,v]
+			
+	
+	return [False]
+	
+	
+		
 	
 	
 	
@@ -76,19 +135,14 @@ class Block_Manager:
 			
 			self.blocks[-1].arg_adress = actual.adress
 			
-			return [self.end_block(actual)]
+			return [self.end_block()]
 			
-		elif actual.b_type == OP.Block_Type.ELSE:
+		elif actual.b_type in [OP.Block_Type.ELSE,OP.Block_Type.ELIF]:
 		
-			rec = 1
+			ret = []
 			
-			assert self.blocks[-1].b_type in [OP.Block_Type.IF], "Block Mismatch"
-			
-			
-			
-			#while self.blocks[0-rec].b_type != OP.Block_Type.IF:
-			
-			#	rec += 1
+			assert self.blocks[-1].b_type in [OP.Block_Type.IF,OP.Block_Type.ELIF], "Block Mismatch"
+
 			
 			if self.blocks[-1].b_type == OP.Block_Type.IF:
 				
@@ -96,19 +150,22 @@ class Block_Manager:
 			
 				self.blocks[-1].arg_adress = actual.adress + 1
 				
+			elif self.blocks[-1].b_type == OP.Block_Type.ELIF:
+			
+				self.blocks[-1].sub_blocks.append(actual.adress)
+				
+				assert self.blocks[-2].b_type == OP.Block_Type.IF,"block Mismatch"
+				
+				self.blocks[-2].sub_blocks.append(actual.adress + 1)
 				
 				
-				
-			#For Elifs
-			#elif self.blocks[-1].b_type == OP.Block_Type.IF:
+			if self.blocks[-1].b_type == OP.Block_Type.ELIF:
 			
+				ret.append(self.end_block())
 			
-			
-			
-			#print "hello"
-			#Start a new block
 			self.start_block(actual)
-			return []
+			
+			return ret
 			
 			
 		elif actual.b_type == OP.Block_Type.END:
@@ -120,15 +177,15 @@ class Block_Manager:
 			
 			if self.blocks[-1].b_type == OP.Block_Type.IF:
 			
-				return [self.end_block(actual)]
+				return [self.end_block()]
 				
 			elif self.blocks[-1].b_type == OP.Block_Type.ELSE:
 			
-				loc_b = self.end_block(actual)
+				loc_b = self.end_block()
 				
 				assert self.blocks[-1].b_type == OP.Block_Type.IF, "Block Mismatch"
 				
-				return [loc_b ,self.end_block(actual)]
+				return [loc_b ,self.end_block()]
 				
 				
 		
@@ -137,7 +194,7 @@ class Block_Manager:
 		self.blocks.append(block)
 		self.level +=1
 		
-	def end_block(self,block):
+	def end_block(self):
 			
 		b = self.blocks.pop()
 		self.level-=1
@@ -220,12 +277,14 @@ class Context:
 	
 		if self.current_file != 0 and self.state != State.NOT_READY:
 		
+		
+		
 			return WErrors.Location(self.current_path,self.current_file,self.current_line,self.current_col)
 		
 	def set_main(self):
 	
 		if (self.main_file != 0 )and (self.main_file != self.current_file):
-			raise DuplicateMainError("test will this show?",build_location)
+			raise DuplicateMainError("test will this show?",self.build_location())
 			
 		else:
 		
@@ -293,6 +352,7 @@ class Operation_Decoder:
 	
 		blockinfo = 0
 		opcode = Opcode.Opcode()
+		valu= check_numeric_format(cmd)
 
 #Handle all possible cases in order
 
@@ -314,10 +374,10 @@ class Operation_Decoder:
 
 #02: numeric value
 
-		elif cmd.isdigit():
+		elif valu[0]:
 		
 			opcode.value=OP.PUSH
-			opcode.arg = int(cmd)			
+			opcode.arg = valu[1]		
 			
 #03: affixed Ops
 
@@ -369,6 +429,8 @@ class Operation_Decoder:
 			opcode.value=0
 			
 			print 'unrecognised command : ' +cmd
+			
+			#raise WErrors.W_ERROR('acab',str(self.context.build_location()))
 			
 			
 		return opcode,blockinfo
@@ -463,9 +525,9 @@ class Pre_Compiler:
 		
 		self.raw_data = self.file_loader.load_file(filepath)
 		
-		self.context.current_file = filepath.split("/")[-1:]
+		self.context.current_file = filepath.split("/")[-1:][0]
 		
-		self.context.current_path = filepath.split("/")[:-1]
+		self.context.current_path = '/'.join(filepath.split("/")[:-1])
 		
 		self.context.set_line(0)
 		
@@ -494,6 +556,8 @@ class Pre_Compiler:
 		
 		while not file_end:
 		
+			in_quotes = 0
+		
 			mode = 0
 			buff=''
 			#raw_input("test")
@@ -503,7 +567,26 @@ class Pre_Compiler:
 				r = self.raw_data[line][col]
 				#print 'r'
 				
-				if r in OP.separator:
+				if r in OP.quotes.keys():
+				
+					if in_quotes != 0 and OP.quotes[r] == in_quotes:
+				
+						in_quotes = 0
+					
+					elif in_quotes == 0 and mode == 0:
+				
+						in_quotes = OP.quotes[r]
+						
+						self.context.set_line(line+1)
+						self.context.set_col(col+1)
+						
+						
+						
+					else:
+					
+						raise WErrors.ParserError('Misplaced Quote', self.context.build_location())
+				
+				if r in OP.separator and in_quotes == 0:
 				
 					if mode == 0:
 					
@@ -520,8 +603,8 @@ class Pre_Compiler:
 						mode = 1
 						buff+=r
 						
-						self.context.set_line(line)
-						self.context.set_col(col)
+						self.context.set_line(line+1)
+						self.context.set_col(col+1)
 						
 						
 					else:
@@ -553,7 +636,9 @@ class Pre_Compiler:
 				break
 		
 			self.context.state =State.ISOLATING
-			print 'o Isolated: ' +buff +'		Col: ' +str(self.context.current_col) + ' line: ' +str(self.context.current_line)
+			
+			if self.flags & O.VERBOSE:
+				print 'o Isolated: ' +buff +'		Col: ' +str(self.context.current_col) + ' line: ' +str(self.context.current_line)
 			
 			
 			
@@ -565,6 +650,10 @@ class Pre_Compiler:
 			op.adress = len(self.op_array)
 			
 			self.op_array.append(op)
+			
+			
+			
+			assert op.value !=0, "Unknow Opcode Found at : " + str(self.context.build_location())
 		
 			#print'  > Opcode: '+str(op.value) +'	arg :' +str(op.arg) 
 			
@@ -633,6 +722,15 @@ class Pre_Compiler:
 					if op.value in [OP.DO,OP.END_BLOCK]:
 					
 						self.op_array.pop()
+						
+					elif op.value == OP.ELIF:
+					
+						tmpopcode = Opcode.Opcode()
+						tmpopcode.value = OP.ELIF2
+						tmpopcode.adress = len(self.op_array)
+						tmpopcode.arg = 0
+			
+						self.op_array.append(tmpopcode)
 			
 			'''					
 				
@@ -723,8 +821,8 @@ class Pre_Compiler:
 			'''
 				
 				
-				
-			print"current Op adress: " + str(len(self.op_array))
+			if self.flags & O.VERBOSE:	
+				print"current Op adress: " + str(len(self.op_array))
 				
 				
 		
