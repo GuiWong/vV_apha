@@ -2,6 +2,8 @@
 
 ;%include "wio.asm"
 
+
+%include "vVc/assembly/w_runtime/vV_errors.asm"
 %include "vVc/assembly/w_runtime/vV_system0.asm"
 %include "vVc/assembly/w_runtime/vV_system1.asm"
 %include "vVc/assembly/w_runtime/vV_memaloc.asm"

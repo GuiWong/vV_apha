@@ -20,7 +20,8 @@ do
 	
 	flush
 	
-	113 =? ! while
+	113 =? if break ,
+	1 while
 
 
 

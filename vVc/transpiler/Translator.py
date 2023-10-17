@@ -65,7 +65,7 @@ class Translator:
 	
 		self.output+= '\
 %include "'+self.lib_path+'vV_defines.asm"		\n\
-%include "'+self.lib_path+'vV_errors.asm"		\n\
+%include "'+self.lib_path+'vV_error_code.asm"		\n\
 %include "'+self.lib_path+'vV_io.asm"			\n\
 %include "'+self.lib_path+'w_runtime.asm"		\n'
 
@@ -379,7 +379,14 @@ w_entry_point:
 \n\
 	vV_dec_sp 1				\n\
 	or DWORD[vV_sp] , 0			\n\
-	jne '+self.label_names[arg]+'	\n'
+	jne '+self.label_names[arg]+'		\n'
+	
+		elif op == OP.BREAK:
+		
+			txt = '\
+; Break opcode					\n\
+\n\
+	jmp '+self.label_names[arg]+'		\n'	
 			
 
 			

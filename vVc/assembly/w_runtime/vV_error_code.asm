@@ -1,0 +1,9 @@
+
+%define vV_ERR_IO_I_OVERFLOW 1
+%define vV_ERR_IO_O_OVERFLOW 2
+%define vV_ERR_IO_I_UNVALID 3
+%define vV_ERR_IO_O_UNVALID 4
+%define vV_ERR_IO_I_VALUE_OVERFLOW 5
+
+
+%define vV_ERR_VALUE_OVERFLOW 8

@@ -109,19 +109,55 @@ vV_ascii_as_bin:
 	
 vV_ascii_unvalid:
 	
-		mov rax , 24;	#TODO: Defined Errors code/ data in file
-		xor rdx , rdx
-		mov dl , cl
-		
-		call w_forced_exit
-		
-vV_ascii_overflow:
-	
-		mov rax , 25;	#TODO: Defined Errors code/ data in file
+		;mov rax , 24;	#TODO: Defined Errors code/ data in file
 		;xor rdx , rdx
 		;mov dl , cl
 		
-		call w_forced_exit
+		;call w_forced_exit
+		
+		push rax
+		push rbx
+		
+		mov ah , vV_ERR_IO_I_UNVALID
+		or ax , 0
+		xor rbx , rbx
+		mov bl , cl
+		
+		call vV_error
+		
+		pop rbx
+		pop rax
+		
+		ret
+		
+		
+		
+		
+vV_ascii_overflow:
+	
+		push rax
+		push rbx
+		
+		xor rbx , rbx
+		mov rbx , rax
+		
+		;or rbx , 0x00010000
+		
+		mov ah , vV_ERR_IO_I_OVERFLOW
+		or ax , 0
+		
+		
+		
+		call vV_error
+		
+		pop rbx
+		pop rax
+		
+		;TODO: Maybe use vV_error return value for decision making
+		
+		mov eax , -1
+		
+		ret
 		
 		
 vV_ascii_change_to_hex:

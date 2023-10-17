@@ -1,5 +1,5 @@
 %include "vVc/assembly/w_runtime/vV_defines.asm"		
-%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
 %include "vVc/assembly/w_runtime/vV_io.asm"			
 %include "vVc/assembly/w_runtime/w_runtime.asm"		
 
@@ -20,7 +20,7 @@ w_entry_point:
 	
 	
 
-	wblock_7:		
+	wblock_9:		
 
 ;------------------------------------------------------
 
@@ -93,7 +93,7 @@ w_entry_point:
 
 
 
-	wblock_0:		
+	wblock_1:		
 
 ;------------------------------------------------------
 
@@ -197,34 +197,293 @@ w_entry_point:
 
 	vV_dec_sp 1				
 
- ;OpADR: [32]  ; NOT opcode 					
+ ;OpADR: [32]  ; IF opcode					
 
-	not DWORD vV_top			
-
- ;OpADR: [33]  ; WHILE opcode					
-
-	vV_dec_sp 1				
-	or DWORD[vV_sp] , 0			
+	vV_dec_sp 1			
+	xor DWORD[vV_sp] , -1			
 	jne wblock_0	
+
+ ;OpADR: [33]  ; Break opcode					
+
+	jmp wblock_2		
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
 
  ;OpADR: [34]  ; PUSH opcode 
 
-	vV_push 538983031 
+	vV_push 1 
 
 
- ;OpADR: [35]  ; PUSH opcode 
+ ;OpADR: [35]  ; WHILE opcode					
 
-	vV_push 980574568 
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_1		
+
+
+	wblock_2:		
+
+;------------------------------------------------------
 
 
  ;OpADR: [36]  ; PUSH opcode 
 
-	vV_push 1663054880 
+	vV_push 538983031 
 
 
  ;OpADR: [37]  ; PUSH opcode 
 
+	vV_push 980574568 
+
+
+ ;OpADR: [38]  ; PUSH opcode 
+
+	vV_push 1663054880 
+
+
+ ;OpADR: [39]  ; PUSH opcode 
+
 	vV_push 1701869940 
+
+
+
+	wblock_8:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [40]  ; DUP opcode (4)			
+
+	vV_dup 4			
+
+
+ ;OpADR: [41]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [42]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [43]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [44]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [45]  ; GET opcode (9)			
+
+								
+	call vV_io_get_packed_char				
+						
+
+ ;OpADR: [46]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [47]  ; SWAP opcode 
+
+
+	vV_swap		
+
+
+ ;OpADR: [48]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [49]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [50]  ; BUFF_OUT opcode (0)			
+
+	call vV_io_out_buffer_default			
+						
+
+ ;OpADR: [51]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [52]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [53]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [54]  ; PUSH opcode 
+
+	vV_push 1918986339 
+
+
+ ;OpADR: [55]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [56]  ; IF opcode					
+
+	vV_dec_sp 1			
+	xor DWORD[vV_sp] , -1			
+	jne wblock_7	
+
+ ;OpADR: [57]  ; PUSH opcode 
+
+	vV_push 1346983712 
+
+
+ ;OpADR: [58]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+
+ ;OpADR: [59]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [60]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [61]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [62]  ; ELSE opcode					
+
+	jmp wblock_6	
+
+
+	wblock_7:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [63]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [64]  ; PUSH opcode 
+
+	vV_push 1919443824 
+
+
+ ;OpADR: [65]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [66]  ; IF opcode					
+
+	vV_dec_sp 1			
+	xor DWORD[vV_sp] , -1			
+	jne wblock_5	
+
+ ;OpADR: [67]  ; PUSH opcode 
+
+	vV_push 1346983712 
+
+
+ ;OpADR: [68]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+
+ ;OpADR: [69]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [70]  ; ELSE opcode					
+
+	jmp wblock_6	
+
+
+	wblock_5:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [71]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [72]  ; PUSH opcode 
+
+	vV_push 1953068401 
+
+
+ ;OpADR: [73]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [74]  ; IF opcode					
+
+	vV_dec_sp 1			
+	xor DWORD[vV_sp] , -1			
+	jne wblock_6	
+
+ ;OpADR: [75]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [76]  ; PUSH opcode 
+
+	vV_push 0 
 
 
 
@@ -233,253 +492,17 @@ w_entry_point:
 ;------------------------------------------------------
 
 
- ;OpADR: [38]  ; DUP opcode (4)			
-
-	vV_dup 4			
-
-
- ;OpADR: [39]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [40]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [41]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [42]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [43]  ; GET opcode (9)			
-
-								
-	call vV_io_get_packed_char				
-						
-
- ;OpADR: [44]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [45]  ; SWAP opcode 
-
-
-	vV_swap		
-
-
- ;OpADR: [46]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [47]  ; DUP opcode (1)			
-
-	vV_dup 1			
-
-
- ;OpADR: [48]  ; BUFF_OUT opcode (0)			
-
-	call vV_io_out_buffer_default			
-						
-
- ;OpADR: [49]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [50]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [51]  ; DUP opcode (1)			
-
-	vV_dup 1			
-
-
- ;OpADR: [52]  ; PUSH opcode 
-
-	vV_push 1918986339 
-
-
- ;OpADR: [53]  ; EQUAL opcode					
-
-	mov eax , vV_top			
-	cmp DWORD vV_2nd , eax			
-
-	jnz short 0xb				
-
-			mov DWORD vV_2nd , -1	
-
-	jmp short 0x9				
-
-			mov DWORD vV_2nd , 0	
-
-	vV_dec_sp 1				
-
- ;OpADR: [54]  ; IF opcode					
-
-	vV_dec_sp 1			
-	xor DWORD[vV_sp] , -1			
-	jne wblock_1	
-
- ;OpADR: [55]  ; PUSH opcode 
-
-	vV_push 1346983712 
-
-
- ;OpADR: [56]  ; OUT opcode (9)			
-
-								
-	call vV_io_out_packed_char				
-						
-
- ;OpADR: [57]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [58]  ; PUSH opcode 
-
-	vV_push 1 
-
-
- ;OpADR: [59]  ; PUSH opcode 
-
-	vV_push 0 
-
-
- ;OpADR: [60]  ; ELSE opcode					
-
-	jmp wblock_5	
-
-
-	wblock_1:		
-
-;------------------------------------------------------
-
-
- ;OpADR: [61]  ; DUP opcode (1)			
-
-	vV_dup 1			
-
-
- ;OpADR: [62]  ; PUSH opcode 
-
-	vV_push 1919443824 
-
-
- ;OpADR: [63]  ; EQUAL opcode					
-
-	mov eax , vV_top			
-	cmp DWORD vV_2nd , eax			
-
-	jnz short 0xb				
-
-			mov DWORD vV_2nd , -1	
-
-	jmp short 0x9				
-
-			mov DWORD vV_2nd , 0	
-
-	vV_dec_sp 1				
-
- ;OpADR: [64]  ; IF opcode					
-
-	vV_dec_sp 1			
-	xor DWORD[vV_sp] , -1			
-	jne wblock_2	
-
- ;OpADR: [65]  ; PUSH opcode 
-
-	vV_push 1346983712 
-
-
- ;OpADR: [66]  ; OUT opcode (9)			
-
-								
-	call vV_io_out_packed_char				
-						
-
- ;OpADR: [67]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [68]  ; ELSE opcode					
-
-	jmp wblock_5	
-
-
-	wblock_2:		
-
-;------------------------------------------------------
-
-
- ;OpADR: [69]  ; DUP opcode (1)			
-
-	vV_dup 1			
-
-
- ;OpADR: [70]  ; PUSH opcode 
-
-	vV_push 1953068401 
-
-
- ;OpADR: [71]  ; EQUAL opcode					
-
-	mov eax , vV_top			
-	cmp DWORD vV_2nd , eax			
-
-	jnz short 0xb				
-
-			mov DWORD vV_2nd , -1	
-
-	jmp short 0x9				
-
-			mov DWORD vV_2nd , 0	
-
-	vV_dec_sp 1				
-
- ;OpADR: [72]  ; IF opcode					
-
-	vV_dec_sp 1			
-	xor DWORD[vV_sp] , -1			
-	jne wblock_5	
-
- ;OpADR: [73]  ; PUSH opcode 
-
-	vV_push 0 
-
-
- ;OpADR: [74]  ; PUSH opcode 
-
-	vV_push 0 
-
-
-
-	wblock_5:		
-
-;------------------------------------------------------
-
-
- ;OpADR: [75]  ; WHILE opcode					
+ ;OpADR: [77]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
-	jne wblock_6	
+	jne wblock_8		
 
- ;OpADR: [76]  ; WHILE opcode					
+ ;OpADR: [78]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
-	jne wblock_7	
+	jne wblock_9		
 		
 		ret
 

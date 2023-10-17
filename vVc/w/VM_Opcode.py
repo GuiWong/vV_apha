@@ -88,6 +88,8 @@ ELSE = 66		#Map to jmp(end) ,
 DO = 74		#transparent, just adress for while [But start Block]
 WHILE = 75		#sameopcode as an if, but jumps backwards
 
+BREAK = 76
+
 
 
 
@@ -142,7 +144,7 @@ separator = {
 	}	
 	
 	
-block_op ={
+block_op ={		#WARNING: Need virual ops
 
 	IF : "if",
 	ELSE : "el" ,
@@ -150,7 +152,9 @@ block_op ={
 	END_BLOCK : ",",
 	
 	DO : 'do',
-	WHILE:'while'
+	WHILE:'while',
+	
+	BREAK : 'break'
 	#REPEAT:'repeat'
 
 }
@@ -165,13 +169,16 @@ class Block_Type:
 	WHILE = 5
 	#REPEAT=6
 	
+	BREAK = 8
+	
 block_type= {
 
 	IF : Block_Type.IF,
 	ELSE : Block_Type.ELSE,
 	END_BLOCK : Block_Type.END,
 	DO : Block_Type.DO,
-	WHILE : Block_Type.WHILE
+	WHILE : Block_Type.WHILE,
+	BREAK : Block_Type.BREAK
 
 }
 
@@ -243,7 +250,8 @@ virtual_op = {
 	
 	END_BLOCK : ",",
 	DO : 'do',
-	WHILE:'while'
+	WHILE:'while',
+	BREAK : 'break'
 	
 	
 	}
