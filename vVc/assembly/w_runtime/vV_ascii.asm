@@ -378,10 +378,10 @@ vV_ascii_int_to_bin:					;value in eax,
 		
 		cmp eax , 1
 		
-		jae .loop01
+		ja .loop01
 	
-	;add al , '1'	
-	;mov [rdi] , al
+	add al , '0'	
+	mov [rdi] , al
 	
 	jmp vV_ascii_pop_digits
 	

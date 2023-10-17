@@ -4,6 +4,9 @@
 out_path="w_samples/"
 ext01=".was"
 ext02=".o"
+o_path1="assembly/"
+o_path2="object/"
+
 
 path=$1
 
@@ -13,11 +16,11 @@ python vVc "$path"
 name="${path##*/}"
 name="${name%.*}"
 
-output="${out_path}${name}${ext01}"
+output="${out_path}${o_path1}${name}${ext01}"
 
 
 
-output2="${out_path}${name}${ext02}"
+output2="${out_path}${o_path1}${name}${ext02}"
 
 echo
 
@@ -28,5 +31,5 @@ echo "${out_path}${name}"
 nasm -f elf64 "$output" -l w_samples/tmp/lookup.txt
 
 
-ld -o "${output%.*}" "$output2"
+ld -o  "${out_path}${name}" "$output2"
 

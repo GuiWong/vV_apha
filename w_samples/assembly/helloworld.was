@@ -1,0 +1,200 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/w_runtime.asm"		
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+
+w_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: [0]  ; PUSH opcode 
+
+	vV_push 100 
+
+
+ ;OpADR: [1]  ; PUSH opcode 
+
+	vV_push 108 
+
+
+ ;OpADR: [2]  ; PUSH opcode 
+
+	vV_push 114 
+
+
+ ;OpADR: [3]  ; PUSH opcode 
+
+	vV_push 111 
+
+
+ ;OpADR: [4]  ; PUSH opcode 
+
+	vV_push 87 
+
+
+ ;OpADR: [5]  ; PUSH opcode 
+
+	vV_push 32 
+
+
+ ;OpADR: [6]  ; PUSH opcode 
+
+	vV_push 111 
+
+
+ ;OpADR: [7]  ; PUSH opcode 
+
+	vV_push 108 
+
+
+ ;OpADR: [8]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [9]  ; PUSH opcode 
+
+	vV_push 101 
+
+
+ ;OpADR: [10]  ; PUSH opcode 
+
+	vV_push 72 
+
+
+ ;OpADR: [11]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [12]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [13]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [14]  ; SWAP opcode 
+
+
+	vV_swap		
+
+
+ ;OpADR: [15]  ; BUFF_OUT opcode (8)			
+
+
+	call vV_io_out_char_buffer			
+						
+
+ ;OpADR: [16]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [17]  ; PUSH opcode 
+
+	vV_push 11 
+
+
+ ;OpADR: [18]  ; LESS opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [19]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_0	
+
+ ;OpADR: [20]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [21]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [22]  ; OUT opcode (8)			
+
+		
+	call vV_io_out_char				
+						
+
+ ;OpADR: [23]  ; PUSH opcode 
+
+	vV_push 543452274 
+
+
+ ;OpADR: [24]  ; PUSH opcode 
+
+	vV_push 1867980911 
+
+
+ ;OpADR: [25]  ; PUSH opcode 
+
+	vV_push 1819043144 
+
+
+ ;OpADR: [26]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [27]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [28]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [29]  ; FLUSH opcode					
+
+		call vV_io_flush	
+		
+		ret
+
+;Transpiled from vV with vVc version 0.0.1.5
+		
+		

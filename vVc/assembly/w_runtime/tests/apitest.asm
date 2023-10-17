@@ -42,17 +42,22 @@ w_entry_point:
 	vV_push 63
 	vV_push 126
 	
-	call wio_get
+	call vV_io_get_packed_char
 	
-	call wio_get
+	call vV_io_get_packed_char
 	
-	mov r10d , vV_ascii_int_to_bin
+	mov r10d , vV_ascii_int_to_dec
 	
-	call vV_io_out
 	
-	call vV_io_out
+	;call vV_io_out
+	;call vV_io_out
 	
-	call vV_flush
+	
+	call vV_io_out_packed_char
+	
+	call vV_io_out_packed_char
+	
+	;call vV_io_flush
 	
 	vV_swap
 	
@@ -122,13 +127,13 @@ w_entry_point:
 	
 
 	
-	call wio_out
+	call vV_io_out_default
 	
 	
 	
-	call wio_out
-	call wio_out
-	call wio_out
+	call vV_io_out_default
+	call vV_io_out_default
+	call vV_io_out_default
 	
 	mov eax , 255
 	

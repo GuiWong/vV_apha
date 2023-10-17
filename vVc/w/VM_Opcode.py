@@ -193,11 +193,15 @@ class Format:
 	HEX = 3
 	BIN = 4
 	
+	CHR = 8
+	PCHR = 9
+	
 format_prefixed = {
 
-	#GET : 'get',
+	GET : 'get',
 	OUT : 'out',
 	BUFF_OUT : 'out_'
+	
 	
 	}
 
@@ -207,6 +211,8 @@ format_prefixes = {
 	'x': Format.HEX,
 	'h': Format.HEX,
 	'b': Format.BIN,
+	'c': Format.CHR,
+	'w': Format.PCHR
 	
 
 }
@@ -253,6 +259,7 @@ direct_op = {
 	SUB: "-",
 	MUL: "*",
 	DIV: "/",
+	MOD:'%',
 	#NEG: "!",
 	
 	LSH: "<",

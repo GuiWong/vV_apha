@@ -2,4 +2,4 @@
 
 do
 
-2dup + dup . dup 2147483647 <? while
+2dup + dup xout dup 4294967290 <? while

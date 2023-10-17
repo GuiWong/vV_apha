@@ -11,7 +11,7 @@ class Translator:
 	
 	lib_path = 'vVc/assembly/w_runtime/'
 	
-	out_path = 'w_samples/'
+	out_path = 'w_samples/assembly/'
 	
 	filename = ''
 	
@@ -65,6 +65,7 @@ class Translator:
 	
 		self.output+= '\
 %include "'+self.lib_path+'vV_defines.asm"		\n\
+%include "'+self.lib_path+'vV_errors.asm"		\n\
 %include "'+self.lib_path+'vV_io.asm"			\n\
 %include "'+self.lib_path+'w_runtime.asm"		\n'
 
@@ -101,7 +102,7 @@ w_entry_point:
 		
 			self.output += self.generate_label(self.label_names[self.pc])
 			
-		self.output += '\n ;OpADR: ('+str(self.pc)+')\n'
+		self.output += '\n ;OpADR: ['+str(self.pc)+']  '
 			
 		self.translate_opcode()
 		
@@ -386,8 +387,50 @@ w_entry_point:
 		
 			txt = '\
 ; GET opcode ('+str(arg)+')			\n\
-\n\
-		call wio_get			\n'	
+\n'		
+			if arg == OP.Format.NONE:
+			
+				txt+='\
+	call vV_io_get_default			\n\
+						\n'
+			
+			elif arg == OP.Format.DEC:
+			
+				txt+='\
+	mov r10d , vV_ascii_as_dec		\n\
+	call vV_io_get				\n\
+						\n'
+						
+			elif arg == OP.Format.HEX:
+			
+				txt+='\
+	mov r10d , vV_ascii_as_hex		\n\
+	call vV_io_get				\n\
+						\n'
+						
+			elif arg == OP.Format.BIN:
+			
+				txt+='\
+	mov r10d , vV_ascii_as_bin		\n\
+	call vV_io_get				\n\
+						\n'	
+						
+														
+			elif arg == OP.Format.CHR:
+			
+				txt+='\
+		\n\
+	call vV_io_get_char				\n\
+						\n'
+						
+			elif arg == OP.Format.PCHR:
+			
+				txt+='\
+								\n\
+	call vV_io_get_packed_char				\n\
+						\n'
+						
+	
 			
 
 
@@ -423,6 +466,23 @@ w_entry_point:
 	mov r10d , vV_FORMAT_BIN		\n\
 	call vV_io_out				\n\
 						\n'	
+						
+						
+						
+			elif arg == OP.Format.CHR:
+			
+				txt+='\
+		\n\
+	call vV_io_out_char				\n\
+						\n'
+						
+			elif arg == OP.Format.PCHR:
+			
+				txt+='\
+								\n\
+	call vV_io_out_packed_char				\n\
+						\n'
+						
 						
 			else:
 			
@@ -462,6 +522,21 @@ w_entry_point:
 	mov r10d , vV_FORMAT_BIN		\n\
 	call vV_io_out_buffer				\n\
 						\n'	
+						
+						
+			elif arg == OP.Format.CHR:
+			
+				txt+='\
+\n\
+	call vV_io_out_char_buffer			\n\
+						\n'
+						
+			elif arg == OP.Format.PCHR:
+			
+				txt+='\
+\n\
+	call vV_io_out_packed_char_buffer				\n\
+						\n'
 						
 			else:
 			

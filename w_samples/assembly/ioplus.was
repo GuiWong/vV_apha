@@ -1,0 +1,333 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/w_runtime.asm"		
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+
+w_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: [0]  ; PUSH opcode 
+
+	vV_push 1848604960 
+
+
+ ;OpADR: [1]  ; PUSH opcode 
+
+	vV_push 538984302 
+
+
+ ;OpADR: [2]  ; PUSH opcode 
+
+	vV_push 1767991137 
+
+
+ ;OpADR: [3]  ; PUSH opcode 
+
+	vV_push 540701554 
+
+
+ ;OpADR: [4]  ; PUSH opcode 
+
+	vV_push 1700949365 
+
+
+ ;OpADR: [5]  ; PUSH opcode 
+
+	vV_push 1847604256 
+
+
+ ;OpADR: [6]  ; PUSH opcode 
+
+	vV_push 1701869940 
+
+
+ ;OpADR: [7]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+
+	wblock_4:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [8]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [9]  ; DUP opcode (7)			
+
+	vV_dup 7			
+
+
+ ;OpADR: [10]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [11]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [12]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [13]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [14]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [15]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+ ;OpADR: [16]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+ ;OpADR: [17]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+ ;OpADR: [18]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+ ;OpADR: [19]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [20]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [21]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [22]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [23]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [24]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [25]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [26]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [27]  ; OUT opcode (3)			
+
+	mov r10d , vV_FORMAT_HEX		
+	call vV_io_out				
+						
+
+ ;OpADR: [28]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [29]  ; OUT opcode (4)			
+
+	mov r10d , vV_FORMAT_BIN		
+	call vV_io_out				
+						
+
+ ;OpADR: [30]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [31]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [32]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [33]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [34]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [35]  ; GET opcode (8)			
+
+		
+	call vV_io_get_char				
+						
+
+ ;OpADR: [36]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [37]  ; PUSH opcode 
+
+	vV_push 121 
+
+
+ ;OpADR: [38]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [39]  ; IF opcode					
+
+	vV_dec_sp 1			
+	xor DWORD[vV_sp] , -1			
+	jne wblock_0	
+
+ ;OpADR: [40]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [41]  ; ELSE opcode					
+
+	jmp wblock_3	
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [42]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [43]  ; PUSH opcode 
+
+	vV_push 89 
+
+
+ ;OpADR: [44]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [45]  ; IF opcode					
+
+	vV_dec_sp 1			
+	xor DWORD[vV_sp] , -1			
+	jne wblock_1	
+
+ ;OpADR: [46]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [47]  ; ELSE opcode					
+
+	jmp wblock_3	
+
+
+	wblock_1:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [48]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+
+	wblock_3:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [49]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_4	
+		
+		ret
+
+;Transpiled from vV with vVc version 0.0.1.5
+		
+		

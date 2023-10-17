@@ -1,0 +1,185 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/w_runtime.asm"		
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+
+w_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: [0]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [1]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [2]  ; SWAP opcode 
+
+
+	vV_swap		
+
+
+ ;OpADR: [3]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [4]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [5]  ; SWAP opcode 
+
+
+	vV_swap		
+
+
+ ;OpADR: [6]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [7]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [8]  ; OR opcode					
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+
+	vV_dec_sp 1				
+
+ ;OpADR: [9]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [10]  ; RSH opcode 					
+
+	shr DWORD vV_top , 1			
+
+ ;OpADR: [11]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [12]  ; PUSH opcode 
+
+	vV_push 4294967295 
+
+
+ ;OpADR: [13]  ; OR opcode					
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+
+	vV_dec_sp 1				
+
+ ;OpADR: [14]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_0	
+
+ ;OpADR: [15]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+
+	wblock_1:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [16]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [17]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [18]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [19]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [20]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [21]  ; PUSH opcode 
+
+	vV_push 8 
+
+
+ ;OpADR: [22]  ; LESS opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [23]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_1	
+
+ ;OpADR: [24]  ; PUSH opcode 
+
+	vV_push 0 
+
+		
+		ret
+
+;Transpiled from vV with vVc version 0.0.1.5
+		
+		

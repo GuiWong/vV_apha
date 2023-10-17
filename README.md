@@ -8,33 +8,26 @@ but vV is already different in implementation and in planning.
 
 
 
-(Current version could be 0.0.1 , first version with a working compiler.)
-
-	Now working on v 0.0.2, I/O update
+	Update 0.0.2: Basic I/O
 
 
 Planned Updates:
 
 
 
-
-	0.0.2:		I/O Update
+	0.0.2.5:	
+			-Cleanup labels, files
+			-Define Errors
 	
-		-buffered 32b unsigned int input		|	Done/implemented 
-		-buffered 32b unsigned int output		|	Done/implemeted 
-		-Basic Errors (exit code!=0)			|	TODO: define errors somewhere
-		-Rewrite the transpiler to use nasm macros	|	In progress
-		
-		todo:
-		
-		-format for u_int I/O (hex, bin, decimal)	Done
-		- "char" I/O
-		-" PackedChar" I/O
-		- Rename labels, update some names		In progress
+	
+	0.0.3:	
+			Basic "Functions"
+			char/pckdchar in editor
+			
 
 
 
-	0.0.3: 	The string Update
+	0.0.?: 	The string Update
 	
 		-add a 2nd stack for strings
 			-new stack pointer: r14 (string stack pointer)
@@ -46,7 +39,7 @@ Planned Updates:
 				
 				
 				
-	0.0.4:		Memory access, Variables
+	0.0.?:		Memory access, Variables
 	
 	
 	
@@ -66,8 +59,6 @@ For now, it only has:
 stack is in .bss for now, pointed to by r15
 
 rsp is used as return stack
-
-
 
 
 

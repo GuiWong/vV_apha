@@ -65,7 +65,11 @@
     64                              <1> 	
     65                              <1> %endmacro
     66                              <1> 	
-     2                                  %include "vVc/assembly/w_runtime/vV_io.asm"			
+     2                                  %include "vVc/assembly/w_runtime/vV_errors.asm"		
+     1                              <1> 
+     2                              <1> %define vV_ERR_OVERFLOW 3
+     3                              <1> %define vV_ERR_FORMAT 4
+     3                                  %include "vVc/assembly/w_runtime/vV_io.asm"			
      1                              <1> 
      2                              <1> 
      3                              <1> %include "vVc/assembly/w_runtime/vV_ascii.asm"
@@ -184,7 +188,7 @@
    113 00000073 4831D2              <2> 		xor rdx , rdx
    114 00000076 88CA                <2> 		mov dl , cl
    115                              <2> 		
-   116 00000078 E800030000          <2> 		call w_forced_exit
+   116 00000078 E8B4030000          <2> 		call w_forced_exit
    117                              <2> 		
    118                              <2> vV_ascii_overflow:
    119                              <2> 	
@@ -192,7 +196,7 @@
    121                              <2> 		;xor rdx , rdx
    122                              <2> 		;mov dl , cl
    123                              <2> 		
-   124 00000082 E8F6020000          <2> 		call w_forced_exit
+   124 00000082 E8AA030000          <2> 		call w_forced_exit
    125                              <2> 		
    126                              <2> 		
    127                              <2> vV_ascii_change_to_hex:
@@ -401,7 +405,7 @@
    330 00000147 89CA                <2> 			mov edx , ecx
    331 00000149 4489C9              <2> 			mov ecx , r9d
    332                              <2> 		
-   333 0000014C E82C020000          <2> 			call w_forced_exit
+   333 0000014C E8E0020000          <2> 			call w_forced_exit
    334                              <2> 		
    335                              <2> 						
    336                              <2> 		.loopstart:
@@ -449,12 +453,12 @@
    378                              <2> 		
    379 00000172 83F801              <2> 		cmp eax , 1
    380                              <2> 		
-   381 00000175 73ED                <2> 		jae .loop01
+   381 00000175 77ED                <2> 		ja .loop01
    382                              <2> 	
-   383                              <2> 	;add al , '1'	
-   384                              <2> 	;mov [rdi] , al
+   383 00000177 0430                <2> 	add al , '0'	
+   384 00000179 8807                <2> 	mov [rdi] , al
    385                              <2> 	
-   386 00000177 EBB9                <2> 	jmp vV_ascii_pop_digits
+   386 0000017B EBB5                <2> 	jmp vV_ascii_pop_digits
    387                              <2> 	
    388                              <2> 	
    389                              <2> ;Will need a special version for String stack
@@ -490,363 +494,488 @@
     26                              <1> 
     27                              <1> 
     28                              <1> 
-    29                              <1> 	vV_io_flush:
+    29                              <1> vV_io_flush:
     30                              <1> 	
     31                              <1> 	
     32                              <1> 	
-    33 00000179 8B1425[47010000]    <1> 		mov edx , DWORD[wout_count]			;string lenght	
-    34 00000180 48BE-               <1> 		mov rsi , w_output_buffer			;strng ptr
-    34 00000182 [4B01000000000000]  <1>
-    35                              <1> 		
-    36                              <1> 		;dec edx			
-    37                              <1> 		;dec edx
+    33 0000017D 8B1425[47010000]    <1> 	mov edx , DWORD[wout_count]			;string lenght	
+    34                              <1> 	
+    35 00000184 C70425[47010000]00- <1> 	mov DWORD[wout_count] , 0
+    35 0000018C 000000              <1>
+    36                              <1> 	
+    37 0000018F 48BE-               <1> 	mov rsi , w_output_buffer			;strng ptr
+    37 00000191 [4B01000000000000]  <1>
     38                              <1> 		
-    39 0000018A 67C682[4B010000]0A  <1> 		mov BYTE[w_output_buffer + edx] , 0xa
-    40 00000192 FFC2                <1> 		inc edx
+    39 00000199 67C682[4B010000]0A  <1> 	mov BYTE[w_output_buffer + edx] , 0xa
+    40 000001A1 FFC2                <1> 	inc edx
     41                              <1> 		
-    42 00000194 BF01000000          <1> 		mov rdi , 1					;file descriptor, stdout
-    43 00000199 B801000000          <1> 		mov rax , 1					; Write sysCall
-    44 0000019E 0F05                <1> 		syscall
+    42 000001A3 BF01000000          <1> 	mov rdi , 1					;file descriptor, stdout
+    43 000001A8 B801000000          <1> 	mov rax , 1					; Write sysCall
+    44 000001AD 0F05                <1> 	syscall
     45                              <1> 	
-    46 000001A0 C3                  <1> 		ret
-    47                              <1> 
-    48                              <1> 
-    49                              <1> 
-    50                              <1> 
-    51                              <1> 
-    52                              <1> 
-    53                              <1> 	wio_out_buff:				; print top of data stack (int->str)
-    54                              <1> 	
-    55 000001A1 4983EF04            <1> 		sub r15 , 4
-    56                              <1> 	
-    57 000001A5 418B07              <1> 		mov eax, [r15]				;set rax to top of dstack
-    58                              <1> 		
-    59                              <1> 		
-    60                              <1> 		
-    61 000001A8 BF[4B010000]        <1> 		mov edi , w_output_buffer
-    62 000001AD 033C25[47010000]    <1> 		add edi ,DWORD[wout_count]
-    63                              <1> 		
-    64 000001B4 41B9FF000000        <1> 		mov r9 , 255
-    65 000001BA 4129F9              <1> 		sub r9d , edi
-    66                              <1> 		
-    67 000001BD E855FFFFFF          <1> 		call vV_ascii_int_to_dec				;get str repr of rax in w_number_buffer
-    68                              <1> 		
-    69                              <1> 		
-    70                              <1> 		;inc eax
-    71 000001C2 010425[47010000]    <1> 		add [wout_count] , eax
-    72                              <1> 		
-    73                              <1> 	
-    74 000001C9 C3                  <1> 		ret
-    75                              <1> 		
-    76                              <1> 	
+    46                              <1> 	
+    47                              <1> 	
+    48 000001AF C3                  <1> 	ret
+    49                              <1> 	
+    50                              <1> 		
+    51                              <1> ;-------------------------------------------------------------------------------
+    52                              <1> ;-------------------------------------------------------------------------------
+    53                              <1> 	
+    54                              <1> vV_io_out_buffer_default:
+    55                              <1> 
+    56 000001B0 448B1425[40000000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
+    57 000001B8 E80F000000          <1> 	call vV_io_out_buffer
+    58 000001BD C3                  <1> 	ret
+    59                              <1> 	
+    60                              <1> vV_io_out_default:
+    61                              <1> 
+    62 000001BE 448B1425[40000000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
+    63 000001C6 E80C000000          <1> 	call vV_io_out
+    64 000001CB C3                  <1> 	ret
+    65                              <1> 
+    66                              <1> ;-------------------------------------------------------------------------------
+    67                              <1> ;-------------------------------------------------------------------------------
+    68                              <1> 	
+    69                              <1> vV_io_out_buffer:				;print str repr of Top Of Stack element
+    70                              <1> 						
+    71                              <1> 						
+    72 000001CC E811000000          <1> 	call vV_io_out01			
+    73 000001D1 E84A000000          <1> 	call vV_io_out_buffer_end
+    74 000001D6 C3                  <1> 	ret
+    75                              <1> 
+    76                              <1> ;-------------------------------------------------------------------------------
     77                              <1> 		
-    78                              <1> ;vV_io_out_format_default:
-    79                              <1> ;
-    80                              <1> ;	mov r10d , DWORD[vV_sys_format_mode]	
-    81                              <1> ;	ret
-    82                              <1> 	
-    83                              <1> vV_io_out_buffer_default:
+    78                              <1> vV_io_out:					;print str repr of Top Of Stack element
+    79                              <1> 
+    80                              <1> 
+    81 000001D7 E806000000          <1> 	call vV_io_out01					
+    82 000001DC E826000000          <1> 	call vV_io_out_direct_end
+    83 000001E1 C3                  <1> 	ret
     84                              <1> 
-    85 000001CA 448B1425[40000000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
-    86 000001D2 E80F000000          <1> 	call vV_io_out_buffer
-    87 000001D7 C3                  <1> 	ret
-    88                              <1> 	
-    89                              <1> vV_io_out_default:
+    85                              <1> ;-------------------------------------------------------------------------------	
+    86                              <1> ;-------------------------------------------------------------------------------	
+    87                              <1> 
+    88                              <1> vV_io_out01:					;print str repr of Top Of Stack element
+    89                              <1> 
     90                              <1> 
-    91 000001D8 448B1425[40000000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
-    92 000001E0 E80C000000          <1> 	call vV_io_out
-    93 000001E5 C3                  <1> 	ret
-    94                              <1> 	
-    95                              <1> vV_io_out_buffer:					;print str repr of Top Of Stack element
-    96                              <1> 
-    97                              <1> 
-    98 000001E6 E811000000          <1> 	call vV_io_out01					
-    99                              <1> 	
-   100 000001EB E84A000000          <1> 	call vV_io_out_buffer_end
-   101                              <1> 	
-   102 000001F0 C3                  <1> 	ret
-   103                              <1> 		
-   104                              <1> vV_io_out:					;print str repr of Top Of Stack element
-   105                              <1> 
+    91                              <1> 	vV_pop eax				;get value in eax
+    91                              <2> 
+    91 000001E2 4983EF04            <2>  sub vV_sp , 4
+    91 000001E6 418B07              <2>  mov %1 , [vV_sp]
+    91                              <2> 
+    92                              <1> 	
+    93 000001E9 BF[4B010000]        <1> 	mov edi , w_output_buffer		;set dest as O_buff
+    94 000001EE 033C25[47010000]    <1> 	add edi ,DWORD[wout_count]		;set offset to start of freespace
+    95                              <1> 	
+    96 000001F5 57                  <1> push rdi					;Save buffer origin
+    97                              <1> 	
+    98 000001F6 41B9FF000000        <1> 	mov r9 , 255				;set Max buffer available	
+    99 000001FC 4129F9              <1> 	sub r9d , edi				;#TODO: Stop HardCoding VALUES!!!!
+   100 000001FF 41FFD2              <1> 		call r10			;call current conversion format function
+   101 00000202 4831FF              <1> 	xor rdi , rdi
+   102                              <1> 	
+   103 00000205 5F                  <1> pop rdi						;recover Buffer origin
+   104                              <1> 	
+   105 00000206 C3                  <1> 	ret
    106                              <1> 
-   107 000001F1 E806000000          <1> 	call vV_io_out01					
+   107                              <1> ;-------------------------------------------------------------------------------	
    108                              <1> 	
-   109 000001F6 E826000000          <1> 	call vV_io_out_direct_end
-   110                              <1> 	
-   111 000001FB C3                  <1> 	ret
-   112                              <1> 	
-   113                              <1> 	
-   114                              <1> 
-   115                              <1> vV_io_out01:					;print str repr of Top Of Stack element
-   116                              <1> 
-   117                              <1> 
-   118                              <1> 	vV_pop eax			;get value in eax
-   118                              <2> 
-   118 000001FC 4983EF04            <2>  sub vV_sp , 4
-   118 00000200 418B07              <2>  mov %1 , [vV_sp]
-   118                              <2> 
-   119                              <1> 	
-   120 00000203 BF[4B010000]        <1> 	mov edi , w_output_buffer	;set dest as O_buff
-   121 00000208 033C25[47010000]    <1> 	add edi ,DWORD[wout_count]	;set offset to freespace
+   109                              <1> vV_io_out_direct_end:
+   110                              <1> 
+   111                              <1> 
+   112                              <1> 
+   113 00000207 67C604070A          <1> 	mov BYTE[edi + eax] , 0xa		;add new_line
+   114                              <1> 		
+   115 0000020C FFC0                <1> 		inc eax
+   116                              <1> 		
+   117 0000020E 89C2                <1> 		mov edx , eax				;string lenght		
+   118 00000210 4889FE              <1> 		mov rsi , rdi				;strng ptr
+   119 00000213 BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
+   120 00000218 B801000000          <1> 		mov rax , 1				; Write sysCall
+   121 0000021D 0F05                <1> 		syscall
    122                              <1> 	
-   123 0000020F 57                  <1> push rdi				;Save buffer origin
-   124                              <1> 	
-   125 00000210 41B9FF000000        <1> 	mov r9 , 255			;set Max buffer available	#TODO: Stop HardCoding VALUES!!!!
-   126 00000216 4129F9              <1> 	sub r9d , edi			;
-   127                              <1> 
+   123 0000021F C3                  <1> 		ret
+   124                              <1> 
+   125                              <1> ;-------------------------------------------------------------------------------		
+   126                              <1> 		
+   127                              <1> vV_io_out_buffer_end:
    128                              <1> 
-   129 00000219 41FFD2              <1> 	call r10			;call current conversion format function
-   130                              <1> 	
-   131                              <1> 	
-   132 0000021C 4831FF              <1> 	xor rdi , rdi
-   133                              <1> 	
-   134 0000021F 5F                  <1> pop rdi						;recover Buffer origin
-   135                              <1> 	
-   136 00000220 C3                  <1> 	ret
+   129 00000220 010425[47010000]    <1> 	add [wout_count] , eax
+   130                              <1> 
+   131 00000227 C3                  <1> 	ret
+   132                              <1> 
+   133                              <1> ;-------------------------------------------------------------------------------
+   134                              <1> 
+   135                              <1> vV_io_out_char:
+   136                              <1> 
    137                              <1> 	
-   138                              <1> 	
-   139                              <1> vV_io_out_direct_end:
-   140                              <1> 
-   141                              <1> 
-   142                              <1> 
-   143 00000221 67C604070A          <1> 	mov BYTE[edi + eax] , 0xa		;add new_line
-   144                              <1> 		
-   145 00000226 FFC0                <1> 		inc eax
-   146                              <1> 		
-   147 00000228 89C2                <1> 		mov edx , eax				;string lenght		#TODO: remove leading 0
-   148 0000022A 4889FE              <1> 		mov rsi , rdi				;strng ptr
-   149 0000022D BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
-   150 00000232 B801000000          <1> 		mov rax , 1				; Write sysCall
-   151 00000237 0F05                <1> 		syscall
-   152                              <1> 	
-   153 00000239 C3                  <1> 		ret
-   154                              <1> 		
-   155                              <1> 		
-   156                              <1> vV_io_out_buffer_end:
-   157                              <1> 
-   158 0000023A 010425[47010000]    <1> 	add [wout_count] , eax
-   159                              <1> 		
-   160                              <1> 	
-   161 00000241 C3                  <1> 		ret
-   162                              <1> 		
-   163                              <1> 
-   164                              <1> 		
+   138 00000228 E827000000          <1> 	call vV_io_read_char
+   139 0000022D E8D5FFFFFF          <1> 	call vV_io_out_direct_end
+   140                              <1> 	
+   141 00000232 C3                  <1> 	ret
+   142                              <1> 	
+   143                              <1> vV_io_out_packed_char:
+   144                              <1> 
+   145                              <1> 	
+   146 00000233 E842000000          <1> 	call vV_io_read_packed_char
+   147                              <1> 	
+   148 00000238 E8CAFFFFFF          <1> 	call vV_io_out_direct_end
+   149                              <1> 	
+   150 0000023D C3                  <1> 	ret
+   151                              <1> 	
+   152                              <1> vV_io_out_char_buffer:
+   153                              <1> 
+   154 0000023E E811000000          <1> 	call vV_io_read_char
+   155                              <1> 	
+   156 00000243 E8D8FFFFFF          <1> 	call vV_io_out_buffer_end
+   157                              <1> 	
+   158 00000248 C3                  <1> 	ret
+   159                              <1> 	
+   160                              <1> vV_io_out_packed_char_buffer:
+   161                              <1> 
+   162 00000249 E82C000000          <1> 	call vV_io_read_packed_char
+   163                              <1> 	
+   164 0000024E E8CDFFFFFF          <1> 	call vV_io_out_buffer_end
    165                              <1> 	
-   166                              <1> 
-   167                              <1> 
-   168                              <1> 	wio_out:				; print top of data stack (int->str)
-   169                              <1> 	
-   170 00000242 4983EF04            <1> 		sub r15 , 4
+   166 00000253 C3                  <1> 	ret
+   167                              <1> 	
+   168                              <1> vV_io_read_char:
+   169                              <1> 
+   170                              <1> 	vV_pop eax
+   170                              <2> 
+   170 00000254 4983EF04            <2>  sub vV_sp , 4
+   170 00000258 418B07              <2>  mov %1 , [vV_sp]
+   170                              <2> 
    171                              <1> 	
-   172 00000246 418B07              <1> 		mov eax, [r15]				;set rax to top of dstack
-   173                              <1> 		
-   174                              <1> 		
-   175                              <1> 		
-   176 00000249 BF[4B010000]        <1> 		mov edi , w_output_buffer
-   177 0000024E 033C25[47010000]    <1> 		add edi ,DWORD[wout_count]
-   178                              <1> 		
-   179 00000255 57                  <1> 	push rdi
-   180                              <1> 		
-   181 00000256 41B9FF000000        <1> 		mov r9 , 255
-   182 0000025C 4129F9              <1> 		sub r9d , edi
-   183                              <1> 		
-   184 0000025F E889FEFFFF          <1> 		call vV_ascii_int_to_hex;vV_ascii_int_to_dec				;get str repr of rax in w_number_buffer
+   172 0000025B 48BF-               <1> 	mov rdi , w_output_buffer
+   172 0000025D [4B01000000000000]  <1>
+   173 00000265 033C25[47010000]    <1> 	add edi , [wout_count]
+   174                              <1> 	
+   175 0000026C 678807              <1> 	mov [edi] , al
+   176                              <1> 	
+   177 0000026F BF[4B010000]        <1> 	mov edi , w_output_buffer
+   178 00000274 B801000000          <1> 	mov eax , 1
+   179                              <1> 	
+   180 00000279 C3                  <1> 	ret	
+   181                              <1> 	
+   182                              <1> vV_io_read_packed_char:
+   183                              <1> 
+   184                              <1> 	vV_pop eax
+   184                              <2> 
+   184 0000027A 4983EF04            <2>  sub vV_sp , 4
+   184 0000027E 418B07              <2>  mov %1 , [vV_sp]
+   184                              <2> 
    185                              <1> 	
-   186 00000264 4831FF              <1> 	xor rdi , rdi
-   187 00000267 5F                  <1> 	pop rdi	
-   188                              <1> 		
-   189 00000268 67C604070A          <1> 		mov BYTE[edi + eax] , 0xa
-   190                              <1> 		
-   191 0000026D FFC0                <1> 		inc eax
-   192                              <1> 		
-   193 0000026F 89C2                <1> 		mov edx , eax				;string lenght		#TODO: remove leading 0
-   194 00000271 4889FE              <1> 		mov rsi , rdi				;strng ptr
-   195 00000274 BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
-   196 00000279 B801000000          <1> 		mov rax , 1				; Write sysCall
-   197 0000027E 0F05                <1> 		syscall
-   198                              <1> 	
-   199 00000280 C3                  <1> 		ret
-   200                              <1> 		
-   201                              <1> 		
-   202                              <1> 	wio_get:
+   186 00000281 48BF-               <1> 	mov rdi , w_output_buffer
+   186 00000283 [4B01000000000000]  <1>
+   187 0000028B 033C25[47010000]    <1> 	add edi , [wout_count]
+   188                              <1> 	
+   189 00000292 678907              <1> 	mov [edi] , eax
+   190                              <1> 	
+   191 00000295 BF[4B010000]        <1> 	mov edi , w_output_buffer
+   192 0000029A B804000000          <1> 	mov eax , 4	
+   193                              <1> 	
+   194 0000029F C3                  <1> 	ret
+   195                              <1> 		
+   196                              <1> ;-------------------------------------------------------------------------------
+   197                              <1> ;-------------------------------------------------------------------------------
+   198                              <1> ;-------------------------------------------------------------------------------
+   199                              <1> ;-------------------------------------------------------------------------------
+   200                              <1> ;-------------------------------------------------------------------------------
+   201                              <1> ;-------------------------------------------------------------------------------
+   202                              <1> ;-------------------------------------------------------------------------------
    203                              <1> 	
-   204                              <1> 	
-   205 00000281 48BE-               <1> 		mov rsi , w_input_buffer		;ptr to string destination	
-   205 00000283 [4800000000000000]  <1>
-   206 0000028B BAFF000000          <1> 		mov edx , 255				;string lenght		#TODO: handle multiple lenght numbers
-   207 00000290 BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
-   208 00000295 B800000000          <1> 		mov rax , 0				; read sysCall
-   209                              <1> 		
-   210 0000029A 0F05                <1> 		syscall
+   204                              <1> vV_io_read:
+   205                              <1> 
+   206                              <1> 								
+   207 000002A0 48BE-               <1> 		mov rsi , w_input_buffer		;ptr to string destination	
+   207 000002A2 [4800000000000000]  <1>
+   208 000002AA BAFF000000          <1> 		mov edx , 255				;string lenght	
+   209 000002AF BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
+   210 000002B4 B800000000          <1> 		mov rax , 0				; read sysCall
    211                              <1> 		
-   212                              <1> 		
-   213                              <1> ;-------------Buffer_Overflow_Execption  (experiment) [Working for now]
-   214                              <1> 
+   212 000002B9 0F05                <1> 		syscall
+   213                              <1> 	
+   214                              <1> ;-------------Buffer_Overflow_Execption  
    215                              <1> 
    216                              <1> 
-   217 0000029C 3DFF000000          <1> 		cmp eax , 255
-   218                              <1> 		
-   219 000002A1 7214                <1> 		jb .no_overflow
-   220                              <1> 		
-   221                              <1> 		
-   222 000002A3 803C25[46010000]0A  <1> 		cmp BYTE[w_input_buffer +254] , 0xa
+   217                              <1> 
+   218 000002BB 3DFF000000          <1> 		cmp eax , 255				;Check if Buffer Is Full
+   219                              <1> 		
+   220 000002C0 7214                <1> 			jb .no_overflow
+   221                              <1> 			
+   222 000002C2 803C25[46010000]0A  <1> 		cmp BYTE[w_input_buffer +254] , 0xa	;Check if Buffer end with "\n"
    223                              <1> 		
-   224 000002AB 740A                <1> 		je .no_overflow
+   224 000002CA 740A                <1> 			je .no_overflow
    225                              <1> 		
-   226 000002AD B80C000000          <1> 			mov rax , 12		;placeholder value for now, 
-   227                              <1> 						;TODO: Make ERRORS constants
-   228                              <1> 		
-   229 000002B2 E8C6000000          <1> 			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
+   226                              <1> 		
+   227 000002CC B80C000000          <1> 			mov rax , 12		;placeholder value for now, 
+   228                              <1> 						;TODO: Make ERRORS constants
+   229 000002D1 E85B010000          <1> 			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
    230                              <1> 		
    231                              <1> 		.no_overflow:
    232                              <1> 		
-   233                              <1> ;----------------------------------------------
-   234                              <1> 
-   235                              <1> 
-   236 000002B7 53                  <1> push rbx
-   237                              <1> 
-   238 000002B8 89C3                <1> 		mov ebx , eax 	;char count
-   239 000002BA 31FF                <1> 		xor edi , edi 
-   240 000002BC BE[48000000]        <1> 		mov esi , w_input_buffer
-   241                              <1> 		
-   242                              <1> 
-   243 000002C1 E87CFDFFFF          <1> 		call vV_ascii_as_dec
-   244                              <1> 		
-   245 000002C6 5B                  <1> pop rbx
-   246                              <1> 		
-   247 000002C7 418907              <1> 		mov [r15] , eax
-   248                              <1> 		
-   249 000002CA 4983C704            <1> 		add r15 , 4
-   250                              <1> 		
-   251 000002CE C3                  <1> 		ret
-   252                              <1> 		
-   253                              <1> 	wio_get_str_raw:		;removes the new_line
-   254                              <1> 	
-   255 000002CF 49BA-               <1> 		mov r10 , .end
-   255 000002D1 [DB02000000000000]  <1>
-   256                              <1> 		
+   233 000002D6 C3                  <1> 			ret
+   234                              <1> 		
+   235                              <1> 		
+   236                              <1> 	
+   237                              <1> 	
+   238                              <1> vV_io_get_default:
+   239                              <1> 
+   240 000002D7 41BA[42000000]      <1> 	mov r10d , vV_ascii_as_dec			;TODO: default settings
+   241 000002DD E801000000          <1> 	call vV_io_get
+   242 000002E2 C3                  <1> 	ret
+   243                              <1> 	
+   244                              <1> 	
+   245                              <1> vV_io_get:						;convert inputed value to 
+   246                              <1> 							;32bit int, push it on
+   247                              <1> 							;the stack
+   248 000002E3 E8B8FFFFFF          <1> 	call vV_io_read
+   249                              <1> 		
+   250                              <1> ;----------------------------------------------	
+   251                              <1> 
+   252 000002E8 53                  <1> 	push rbx				;Save rbx (conversion uses it) 
+   253                              <1> 
+   254 000002E9 89C3                <1> 		mov ebx , eax 			;send char count by ebx
+   255 000002EB 31FF                <1> 		xor edi , edi 			;zero out counter
+   256 000002ED BE[48000000]        <1> 		mov esi , w_input_buffer	;Set source to I_buffer
    257                              <1> 		
-   258                              <1> 		
-   259                              <1> 		
-   260 000002D9 EB39                <1> 		jmp wio_get_str
-   261                              <1> 		
-   262                              <1> 		.end:
-   263                              <1> 		
-   264 000002DB FF0C25[44000000]    <1> 		dec DWORD [w_input_buffer-4]
-   265                              <1> 		
-   266                              <1> 	
-   267                              <1> 		
-   268 000002E2 C3                  <1> 		ret
-   269                              <1> 	
-   270                              <1> 	wio_get_str_null:		;null terminated
-   271                              <1> 	
-   272 000002E3 49BA-               <1> 		mov r10 , .end
-   272 000002E5 [EF02000000000000]  <1>
-   273                              <1> 		
-   274                              <1> 		
-   275 000002ED EB25                <1> 		jmp wio_get_str
-   276                              <1> 		
-   277                              <1> 		.end:
-   278                              <1> 		
-   279 000002EF 48BE-               <1> 		mov rsi , w_input_buffer
-   279 000002F1 [4800000000000000]  <1>
-   280                              <1> 		
-   281 000002F9 033425[44000000]    <1> 		add esi ,[w_input_buffer -4]
-   282                              <1> 		
-   283 00000300 48FFCE              <1> 		dec rsi
-   284                              <1> 		
-   285 00000303 C60600              <1> 		mov BYTE [rsi] , 0
-   286                              <1> 		
-   287                              <1> 		
-   288                              <1> 		
-   289 00000306 C3                  <1> 		ret
+   258                              <1> 
+   259 000002F2 41FFD2              <1> 		call r10
+   260                              <1> 		
+   261 000002F5 5B                  <1> 	pop rbx
+   262                              <1> 	
+   263                              <1> 		vV_push eax
+   263                              <2> 
+   263 000002F6 418907              <2>  mov DWORD[vV_sp] , %1
+   263 000002F9 4983C704            <2>  add vV_sp , 4
+   263                              <2> 
+   264                              <1> 		
+   265 000002FD C3                  <1> 		ret
+   266                              <1> 
+   267                              <1> 
+   268                              <1> ;-------------------------------------------------------------------------------
+   269                              <1> ;-------------------------------------------------------------------------------
+   270                              <1> 
+   271                              <1> 
+   272                              <1> vV_io_get_char:
+   273                              <1> 
+   274                              <1> 
+   275 000002FE E89DFFFFFF          <1> 	call vV_io_read
+   276                              <1> 	
+   277 00000303 31D2                <1> 	xor edx , edx
+   278                              <1> 	
+   279 00000305 8A1425[48000000]    <1> 	mov dl , [w_input_buffer]
+   280                              <1> 	
+   281                              <1> 	vV_push edx
+   281                              <2> 
+   281 0000030C 418917              <2>  mov DWORD[vV_sp] , %1
+   281 0000030F 4983C704            <2>  add vV_sp , 4
+   281                              <2> 
+   282                              <1> 	
+   283 00000313 C3                  <1> 	ret
+   284                              <1> 	
+   285                              <1> vV_io_get_packed_char:
+   286                              <1> 
+   287 00000314 C70425[48000000]00- <1> 	mov DWORD [w_input_buffer] , 0
+   287 0000031C 000000              <1>
+   288                              <1> 
+   289 0000031F E87CFFFFFF          <1> 	call vV_io_read
    290                              <1> 	
-   291                              <1> 	wio_get_str_nline:		;keep the new line
+   291 00000324 31D2                <1> 	xor edx , edx
    292                              <1> 	
-   293 00000307 49BA-               <1> 		mov r10 , .end
-   293 00000309 [1303000000000000]  <1>
-   294                              <1> 		
-   295                              <1> 		
-   296 00000311 EB01                <1> 		jmp wio_get_str
-   297                              <1> 		
-   298                              <1> 		.end:
+   293 00000326 8B1425[48000000]    <1> 	mov edx, [w_input_buffer]
+   294                              <1> 	
+   295                              <1> 	vV_push edx
+   295                              <2> 
+   295 0000032D 418917              <2>  mov DWORD[vV_sp] , %1
+   295 00000330 4983C704            <2>  add vV_sp , 4
+   295                              <2> 
+   296                              <1> 	
+   297 00000334 C3                  <1> 	ret
+   298                              <1> 	
    299                              <1> 		
-   300 00000313 C3                  <1> 		ret
+   300                              <1> 	
    301                              <1> 		
-   302                              <1> 		
-   303                              <1> 	wio_get_str:				;arg: eax: size to read	r10: return adrr
-   304                              <1> 							; ?? may use rsi for dest info???
-   305                              <1> 							; then shouldn't increment rsi in get_str
-   306                              <1> 							; maybe make a get_string_direct later???
-   307                              <1> 							; or do adr calc before?
-   308                              <1> 							; maybe 2 entry point/ 1 exit point?
-   309                              <1> 	
-   310                              <1> 	
-   311 00000314 48BE-               <1> 		mov rsi , w_input_buffer			;ptr to string destination	
-   311 00000316 [4800000000000000]  <1>
-   312 0000031E 033425[44000000]    <1> 		add esi , [w_input_buffer - 4]
-   313 00000325 89C2                <1> 		mov edx , eax				;string lenght		#TODO: handle multiple lenght numbers
-   314                              <1> 		;sub edx , [w_input_buffer - 4]
-   315 00000327 BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
-   316 0000032C B800000000          <1> 		mov rax , 0				; read sysCall
-   317                              <1> 		
-   318 00000331 0F05                <1> 		syscall
-   319                              <1> 		
+   302                              <1> 	wio_get:
+   303                              <1> 	
+   304                              <1> 	
+   305 00000335 48BE-               <1> 		mov rsi , w_input_buffer		;ptr to string destination	
+   305 00000337 [4800000000000000]  <1>
+   306 0000033F BAFF000000          <1> 		mov edx , 255				;string lenght		#TODO: handle multiple lenght numbers
+   307 00000344 BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
+   308 00000349 B800000000          <1> 		mov rax , 0				; read sysCall
+   309                              <1> 		
+   310 0000034E 0F05                <1> 		syscall
+   311                              <1> 		
+   312                              <1> 		
+   313                              <1> ;-------------Buffer_Overflow_Execption  (experiment) [Working for now]
+   314                              <1> 
+   315                              <1> 
+   316                              <1> 
+   317 00000350 3DFF000000          <1> 		cmp eax , 255
+   318                              <1> 		
+   319 00000355 7214                <1> 		jb .no_overflow
    320                              <1> 		
    321                              <1> 		
-   322                              <1> 		
+   322 00000357 803C25[46010000]0A  <1> 		cmp BYTE[w_input_buffer +254] , 0xa
    323                              <1> 		
-   324                              <1> 		;dec eax
+   324 0000035F 740A                <1> 		je .no_overflow
    325                              <1> 		
-   326 00000333 010425[44000000]    <1> 		add [w_input_buffer-4] , eax
-   327                              <1> 		
+   326 00000361 B80C000000          <1> 			mov rax , 12		;placeholder value for now, 
+   327                              <1> 						;TODO: Make ERRORS constants
    328                              <1> 		
-   329 0000033A 41FFE2              <1> 		jmp r10
+   329 00000366 E8C6000000          <1> 			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
    330                              <1> 		
-   331                              <1> 		
-   332                              <1> 	wio_move_in_to_out:
-   333                              <1> 	
-   334                              <1> 	
-   335 0000033D 8B0C25[44000000]    <1> 		mov ecx , [w_input_buffer-4]
-   336 00000344 83C104              <1> 		add ecx , 4
-   337 00000347 BE[44000000]        <1> 		mov esi , w_input_buffer-4
-   338 0000034C BF[47010000]        <1> 		mov edi , w_output_buffer-4
-   339                              <1> 		
-   340 00000351 F3A4                <1> 		rep movsb
+   331                              <1> 		.no_overflow:
+   332                              <1> 		
+   333                              <1> ;----------------------------------------------
+   334                              <1> 
+   335                              <1> 
+   336 0000036B 53                  <1> push rbx
+   337                              <1> 
+   338 0000036C 89C3                <1> 		mov ebx , eax 	;char count
+   339 0000036E 31FF                <1> 		xor edi , edi 
+   340 00000370 BE[48000000]        <1> 		mov esi , w_input_buffer
    341                              <1> 		
-   342 00000353 C70425[44000000]00- <1> 		mov DWORD [w_input_buffer-4] , 0
-   342 0000035B 000000              <1>
-   343                              <1> 		
+   342                              <1> 
+   343 00000375 E8C8FCFFFF          <1> 		call vV_ascii_as_dec
    344                              <1> 		
-   345                              <1> 		
-   346 0000035E C3                  <1> 		ret
-   347                              <1> 	
-   348                              <1> 	
-   349                              <1> 		
+   345 0000037A 5B                  <1> pop rbx
+   346                              <1> 		
+   347 0000037B 418907              <1> 		mov [r15] , eax
+   348                              <1> 		
+   349 0000037E 4983C704            <1> 		add r15 , 4
    350                              <1> 		
-   351                              <1> 	wio_flush:
-   352                              <1> 	
-   353                              <1> 	
-   354                              <1> 		
-   355 0000035F 8B1425[47010000]    <1> 		mov edx , [w_output_buffer - 4]		;string lenght
-   356 00000366 48BE-               <1> 		mov rsi , w_output_buffer			;strng ptr
-   356 00000368 [4B01000000000000]  <1>
-   357 00000370 BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
-   358 00000375 B801000000          <1> 		mov rax , 1				; Write sysCall
-   359 0000037A 0F05                <1> 		syscall
-   360                              <1> 	
-   361 0000037C C3                  <1> 		ret
-   362                              <1> 		
+   351 00000382 C3                  <1> 		ret
+   352                              <1> 		
+   353                              <1> 	wio_get_str_raw:		;removes the new_line
+   354                              <1> 	
+   355 00000383 49BA-               <1> 		mov r10 , .end
+   355 00000385 [8F03000000000000]  <1>
+   356                              <1> 		
+   357                              <1> 		
+   358                              <1> 		
+   359                              <1> 		
+   360 0000038D EB39                <1> 		jmp wio_get_str
+   361                              <1> 		
+   362                              <1> 		.end:
    363                              <1> 		
-   364                              <1> 		
+   364 0000038F FF0C25[44000000]    <1> 		dec DWORD [w_input_buffer-4]
    365                              <1> 		
-   366                              <1> 		
+   366                              <1> 	
    367                              <1> 		
-   368                              <1> 		
-   369                              <1> 
-   370                              <1> 
-   371                              <1> 
-     3                                  %include "vVc/assembly/w_runtime/w_runtime.asm"		
+   368 00000396 C3                  <1> 		ret
+   369                              <1> 	
+   370                              <1> 	wio_get_str_null:		;null terminated
+   371                              <1> 	
+   372 00000397 49BA-               <1> 		mov r10 , .end
+   372 00000399 [A303000000000000]  <1>
+   373                              <1> 		
+   374                              <1> 		
+   375 000003A1 EB25                <1> 		jmp wio_get_str
+   376                              <1> 		
+   377                              <1> 		.end:
+   378                              <1> 		
+   379 000003A3 48BE-               <1> 		mov rsi , w_input_buffer
+   379 000003A5 [4800000000000000]  <1>
+   380                              <1> 		
+   381 000003AD 033425[44000000]    <1> 		add esi ,[w_input_buffer -4]
+   382                              <1> 		
+   383 000003B4 48FFCE              <1> 		dec rsi
+   384                              <1> 		
+   385 000003B7 C60600              <1> 		mov BYTE [rsi] , 0
+   386                              <1> 		
+   387                              <1> 		
+   388                              <1> 		
+   389 000003BA C3                  <1> 		ret
+   390                              <1> 	
+   391                              <1> 	wio_get_str_nline:		;keep the new line
+   392                              <1> 	
+   393 000003BB 49BA-               <1> 		mov r10 , .end
+   393 000003BD [C703000000000000]  <1>
+   394                              <1> 		
+   395                              <1> 		
+   396 000003C5 EB01                <1> 		jmp wio_get_str
+   397                              <1> 		
+   398                              <1> 		.end:
+   399                              <1> 		
+   400 000003C7 C3                  <1> 		ret
+   401                              <1> 		
+   402                              <1> 		
+   403                              <1> 	wio_get_str:				;arg: eax: size to read	r10: return adrr
+   404                              <1> 							; ?? may use rsi for dest info???
+   405                              <1> 							; then shouldn't increment rsi in get_str
+   406                              <1> 							; maybe make a get_string_direct later???
+   407                              <1> 							; or do adr calc before?
+   408                              <1> 							; maybe 2 entry point/ 1 exit point?
+   409                              <1> 	
+   410                              <1> 	
+   411 000003C8 48BE-               <1> 		mov rsi , w_input_buffer			;ptr to string destination	
+   411 000003CA [4800000000000000]  <1>
+   412 000003D2 033425[44000000]    <1> 		add esi , [w_input_buffer - 4]
+   413 000003D9 89C2                <1> 		mov edx , eax				;string lenght		#TODO: handle multiple lenght numbers
+   414                              <1> 		;sub edx , [w_input_buffer - 4]
+   415 000003DB BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
+   416 000003E0 B800000000          <1> 		mov rax , 0				; read sysCall
+   417                              <1> 		
+   418 000003E5 0F05                <1> 		syscall
+   419                              <1> 		
+   420                              <1> 		
+   421                              <1> 		
+   422                              <1> 		
+   423                              <1> 		
+   424                              <1> 		;dec eax
+   425                              <1> 		
+   426 000003E7 010425[44000000]    <1> 		add [w_input_buffer-4] , eax
+   427                              <1> 		
+   428                              <1> 		
+   429 000003EE 41FFE2              <1> 		jmp r10
+   430                              <1> 		
+   431                              <1> 		
+   432                              <1> 	wio_move_in_to_out:
+   433                              <1> 	
+   434                              <1> 	
+   435 000003F1 8B0C25[44000000]    <1> 		mov ecx , [w_input_buffer-4]
+   436 000003F8 83C104              <1> 		add ecx , 4
+   437 000003FB BE[44000000]        <1> 		mov esi , w_input_buffer-4
+   438 00000400 BF[47010000]        <1> 		mov edi , w_output_buffer-4
+   439                              <1> 		
+   440 00000405 F3A4                <1> 		rep movsb
+   441                              <1> 		
+   442 00000407 C70425[44000000]00- <1> 		mov DWORD [w_input_buffer-4] , 0
+   442 0000040F 000000              <1>
+   443                              <1> 		
+   444                              <1> 		
+   445                              <1> 		
+   446 00000412 C3                  <1> 		ret
+   447                              <1> 	
+   448                              <1> 	
+   449                              <1> 		
+   450                              <1> 		
+   451                              <1> 	wio_flush:
+   452                              <1> 	
+   453                              <1> 	
+   454                              <1> 		
+   455 00000413 8B1425[47010000]    <1> 		mov edx , [w_output_buffer - 4]		;string lenght
+   456 0000041A 48BE-               <1> 		mov rsi , w_output_buffer			;strng ptr
+   456 0000041C [4B01000000000000]  <1>
+   457 00000424 BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
+   458 00000429 B801000000          <1> 		mov rax , 1				; Write sysCall
+   459 0000042E 0F05                <1> 		syscall
+   460                              <1> 	
+   461 00000430 C3                  <1> 		ret
+   462                              <1> 		
+   463                              <1> 		
+   464                              <1> 		
+   465                              <1> 		
+   466                              <1> 		
+   467                              <1> 		
+   468                              <1> 		
+   469                              <1> 
+   470                              <1> 
+   471                              <1> 
+     4                                  %include "vVc/assembly/w_runtime/w_runtime.asm"		
      1                              <1> %define SYS_EXIT 60
      2                              <1> 
      3                              <1> ;%include "wio.asm"
@@ -967,67 +1096,67 @@
     33                              <1> 
     34                              <1> 	w_forced_exit:				;rax hold exit code
     35                              <1> 	
-    36 0000037D 50                  <1> 		push rax
+    36 00000431 50                  <1> 		push rax
     37                              <1> 		
     38                              <1> 	
-    39 0000037E BA1C000000          <1> 		mov edx , errsize				;string lenght
-    40 00000383 48BE-               <1> 		mov rsi , error			;strng ptr
-    40 00000385 [0100000000000000]  <1>
-    41 0000038D BF02000000          <1> 		mov rdi , 2				;file descriptor, stderr
-    42 00000392 B801000000          <1> 		mov rax , 1				; Write sysCall
-    43 00000397 0F05                <1> 		syscall
+    39 00000432 BA1C000000          <1> 		mov edx , errsize				;string lenght
+    40 00000437 48BE-               <1> 		mov rsi , error			;strng ptr
+    40 00000439 [0100000000000000]  <1>
+    41 00000441 BF02000000          <1> 		mov rdi , 2				;file descriptor, stderr
+    42 00000446 B801000000          <1> 		mov rax , 1				; Write sysCall
+    43 0000044B 0F05                <1> 		syscall
     44                              <1> 		
     45                              <1> 		
-    46 00000399 5F                  <1> 		pop rdi
+    46 0000044D 5F                  <1> 		pop rdi
     47                              <1> 		;mov rdi, rax
-    48 0000039A B83C000000          <1> 		mov rax, SYS_EXIT
-    49 0000039F 0F05                <1> 		syscall
+    48 0000044E B83C000000          <1> 		mov rax, SYS_EXIT
+    49 00000453 0F05                <1> 		syscall
     50                              <1> 		
     51                              <1> 		
     52                              <1> 
     53                              <1> 
     54                              <1> 	save_regs:			;In case called from other process
     55                              <1> 	
-    56 000003A1 58                  <1> 		pop rax
+    56 00000455 58                  <1> 		pop rax
     57                              <1> 	
-    58 000003A2 53                  <1> 		push rbx
-    59 000003A3 4154                <1> 		push r12
-    60 000003A5 4155                <1> 		push r13
-    61 000003A7 4156                <1> 		push r14
-    62 000003A9 4157                <1> 		push r15
+    58 00000456 53                  <1> 		push rbx
+    59 00000457 4154                <1> 		push r12
+    60 00000459 4155                <1> 		push r13
+    61 0000045B 4156                <1> 		push r14
+    62 0000045D 4157                <1> 		push r15
     63                              <1> 		
-    64 000003AB 50                  <1> 		push rax
+    64 0000045F 50                  <1> 		push rax
     65                              <1> 		
-    66 000003AC C3                  <1> 		ret
+    66 00000460 C3                  <1> 		ret
     67                              <1> 		
     68                              <1> 	restore_regs:
     69                              <1> 	
-    70 000003AD 58                  <1> 		pop rax
+    70 00000461 58                  <1> 		pop rax
     71                              <1> 	
-    72 000003AE 415F                <1> 		pop r15
-    73 000003B0 415E                <1> 		pop r14
-    74 000003B2 415D                <1> 		pop r13
-    75 000003B4 415C                <1> 		pop r12
-    76 000003B6 5B                  <1> 		pop rbx
+    72 00000462 415F                <1> 		pop r15
+    73 00000464 415E                <1> 		pop r14
+    74 00000466 415D                <1> 		pop r13
+    75 00000468 415C                <1> 		pop r12
+    76 0000046A 5B                  <1> 		pop rbx
     77                              <1> 		
-    78 000003B7 50                  <1> 		push rax
+    78 0000046B 50                  <1> 		push rax
     79                              <1> 		
-    80 000003B8 C3                  <1> 		ret
+    80 0000046C C3                  <1> 		ret
     81                              <1> 		
     82                              <1> 	setup_memory:
     83                              <1> 	
-    84 000003B9 C70425[44000000]00- <1> 		mov DWORD [win_count] , 0
-    84 000003C1 000000              <1>
-    85 000003C4 C70425[47010000]00- <1> 		mov DWORD [wout_count] , 0
-    85 000003CC 000000              <1>
+    84 0000046D C70425[44000000]00- <1> 		mov DWORD [win_count] , 0
+    84 00000475 000000              <1>
+    85 00000478 C70425[47010000]00- <1> 		mov DWORD [wout_count] , 0
+    85 00000480 000000              <1>
     86                              <1> 		
-    87 000003CF C70425[54020000]0A- <1> 		mov DWORD [endofline] , 0xa
-    87 000003D7 000000              <1>
+    87 00000483 C70425[54020000]0A- <1> 		mov DWORD [endofline] , 0xa
+    87 0000048B 000000              <1>
     88                              <1> 		
-    89 000003DA C70425[40000000]-   <1> 		mov DWORD[vV_sys_format_mode] , vV_ascii_int_to_dec
-    89 000003E1 [17010000]          <1>
+    89 0000048E C70425[40000000]-   <1> 		mov DWORD[vV_sys_format_mode] , vV_ascii_int_to_dec
+    89 00000495 [17010000]          <1>
     90                              <1> 		
-    91 000003E5 C3                  <1> 		ret
+    91 00000499 C3                  <1> 		ret
     92                              <1> 		
     93                              <1> 		
     94                              <1> 	
@@ -1036,22 +1165,22 @@
     97                              <1> 	
     98                              <1> 		
     99                              <1> 
-   100 000003E6 4889E5              <1> 	mov rbp, rsp				;Setup Stack Frame
+   100 0000049A 4889E5              <1> 	mov rbp, rsp				;Setup Stack Frame
    101                              <1> 	
-   102 000003E9 49BF-               <1> 	mov r15 , fake_stack_start			;setup fake data stack
-   102 000003EB [5812040000000000]  <1>
+   102 0000049D 49BF-               <1> 	mov r15 , fake_stack_start			;setup fake data stack
+   102 0000049F [5812040000000000]  <1>
    103                              <1> 	
-   104 000003F3 E8A9FFFFFF          <1> 	call save_regs				;just in case
+   104 000004A7 E8A9FFFFFF          <1> 	call save_regs				;just in case
    105                              <1> 	
    106                              <1> 	
-   107 000003F8 E8BCFFFFFF          <1> 	call setup_memory			;all memory setup at start
+   107 000004AC E8BCFFFFFF          <1> 	call setup_memory			;all memory setup at start
    108                              <1> 	
    109                              <1> 	
    110                              <1> 	
-   111 000003FD E811000000          <1> 	call w_entry_point			;Start the program 
+   111 000004B1 E811000000          <1> 	call w_entry_point			;Start the program 
    112                              <1> 	
    113                              <1> 	
-   114 00000402 E8A6FFFFFF          <1> 	call restore_regs
+   114 000004B6 E8A6FFFFFF          <1> 	call restore_regs
    115                              <1> 	
    116                              <1> ;-----------attempt to clean input buffer--------------------------------------
    117                              <1> 	
@@ -1067,159 +1196,308 @@
    127                              <1> 
    128                              <1> ;------------------------------------------------------------------------------
    129                              <1> 
-   130 00000407 B83C000000          <1> 	mov rax, SYS_EXIT
-   131 0000040C BF00000000          <1> 	mov rdi, 0				;Normal exit procedure (no code returned from main, need to call exit(code) forhat)
-   132 00000411 0F05                <1> 	syscall
+   130 000004BB B83C000000          <1> 	mov rax, SYS_EXIT
+   131 000004C0 BF00000000          <1> 	mov rdi, 0				;Normal exit procedure (no code returned from main, need to call exit(code) forhat)
+   132 000004C5 0F05                <1> 	syscall
    133                              <1> 	
    134                              <1> 	
    135                              <1> 	
    136                              <1> 	
    137                              <1> 	
-     4                                  
      5                                  
-     6                                  global w_entry_point
-     7                                  
+     6                                  
+     7                                  global w_entry_point
      8                                  
      9                                  
-    10                                  segment .text 
-    11                                  
+    10                                  
+    11                                  segment .text 
     12                                  
     13                                  
     14                                  
-    15                                  w_entry_point:
-    16                                  
+    15                                  
+    16                                  w_entry_point:
     17                                  
-    18 00000413 4889E5                  	mov rbp, rsp			;Setup Stack Frame
-    19                                  	
+    18                                  
+    19 000004C7 4889E5                  	mov rbp, rsp			;Setup Stack Frame
     20                                  	
-    21                                   ;OpADR: (0)
-    22                                  ; GET opcode (0)			
+    21                                  	
+    22                                   ;OpADR: [0]  ; PUSH opcode 
     23                                  
-    24 00000416 E866FEFFFF              		call wio_get			
+    24                                  	vV_push 100 
+    24                              <1> 
+    24 000004CA 41C70764000000      <1>  mov DWORD[vV_sp] , %1
+    24 000004D1 4983C704            <1>  add vV_sp , 4
+    24                              <1> 
     25                                  
-    26                                   ;OpADR: (1)
-    27                                  ; GET opcode (0)			
+    26                                  
+    27                                   ;OpADR: [1]  ; PUSH opcode 
     28                                  
-    29 0000041B E861FEFFFF              		call wio_get			
+    29                                  	vV_push 108 
+    29                              <1> 
+    29 000004D5 41C7076C000000      <1>  mov DWORD[vV_sp] , %1
+    29 000004DC 4983C704            <1>  add vV_sp , 4
+    29                              <1> 
     30                                  
-    31                                   ;OpADR: (2)
-    32                                  ; GET opcode (0)			
+    31                                  
+    32                                   ;OpADR: [2]  ; PUSH opcode 
     33                                  
-    34 00000420 E85CFEFFFF              		call wio_get			
+    34                                  	vV_push 114 
+    34                              <1> 
+    34 000004E0 41C70772000000      <1>  mov DWORD[vV_sp] , %1
+    34 000004E7 4983C704            <1>  add vV_sp , 4
+    34                              <1> 
     35                                  
-    36                                   ;OpADR: (3)
-    37                                  ; GET opcode (0)			
+    36                                  
+    37                                   ;OpADR: [3]  ; PUSH opcode 
     38                                  
-    39 00000425 E857FEFFFF              		call wio_get			
+    39                                  	vV_push 111 
+    39                              <1> 
+    39 000004EB 41C7076F000000      <1>  mov DWORD[vV_sp] , %1
+    39 000004F2 4983C704            <1>  add vV_sp , 4
+    39                              <1> 
     40                                  
-    41                                   ;OpADR: (4)
-    42                                  ; ADD opcode 					
+    41                                  
+    42                                   ;OpADR: [4]  ; PUSH opcode 
     43                                  
-    44 0000042A 418B47F8                	mov eax , vV_2nd			
-    45 0000042E 410347FC                	add eax , vV_top			
-    46 00000432 418947F8                	mov vV_2nd , eax			
-    47                                  
-    48                                  	vV_dec_sp 1		
-    48                              <1> 
-    48 00000436 4983EF04            <1>  sub vV_sp , cell(%1)
-    48                              <1> 
-    49                                  
-    50                                   ;OpADR: (5)
-    51                                  ; ADD opcode 					
-    52                                  
-    53 0000043A 418B47F8                	mov eax , vV_2nd			
-    54 0000043E 410347FC                	add eax , vV_top			
-    55 00000442 418947F8                	mov vV_2nd , eax			
+    44                                  	vV_push 87 
+    44                              <1> 
+    44 000004F6 41C70757000000      <1>  mov DWORD[vV_sp] , %1
+    44 000004FD 4983C704            <1>  add vV_sp , 4
+    44                              <1> 
+    45                                  
+    46                                  
+    47                                   ;OpADR: [5]  ; PUSH opcode 
+    48                                  
+    49                                  	vV_push 32 
+    49                              <1> 
+    49 00000501 41C70720000000      <1>  mov DWORD[vV_sp] , %1
+    49 00000508 4983C704            <1>  add vV_sp , 4
+    49                              <1> 
+    50                                  
+    51                                  
+    52                                   ;OpADR: [6]  ; PUSH opcode 
+    53                                  
+    54                                  	vV_push 111 
+    54                              <1> 
+    54 0000050C 41C7076F000000      <1>  mov DWORD[vV_sp] , %1
+    54 00000513 4983C704            <1>  add vV_sp , 4
+    54                              <1> 
+    55                                  
     56                                  
-    57                                  	vV_dec_sp 1		
-    57                              <1> 
-    57 00000446 4983EF04            <1>  sub vV_sp , cell(%1)
-    57                              <1> 
+    57                                   ;OpADR: [7]  ; PUSH opcode 
     58                                  
-    59                                   ;OpADR: (6)
-    60                                  ; ADD opcode 					
+    59                                  	vV_push 108 
+    59                              <1> 
+    59 00000517 41C7076C000000      <1>  mov DWORD[vV_sp] , %1
+    59 0000051E 4983C704            <1>  add vV_sp , 4
+    59                              <1> 
+    60                                  
     61                                  
-    62 0000044A 418B47F8                	mov eax , vV_2nd			
-    63 0000044E 410347FC                	add eax , vV_top			
-    64 00000452 418947F8                	mov vV_2nd , eax			
+    62                                   ;OpADR: [8]  ; DUP opcode (1)			
+    63                                  
+    64                                  	vV_dup 1			
+    64                              <1> 
+    64 00000522 B901000000          <1>  mov ecx , %1
+    64 00000527 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+    64 0000052B 4C89FF              <1>  mov rdi , vV_sp
+    64                              <1> 
+    64 0000052E F3A5                <1>  rep movsd
+    64                              <1> 
+    64 00000530 4983C704            <1>  add vV_sp , cell(%1)
+    64                              <1> 
     65                                  
-    66                                  	vV_dec_sp 1		
-    66                              <1> 
-    66 00000456 4983EF04            <1>  sub vV_sp , cell(%1)
-    66                              <1> 
-    67                                  
-    68                                   ;OpADR: (7)
-    69                                  ; DUP opcode (1)			
+    66                                  
+    67                                   ;OpADR: [9]  ; PUSH opcode 
+    68                                  
+    69                                  	vV_push 101 
+    69                              <1> 
+    69 00000534 41C70765000000      <1>  mov DWORD[vV_sp] , %1
+    69 0000053B 4983C704            <1>  add vV_sp , 4
+    69                              <1> 
     70                                  
-    71                                  	vV_dup 1			
-    71                              <1> 
-    71 0000045A B901000000          <1>  mov ecx , %1
-    71 0000045F 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-    71 00000463 4C89FF              <1>  mov rdi , vV_sp
-    71                              <1> 
-    71 00000466 F3A5                <1>  rep movsd
-    71                              <1> 
-    71 00000468 4983C704            <1>  add vV_sp , cell(%1)
-    71                              <1> 
-    72                                  
+    71                                  
+    72                                   ;OpADR: [10]  ; PUSH opcode 
     73                                  
-    74                                   ;OpADR: (8)
-    75                                  ; BUFF_OUT opcode (0)			
+    74                                  	vV_push 72 
+    74                              <1> 
+    74 0000053F 41C70748000000      <1>  mov DWORD[vV_sp] , %1
+    74 00000546 4983C704            <1>  add vV_sp , 4
+    74                              <1> 
+    75                                  
     76                                  
-    77 0000046C E859FDFFFF              	call vV_io_out_buffer_default			
-    78                                  						
-    79                                  
-    80                                   ;OpADR: (9)
-    81                                  ; DUP opcode (1)			
+    77                                   ;OpADR: [11]  ; PUSH opcode 
+    78                                  
+    79                                  	vV_push 0 
+    79                              <1> 
+    79 0000054A 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+    79 00000551 4983C704            <1>  add vV_sp , 4
+    79                              <1> 
+    80                                  
+    81                                  
     82                                  
-    83                                  	vV_dup 1			
-    83                              <1> 
-    83 00000471 B901000000          <1>  mov ecx , %1
-    83 00000476 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-    83 0000047A 4C89FF              <1>  mov rdi , vV_sp
-    83                              <1> 
-    83 0000047D F3A5                <1>  rep movsd
-    83                              <1> 
-    83 0000047F 4983C704            <1>  add vV_sp , cell(%1)
-    83                              <1> 
+    83                                  	wblock_0:		
     84                                  
-    85                                  
-    86                                   ;OpADR: (10)
-    87                                  ; BUFF_OUT opcode (3)			
-    88                                  
-    89 00000483 41BA[ED000000]          	mov r10d , vV_FORMAT_HEX		
-    90 00000489 E858FDFFFF              	call vV_io_out_buffer				
-    91                                  						
+    85                                  ;------------------------------------------------------
+    86                                  
+    87                                  
+    88                                   ;OpADR: [12]  ; PUSH opcode 
+    89                                  
+    90                                  	vV_push 1 
+    90                              <1> 
+    90 00000555 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+    90 0000055C 4983C704            <1>  add vV_sp , 4
+    90                              <1> 
+    91                                  
     92                                  
-    93                                   ;OpADR: (11)
-    94                                  ; DUP opcode (1)			
-    95                                  
-    96                                  	vV_dup 1			
-    96                              <1> 
-    96 0000048E B901000000          <1>  mov ecx , %1
-    96 00000493 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-    96 00000497 4C89FF              <1>  mov rdi , vV_sp
-    96                              <1> 
-    96 0000049A F3A5                <1>  rep movsd
-    96                              <1> 
-    96 0000049C 4983C704            <1>  add vV_sp , cell(%1)
-    96                              <1> 
-    97                                  
+    93                                   ;OpADR: [13]  ; ADD opcode 					
+    94                                  
+    95 00000560 418B47F8                	mov eax , vV_2nd			
+    96 00000564 410347FC                	add eax , vV_top			
+    97 00000568 418947F8                	mov vV_2nd , eax			
     98                                  
-    99                                   ;OpADR: (12)
-   100                                  ; BUFF_OUT opcode (4)			
-   101                                  
-   102 000004A0 41BA[62010000]          	mov r10d , vV_FORMAT_BIN		
-   103 000004A6 E83BFDFFFF              	call vV_io_out_buffer				
-   104                                  						
+    99                                  	vV_dec_sp 1		
+    99                              <1> 
+    99 0000056C 4983EF04            <1>  sub vV_sp , cell(%1)
+    99                              <1> 
+   100                                  
+   101                                   ;OpADR: [14]  ; SWAP opcode 
+   102                                  
+   103                                  
+   104                                  	vV_swap		
+   104                              <1> 
+   104 00000570 418B57FC            <1>  mov edx , [vV_sp-4]
+   104 00000574 418B47F8            <1>  mov eax , [vV_sp-8]
+   104 00000578 418957F8            <1>  mov [vV_sp-8] , edx
+   104 0000057C 418947FC            <1>  mov [vV_sp-4] , eax
+   104                              <1> 
    105                                  
-   106                                   ;OpADR: (13)
-   107                                  ; FLUSH opcode					
+   106                                  
+   107                                   ;OpADR: [15]  ; BUFF_OUT opcode (8)			
    108                                  
-   109 000004AB E8C9FCFFFF              		call vV_io_flush	
-   110                                  		
-   111 000004B0 C3                      		ret
+   109                                  
+   110 00000580 E8B9FCFFFF              	call vV_io_out_char_buffer			
+   111                                  						
    112                                  
-   113                                  ;Transpiled from vV with vVc version 0.0.1.5
-   114                                  		
-   115                                  		
+   113                                   ;OpADR: [16]  ; DUP opcode (1)			
+   114                                  
+   115                                  	vV_dup 1			
+   115                              <1> 
+   115 00000585 B901000000          <1>  mov ecx , %1
+   115 0000058A 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+   115 0000058E 4C89FF              <1>  mov rdi , vV_sp
+   115                              <1> 
+   115 00000591 F3A5                <1>  rep movsd
+   115                              <1> 
+   115 00000593 4983C704            <1>  add vV_sp , cell(%1)
+   115                              <1> 
+   116                                  
+   117                                  
+   118                                   ;OpADR: [17]  ; PUSH opcode 
+   119                                  
+   120                                  	vV_push 11 
+   120                              <1> 
+   120 00000597 41C7070B000000      <1>  mov DWORD[vV_sp] , %1
+   120 0000059E 4983C704            <1>  add vV_sp , 4
+   120                              <1> 
+   121                                  
+   122                                  
+   123                                   ;OpADR: [18]  ; LESS opcode					
+   124                                  
+   125 000005A2 418B47FC                	mov eax , vV_top			
+   126 000005A6 413947F8                	cmp DWORD vV_2nd , eax			
+   127                                  
+   128 000005AA 73(0B)                  	jae short 0xb				
+   129                                  
+   130 000005AC 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+   131                                  
+   132 000005B4 EB(09)                  	jmp short 0x9				
+   133                                  
+   134 000005B6 41C747F800000000        			mov DWORD vV_2nd , 0	
+   135                                  
+   136                                  	vV_dec_sp 1				
+   136                              <1> 
+   136 000005BE 4983EF04            <1>  sub vV_sp , cell(%1)
+   136                              <1> 
+   137                                  
+   138                                   ;OpADR: [19]  ; WHILE opcode					
+   139                                  
+   140                                  	vV_dec_sp 1				
+   140                              <1> 
+   140 000005C2 4983EF04            <1>  sub vV_sp , cell(%1)
+   140                              <1> 
+   141 000005C6 41830F00                	or DWORD[vV_sp] , 0			
+   142 000005CA 7589                    	jne wblock_0	
+   143                                  
+   144                                   ;OpADR: [20]  ; FLUSH opcode					
+   145                                  
+   146 000005CC E8ACFBFFFF              		call vV_io_flush	
+   147                                  
+   148                                   ;OpADR: [21]  ; PUSH opcode 
+   149                                  
+   150                                  	vV_push 0 
+   150                              <1> 
+   150 000005D1 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   150 000005D8 4983C704            <1>  add vV_sp , 4
+   150                              <1> 
+   151                                  
+   152                                  
+   153                                   ;OpADR: [22]  ; OUT opcode (8)			
+   154                                  
+   155                                  		
+   156 000005DC E847FCFFFF              	call vV_io_out_char				
+   157                                  						
+   158                                  
+   159                                   ;OpADR: [23]  ; PUSH opcode 
+   160                                  
+   161                                  	vV_push 543452274 
+   161                              <1> 
+   161 000005E1 41C707726C6420      <1>  mov DWORD[vV_sp] , %1
+   161 000005E8 4983C704            <1>  add vV_sp , 4
+   161                              <1> 
+   162                                  
+   163                                  
+   164                                   ;OpADR: [24]  ; PUSH opcode 
+   165                                  
+   166                                  	vV_push 1867980911 
+   166                              <1> 
+   166 000005EC 41C7076F20576F      <1>  mov DWORD[vV_sp] , %1
+   166 000005F3 4983C704            <1>  add vV_sp , 4
+   166                              <1> 
+   167                                  
+   168                                  
+   169                                   ;OpADR: [25]  ; PUSH opcode 
+   170                                  
+   171                                  	vV_push 1819043144 
+   171                              <1> 
+   171 000005F7 41C70748656C6C      <1>  mov DWORD[vV_sp] , %1
+   171 000005FE 4983C704            <1>  add vV_sp , 4
+   171                              <1> 
+   172                                  
+   173                                  
+   174                                   ;OpADR: [26]  ; BUFF_OUT opcode (9)			
+   175                                  
+   176                                  
+   177 00000602 E842FCFFFF              	call vV_io_out_packed_char_buffer				
+   178                                  						
+   179                                  
+   180                                   ;OpADR: [27]  ; BUFF_OUT opcode (9)			
+   181                                  
+   182                                  
+   183 00000607 E83DFCFFFF              	call vV_io_out_packed_char_buffer				
+   184                                  						
+   185                                  
+   186                                   ;OpADR: [28]  ; BUFF_OUT opcode (9)			
+   187                                  
+   188                                  
+   189 0000060C E838FCFFFF              	call vV_io_out_packed_char_buffer				
+   190                                  						
+   191                                  
+   192                                   ;OpADR: [29]  ; FLUSH opcode					
+   193                                  
+   194 00000611 E867FBFFFF              		call vV_io_flush	
+   195                                  		
+   196 00000616 C3                      		ret
+   197                                  
+   198                                  ;Transpiled from vV with vVc version 0.0.1.5
+   199                                  		
+   200                                  		
