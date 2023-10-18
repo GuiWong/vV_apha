@@ -7,3 +7,6 @@
 
 
 %define vV_ERR_VALUE_OVERFLOW 8
+
+
+%define vV_ERR_MEMORY_BUFFER_LIMIT 16

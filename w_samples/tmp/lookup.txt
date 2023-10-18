@@ -1,70 +1,89 @@
      1                                  %include "vVc/assembly/w_runtime/vV_defines.asm"		
      1                              <1> 
-     2                              <1> %deftok vV_sp 'r15'
+     2                              <1> 
      3                              <1> 
-     4                              <1> %deftok vV_spS 'r14'
+     4                              <1> ;------------------Variables From Project-------------
      5                              <1> 
-     6                              <1> %deftok vV_sdir '-'
-     7                              <1> 
-     8                              <1> 
-     9                              <1> %define cell(a) (a*4)
+     6                              <1> 
+     7                              <1> %define vV_input_buffer_size 255
+     8                              <1> %define vV_output_buffer_size 255
+     9                              <1> 
     10                              <1> 
     11                              <1> 
-    12                              <1> %define vV_top [vV_sp vV_sdir %+ cell(1)]
-    13                              <1> %define vV_2nd [vV_sp vV_sdir %+ cell(2)]
-    14                              <1> 
-    15                              <1> %define vV_stack_v(a) ([vV_sp vV_sdir %+ cell(a)])
-    16                              <1> 
+    12                              <1> ;------------------Implementation Relative-------------
+    13                              <1> 
+    14                              <1> %deftok vV_sp 'r15'
+    15                              <1> 
+    16                              <1> %deftok vV_spS 'r14'
     17                              <1> 
-    18                              <1> 
-    19                              <1> %deftok vV_FORMAT_BIN "vV_ascii_int_to_bin"
-    20                              <1> %deftok vV_FORMAT_DEC "vV_ascii_int_to_dec"
-    21                              <1> %deftok vV_FORMAT_HEX "vV_ascii_int_to_hex"
+    18                              <1> %deftok vV_sdir '-'
+    19                              <1> 
+    20                              <1> 
+    21                              <1> 
     22                              <1> 
-    23                              <1> 
+    23                              <1> ;------------------Stack Shortcuts--------------------
     24                              <1> 
-    25                              <1> %macro vV_push 1
+    25                              <1> %define cell(a) (a*4)
     26                              <1> 
-    27                              <1> 	mov DWORD[vV_sp] , %1
-    28                              <1> 	add vV_sp , 4
-    29                              <1> 
-    30                              <1> %endmacro
-    31                              <1> 
-    32                              <1> %macro vV_pop 1
+    27                              <1> 
+    28                              <1> %define vV_top [vV_sp vV_sdir %+ cell(1)]
+    29                              <1> %define vV_2nd [vV_sp vV_sdir %+ cell(2)]
+    30                              <1> 
+    31                              <1> %define vV_stack_v(a) ([vV_sp vV_sdir %+ cell(a)])
+    32                              <1> 
     33                              <1> 
-    34                              <1> 	sub vV_sp , 4
-    35                              <1> 	mov %1 , [vV_sp]
-    36                              <1> 	
-    37                              <1> %endmacro
-    38                              <1> 
-    39                              <1> %macro vV_swap 0
+    34                              <1> ;-------------------Out_Format Pointer------------------
+    35                              <1> 
+    36                              <1> %deftok vV_FORMAT_BIN "vV_ascii_int_to_bin"
+    37                              <1> %deftok vV_FORMAT_DEC "vV_ascii_int_to_dec"
+    38                              <1> %deftok vV_FORMAT_HEX "vV_ascii_int_to_hex"
+    39                              <1> 
     40                              <1> 
-    41                              <1> 	mov edx , [vV_sp-4]
-    42                              <1> 	mov eax , [vV_sp-8]
-    43                              <1> 	mov [vV_sp-8] , edx 
-    44                              <1> 	mov [vV_sp-4] , eax 
-    45                              <1> 	
-    46                              <1> %endmacro
-    47                              <1> 
-    48                              <1> %macro vV_dup 1
-    49                              <1> 
-    50                              <1> 	mov ecx , %1
-    51                              <1> 	lea rsi , [vV_sp-cell(%1)]
-    52                              <1> 	mov rdi , vV_sp
-    53                              <1> 		
-    54                              <1> 	rep movsd
+    41                              <1> 
+    42                              <1> ;--------------------Op Macros--------------------------
+    43                              <1> 
+    44                              <1> %macro vV_push 1
+    45                              <1> 
+    46                              <1> 	mov DWORD[vV_sp] , %1
+    47                              <1> 	add vV_sp , 4
+    48                              <1> 
+    49                              <1> %endmacro
+    50                              <1> 
+    51                              <1> %macro vV_pop 1
+    52                              <1> 
+    53                              <1> 	sub vV_sp , 4
+    54                              <1> 	mov %1 , [vV_sp]
     55                              <1> 	
-    56                              <1> 	add vV_sp , cell(%1)
-    57                              <1> 	
-    58                              <1> %endmacro
+    56                              <1> %endmacro
+    57                              <1> 
+    58                              <1> %macro vV_swap 0
     59                              <1> 
-    60                              <1> 
-    61                              <1> %macro vV_dec_sp 1
-    62                              <1> 
-    63                              <1> 	sub vV_sp , cell(%1)
+    60                              <1> 	mov edx , [vV_sp-4]
+    61                              <1> 	mov eax , [vV_sp-8]
+    62                              <1> 	mov [vV_sp-8] , edx 
+    63                              <1> 	mov [vV_sp-4] , eax 
     64                              <1> 	
     65                              <1> %endmacro
-    66                              <1> 	
+    66                              <1> 
+    67                              <1> %macro vV_dup 1
+    68                              <1> 
+    69                              <1> 	mov ecx , %1
+    70                              <1> 	lea rsi , [vV_sp-cell(%1)]
+    71                              <1> 	mov rdi , vV_sp
+    72                              <1> 		
+    73                              <1> 	rep movsd
+    74                              <1> 	
+    75                              <1> 	add vV_sp , cell(%1)
+    76                              <1> 	
+    77                              <1> %endmacro
+    78                              <1> 
+    79                              <1> 
+    80                              <1> %macro vV_dec_sp 1
+    81                              <1> 
+    82                              <1> 	sub vV_sp , cell(%1)
+    83                              <1> 	
+    84                              <1> %endmacro
+    85                              <1> 	
      2                                  %include "vVc/assembly/w_runtime/vV_error_code.asm"		
      1                              <1> 
      2                              <1> %define vV_ERR_IO_I_OVERFLOW 1
@@ -75,442 +94,361 @@
      7                              <1> 
      8                              <1> 
      9                              <1> %define vV_ERR_VALUE_OVERFLOW 8
-     3                                  %include "vVc/assembly/w_runtime/vV_io.asm"			
+    10                              <1> 
+    11                              <1> 
+    12                              <1> %define vV_ERR_MEMORY_BUFFER_LIMIT 16
+     3                                  %include "vVc/assembly/w_runtime/vV_runtime.asm"		
+     1                              <1> %define SYS_EXIT 60
+     2                              <1> 
+     3                              <1> 
+     4                              <1> ;%include "vVc/assembly/w_runtime/vV_errors.asm"
+     5                              <1> ;%include "vVc/assembly/w_runtime/vV_system00.asm"
+     6                              <1> ;%include "vVc/assembly/w_runtime/vV_system10.asm"
+     7                              <1> ;%include "vVc/assembly/w_runtime/vV_system90.asm"
+     8                              <1> 
+     9                              <1> 
+    10                              <1> global _start
+    11                              <1> 
+    12                              <1> 
+    13                              <1> 
+    14                              <1> ;extern vV_entry_point			;Defined by main program
+    15                              <1> 
+    16                              <1> 
+    17                              <1> 
+    18                              <1> 	
+    19                              <1> segment .data 
+    20                              <1> 
+    21                              <1> 
+    22                              <1> 	
+    23                              <1> 
+    24                              <1> segment .text 
+    25                              <1> 
+    26                              <1> 
+    27                              <1> 	vV_forced_exit:				;rax hold exit code
+    28                              <1> 							;Removed default error printing
+    29                              <1> 							;This will now happens in errors module
+    30                              <1> 
+    31 00000000 4889C7              <1> 		mov rdi, rax
+    32 00000003 B83C000000          <1> 		mov rax, SYS_EXIT
+    33 00000008 0F05                <1> 		syscall
+    34                              <1> 		
+    35                              <1> 		
+    36                              <1> 
+    37                              <1> 
+    38                              <1> 	save_regs:			;In case called from other process
+    39                              <1> 	
+    40 0000000A 58                  <1> 		pop rax
+    41                              <1> 	
+    42 0000000B 53                  <1> 		push rbx
+    43 0000000C 4154                <1> 		push r12
+    44 0000000E 4155                <1> 		push r13
+    45 00000010 4156                <1> 		push r14
+    46 00000012 4157                <1> 		push r15
+    47                              <1> 		
+    48 00000014 50                  <1> 		push rax
+    49                              <1> 		
+    50 00000015 C3                  <1> 		ret
+    51                              <1> 		
+    52                              <1> 	restore_regs:
+    53                              <1> 	
+    54 00000016 58                  <1> 		pop rax
+    55                              <1> 	
+    56 00000017 415F                <1> 		pop r15
+    57 00000019 415E                <1> 		pop r14
+    58 0000001B 415D                <1> 		pop r13
+    59 0000001D 415C                <1> 		pop r12
+    60 0000001F 5B                  <1> 		pop rbx
+    61                              <1> 		
+    62 00000020 50                  <1> 		push rax
+    63                              <1> 		
+    64 00000021 C3                  <1> 		ret
+    65                              <1> 		
+    66                              <1> 	setup_memory:
+    67                              <1> 	
+    68 00000022 C70425[80000000]00- <1> 		mov DWORD [vV_input_buffer_content] , 0
+    68 0000002A 000000              <1>
+    69 0000002D C70425[83010000]00- <1> 		mov DWORD [vV_output_buffer_content] , 0
+    69 00000035 000000              <1>
+    70                              <1> 		
+    71                              <1> 		;mov DWORD [endofline] , 0xa
+    72                              <1> 		
+    73 00000038 C70425[14010000]-   <1> 		mov DWORD[vV_sys_format_mode] , vV_ascii_int_to_dec
+    73 0000003F [01040000]          <1>
+    74                              <1> 		
+    75 00000043 C3                  <1> 		ret
+    76                              <1> 		
+    77                              <1> 		
+    78                              <1> 	
+    79                              <1> 		
+    80                              <1> _start:				;Entry point of Every Program
+    81                              <1> 	
+    82                              <1> 		
+    83                              <1> 
+    84 00000044 4889E5              <1> 	mov rbp, rsp				;Setup Stack Frame
+    85                              <1> 	
+    86 00000047 49BF-               <1> 	mov r15 , fake_stack_start			;setup fake data stack
+    86 00000049 [8602040000000000]  <1>
+    87                              <1> 	
+    88 00000051 E8B4FFFFFF          <1> 	call save_regs				;just in case
+    89                              <1> 	
+    90                              <1> 	
+    91 00000056 E8C7FFFFFF          <1> 	call setup_memory			;all memory setup at start
+    92                              <1> 	
+    93                              <1> 	
+    94                              <1> 	
+    95 0000005B E80E040000          <1> 	call vV_entry_point			;Start the program 
+    96                              <1> 	
+    97                              <1> 	
+    98 00000060 E8B1FFFFFF          <1> 	call restore_regs
+    99                              <1> 	
+   100                              <1> 
+   101                              <1> ;------------------------------------------------------------------------------
+   102                              <1> 
+   103 00000065 B83C000000          <1> 	mov rax, SYS_EXIT
+   104 0000006A BF00000000          <1> 	mov rdi, 0		;Normal exit procedure (no code returned from main)
+   105 0000006F 0F05                <1> 	syscall
+   106                              <1> 	
+   107                              <1> 	
+   108                              <1> 	
+   109                              <1> 	
+   110                              <1> 	
+     4                                  %include "vVc/assembly/w_runtime/vV_system00.asm"		
+     1                              <1> 
+     2                              <1> segment .bss
+     3                              <1> 
+     4                              <1> 	ALIGNB 4
+     5 00000000 <res 00000040>      <1> 	vV_sys_start:	resd 16		;not used now
+     6                              <1> 
+     7                              <1> 	
+     8                              <1> 	
+     9                              <1> segment .data
+    10                              <1> 
+    11                              <1> 
+    12                              <1> ;--Start of Memory----------------------------------------------------------
+    13                              <1> 
+    14                              <1> 	ALIGN 8
+    15                              <1> 	
+    16                              <1> 	
+    17                              <1> ;---------------------Error Managment----------
+    18                              <1> 
+    19                              <1> 
+    20                              <1> ;error vectors	
+    21                              <1> 	
+    22                              <1> 	vV_error_vectors:
+    23 00000000 [8D00000000000000]- <1> 	times 32 dq vV_error_unhandeled
+    23 00000000 <rept>              <1>
+    24                              <1> 	
+    25                              <1> 	
+    26                              <1> 	
+    27                              <1> segment .text
+    28                              <1> 
+    29                              <1> 
+    30                              <1> vV_error:
+    31                              <1> 
+    32 00000071 52                  <1> 	push rdx
+    33                              <1> 	
+    34 00000072 4831D2              <1> 	xor rdx , rdx
+    35                              <1> 	
+    36 00000075 88E2                <1> 	mov dl , ah
+    37                              <1> 	
+    38 00000077 C0E203              <1> 	shl dl , 3
+    39                              <1> 	
+    40 0000007A 67FF92[00000000]    <1> 	call [vV_error_vectors + edx]
+    41                              <1> 	
+    42                              <1> 	
+    43 00000081 5A                  <1> 	pop rdx
+    44                              <1> 	
+    45 00000082 C3                  <1> 	ret
+    46                              <1> 	
+    47                              <1> 	
+    48                              <1> vV_error_fatal:
+    49                              <1> 
+    50                              <1> 	
+    51 00000083 88D0                <1> 	mov al , dl
+    52                              <1> 	
+    53 00000085 C0E803              <1> 	shr al , 3
+    54                              <1> 
+    55 00000088 E873FFFFFF          <1> 	call vV_forced_exit
+    56                              <1> 	
+    57                              <1> 	
+    58                              <1> 	
+    59                              <1> 	
+    60                              <1> 	
+    61                              <1> 	
+    62                              <1> 
+    63                              <1> 	
+     5                                  %include "vVc/assembly/w_runtime/vV_errors.asm"		
      1                              <1> 
      2                              <1> 
-     3                              <1> %include "vVc/assembly/w_runtime/vV_ascii.asm"
-     1                              <2> 
-     2                              <2> 
-     3                              <2> segment .text 
-     4                              <2> 
-     5                              <2> 
-     6                              <2> 
-     7                              <2> 
-     8                              <2> vV_ascii_as_hex2:						;Jumped to from parse_num OR called
-     9                              <2> 								;use edi as counter/offset in string !Set if direct call
-    10                              <2> 								;use esi as source string
-    11                              <2> 								;concatenate result in eax
-    12                              <2> 								;parse digit in cl
-    13                              <2> 								
-    14                              <2> 								;use r8 for base
-    15                              <2> 								;use r9 for max_value
-    16                              <2> 								
-    17                              <2> 							
-    18                              <2> 	;mov r8 , 16	
-    19                              <2> 	
-    20                              <2> 	.start_loop:
-    21                              <2> 	
-    22 00000000 678A0C3E            <2> 		mov cl , [esi + edi]
-    23                              <2> 	
-    24                              <2> 		
-    25 00000004 80F930              <2> 		cmp cl , 48
-    26                              <2> 		
-    27 00000007 7265                <2> 			jb vV_ascii_unvalid
-    28                              <2> 			
-    29 00000009 80F93A              <2> 		cmp cl , 58
-    30                              <2> 		
-    31 0000000C 720D                <2> 			jb .pass_int
-    32                              <2> 			
-    33 0000000E 80F966              <2> 			cmp cl , 'f'
-    34                              <2> 			
-    35 00000011 775B                <2> 				ja vV_ascii_unvalid
-    36                              <2> 			
-    37 00000013 80F961              <2> 			cmp cl , 'a'
-    38                              <2> 			
-    39 00000016 7256                <2> 				jb vV_ascii_unvalid
-    40                              <2> 				
-    41 00000018 80E927              <2> 			sub cl , 39
-    42                              <2> 				
-    43                              <2> 			
-    44                              <2> 		.pass_int:	
-    45                              <2> 			
-    46 0000001B 80E930              <2> 		sub cl , '0'
-    47                              <2> 		
-    48                              <2> 		
-    49                              <2> 		
-    50 0000001E 31D2                <2> 		xor edx , edx
-    51                              <2> 		
-    52 00000020 F8                  <2> 		clc
-    53                              <2> 		
-    54 00000021 41F7E0              <2> 		mul r8d
-    55                              <2> 		
-    56 00000024 725D                <2> 		jc vV_ascii_overflow
-    57                              <2> 		
-    58 00000026 01C8                <2> 		add eax , ecx
-    59                              <2> 		
-    60                              <2> 		.pass02:
-    61                              <2> 		
-    62 00000028 FFC7                <2> 		inc edi
-    63                              <2> 		
-    64 0000002A 39DF                <2> 		cmp edi , ebx
-    65                              <2> 		
-    66 0000002C 72D2                <2> 		jb .start_loop
-    67                              <2> 
-    68                              <2> 		
-    69 0000002E C3                  <2> 		ret	
-    70                              <2> 		
-    71                              <2> 		
-    72                              <2> ;
-    73                              <2> ;				ebx		esi
-    74                              <2> ;	ascii_to_format( buffer_size , buffer_adress ) 
-    75                              <2> ;		
-    76                              <2> ;
-    77                              <2> ;	set:	rcx,rdx (rax) to 0
-    78                              <2> ;		r8,r9
-    79                              <2> ;		
-    80                              <2> ;	call: specialized dexodefunction
-    81                              <2> 		
-    82                              <2> vV_ascii_as_hex:
-    83                              <2> 	
-    84 0000002F FFCB                <2> 	dec ebx
-    85 00000031 41B810000000        <2> 	mov r8 , 16	
-    86 00000037 4831C0              <2> 	xor rax , rax 		;(just in case not switching from dec mode)			
-    87 0000003A 4831C9              <2> 	xor rcx , rcx
-    88 0000003D 4831D2              <2> 	xor rdx , rdx
-    89 00000040 EBBE                <2> 	jmp vV_ascii_as_hex2
-    90                              <2> 
-    91                              <2> vV_ascii_as_dec:
-    92                              <2> 
-    93 00000042 FFCB                <2> 	dec ebx
-    94 00000044 41B80A000000        <2> 	mov r8 , 10			
-    95 0000004A 41B93A000000        <2> 	mov r9 , 58
-    96 00000050 4831C9              <2> 	xor rcx , rcx
-    97 00000053 4831D2              <2> 	xor rdx , rdx
-    98 00000056 EB5E                <2> 	jmp vV_ascii_as_decbin
-    99                              <2> 
-   100                              <2> vV_ascii_as_bin:
-   101                              <2> 
-   102 00000058 FFCB                <2> 	dec ebx
-   103 0000005A 41B802000000        <2> 	mov r8 , 2			
-   104 00000060 41B932000000        <2> 	mov r9 , 50
-   105 00000066 4831C9              <2> 	xor rcx , rcx
-   106 00000069 4831D2              <2> 	xor rdx , rdx
-   107                              <2> 	
-   108 0000006C EB48                <2> 	jmp vV_ascii_as_decbin
-   109                              <2> 	
-   110                              <2> vV_ascii_unvalid:
-   111                              <2> 	
-   112                              <2> 		;mov rax , 24;	#TODO: Defined Errors code/ data in file
-   113                              <2> 		;xor rdx , rdx
-   114                              <2> 		;mov dl , cl
-   115                              <2> 		
-   116                              <2> 		;call w_forced_exit
-   117                              <2> 		
-   118 0000006E 50                  <2> 		push rax
-   119 0000006F 53                  <2> 		push rbx
-   120                              <2> 		
-   121 00000070 B403                <2> 		mov ah , vV_ERR_IO_I_UNVALID
-   122 00000072 6683C800            <2> 		or ax , 0
-   123 00000076 4831DB              <2> 		xor rbx , rbx
-   124 00000079 88CB                <2> 		mov bl , cl
-   125                              <2> 		
-   126 0000007B E8(00000000)        <2> 		call vV_error
-   127                              <2> 		
-   128 00000080 5B                  <2> 		pop rbx
-   129 00000081 58                  <2> 		pop rax
-   130                              <2> 		
-   131 00000082 C3                  <2> 		ret
-   132                              <2> 		
-   133                              <2> 		
-   134                              <2> 		
-   135                              <2> 		
-   136                              <2> vV_ascii_overflow:
-   137                              <2> 	
-   138 00000083 50                  <2> 		push rax
-   139 00000084 53                  <2> 		push rbx
-   140                              <2> 		
-   141 00000085 4831DB              <2> 		xor rbx , rbx
-   142 00000088 4889C3              <2> 		mov rbx , rax
-   143                              <2> 		
-   144                              <2> 		;or rbx , 0x00010000
-   145                              <2> 		
-   146 0000008B B401                <2> 		mov ah , vV_ERR_IO_I_OVERFLOW
-   147 0000008D 6683C800            <2> 		or ax , 0
-   148                              <2> 		
-   149                              <2> 		
-   150                              <2> 		
-   151 00000091 E8(00000000)        <2> 		call vV_error
-   152                              <2> 		
-   153 00000096 5B                  <2> 		pop rbx
-   154 00000097 58                  <2> 		pop rax
-   155                              <2> 		
-   156                              <2> 		;TODO: Maybe use vV_error return value for decision making
-   157                              <2> 		
-   158 00000098 B8FFFFFFFF          <2> 		mov eax , -1
-   159                              <2> 		
-   160 0000009D C3                  <2> 		ret
-   161                              <2> 		
-   162                              <2> 		
-   163                              <2> vV_ascii_change_to_hex:
-   164                              <2> 		
-   165 0000009E 83F800              <2> 		cmp eax , 0
-   166                              <2> 			
-   167 000000A1 75CB                <2> 			jne vV_ascii_unvalid
-   168                              <2> 			
-   169 000000A3 41B810000000        <2> 		mov r8 , 16
-   170 000000A9 4831C9              <2> 		xor rcx , rcx
-   171 000000AC 4831C0              <2> 		xor rax ,rax
-   172                              <2> 				
-   173 000000AF FFC7                <2> 		inc edi
-   174 000000B1 E94AFFFFFF          <2> 		jmp vV_ascii_as_hex2		
-   175                              <2> 		
-   176                              <2> 	
-   177                              <2> 
-   178                              <2> 
-   179                              <2> vV_ascii_as_decbin:						;ebx: number of char to read
-   180                              <2> 
-   181                              <2> 	
-   182                              <2> 
-   183                              <2> 								;use edi as counter/offset in string
-   184                              <2> 								;concatenate result in eax
-   185                              <2> 								;parse digit in cl
-   186                              <2> 								
-   187                              <2> 								;use r8 for base
-   188                              <2> 								;use r9 for max_value					
-   189                              <2> 								;itou
-   190                              <2> 	;xor edi, edi			;should be set by caller
-   191 000000B6 4831C0              <2> 	xor rax , rax
-   192                              <2> 	
-   193 000000B9 4831C9              <2> 	xor rcx , rcx
-   194                              <2> 	
-   195 000000BC 4831D2              <2> 	xor rdx , rdx
-   196                              <2> 	
-   197                              <2> 	
-   198                              <2> 	.start_loop:
-   199                              <2> 	
-   200 000000BF 678A0C3E            <2> 		mov cl , [esi + edi]
-   201                              <2> 		
-   202                              <2> 		
-   203 000000C3 80F962              <2> 		cmp cl , 'b'										
-   204 000000C6 7513                <2> 			jne .pass01
-   205                              <2> 		
-   206                              <2> 		.format_change:
-   207                              <2> 			
-   208 000000C8 83F800              <2> 			cmp eax , 0
-   209                              <2> 			
-   210 000000CB 75A1                <2> 				jne vV_ascii_unvalid
-   211                              <2> 				
-   212 000000CD 41B802000000        <2> 			mov r8 , 2
-   213                              <2> 			
-   214 000000D3 41B932000000        <2> 			mov r9 , 50
-   215                              <2> 	
-   216 000000D9 EB26                <2> 			jmp .pass02
-   217                              <2> 		
-   218                              <2> 		
-   219                              <2> 	
-   220                              <2> 		.pass01:
-   221                              <2> 		
-   222 000000DB 80F968              <2> 		cmp cl , 'h'											
-   223 000000DE 74BE                <2> 			je vV_ascii_change_to_hex
-   224 000000E0 80F978              <2> 		cmp cl , 'x'											
-   225 000000E3 74B9                <2> 			je vV_ascii_change_to_hex
-   226                              <2> 			
-   227                              <2> 			
-   228 000000E5 4438C9              <2> 		cmp cl , r9b
-   229                              <2> 		
-   230 000000E8 7384                <2> 			jae vV_ascii_unvalid
-   231                              <2> 		
-   232 000000EA 80F930              <2> 		cmp cl , 48
-   233                              <2> 		
-   234 000000ED 0F827BFFFFFF        <2> 			jb vV_ascii_unvalid
-   235                              <2> 			
-   236                              <2> 		
-   237                              <2> 			
-   238 000000F3 80E930              <2> 		sub cl , 48
-   239                              <2> 		
-   240 000000F6 4831D2              <2> 		xor rdx , rdx
-   241 000000F9 F8                  <2> 		clc
-   242                              <2> 		
-   243 000000FA 41F7E0              <2> 		mul r8d
-   244                              <2> 		
-   245 000000FD 7284                <2> 		jc vV_ascii_overflow
-   246                              <2> 		
-   247 000000FF 01C8                <2> 		add eax , ecx
-   248                              <2> 		
-   249                              <2> 		.pass02:
-   250                              <2> 		
-   251 00000101 FFC7                <2> 		inc edi
-   252                              <2> 		
-   253 00000103 39DF                <2> 		cmp edi , ebx
-   254                              <2> 		
-   255 00000105 72B8                <2> 		jb .start_loop
-   256                              <2> 		
-   257                              <2> 		
-   258 00000107 C3                  <2> 		ret			; result should be in eax
-   259                              <2> 		
-   260                              <2> 
-   261                              <2> 	
-   262                              <2> ;------------------------------------------------------------------------------------------
-   263                              <2> ;------------------------------------------------------------------------------------------
-   264                              <2> 
-   265                              <2> 
-   266                              <2> 
-   267                              <2> vV_ascii_int_to_hex:					;value in eax
-   268                              <2> 						;dest in rdi
-   269                              <2> 
-   270                              <2> 
-   271                              <2> 
-   272 00000108 31C9                <2> 	xor ecx , ecx	
-   273                              <2> 	
-   274 0000010A BE10000000          <2> 	mov esi , 16
-   275                              <2> 
-   276                              <2> 	
-   277                              <2> 	.loop01:
-   278                              <2> 	
-   279 0000010F 4831D2              <2> 		xor rdx , rdx
-   280                              <2> 		
-   281 00000112 F7F6                <2> 		div esi
-   282                              <2> 		
-   283                              <2> 		
-   284 00000114 80FA0A              <2> 		cmp dl , 10
-   285                              <2> 		
-   286 00000117 7203                <2> 		jb .dec
-   287                              <2> 		
-   288 00000119 80C207              <2> 			add dl , 7
-   289                              <2> 		
-   290                              <2> 		.dec:
-   291                              <2> 		
-   292 0000011C 80C230              <2> 			add dl , '0'
-   293                              <2> 		
-   294                              <2> 		
-   295 0000011F 52                  <2> 		push rdx
-   296                              <2> 		
-   297 00000120 FFC1                <2> 		inc ecx
-   298                              <2> 		
-   299 00000122 39F0                <2> 		cmp eax , esi
-   300                              <2> 		
-   301 00000124 73E9                <2> 		jae .loop01
-   302                              <2> 	
-   303                              <2> 	
-   304 00000126 3C0A                <2> 	cmp al , 10
-   305                              <2> 		
-   306 00000128 7202                <2> 		jb .dec2
-   307                              <2> 		
-   308 0000012A 0407                <2> 			add al , 7
-   309                              <2> 		
-   310                              <2> 		.dec2:
-   311                              <2> 		
-   312 0000012C 0430                <2> 			add al , '0'	
-   313 0000012E 8807                <2> 	mov [rdi] , al
-   314                              <2> 	
-   315 00000130 EB1B                <2> 	jmp vV_ascii_pop_digits
-   316                              <2> 		
-   317                              <2> 	
-   318                              <2> 	
-   319                              <2> 	
-   320                              <2> vV_ascii_int_to_dec:					;value in eax
-   321                              <2> 						;dest in rdi
-   322                              <2> 						;max_dest_size in r9d
-   323                              <2> 
-   324                              <2> 
-   325                              <2> 
-   326 00000132 31C9                <2> 	xor ecx , ecx	
-   327                              <2> 	
-   328 00000134 BE0A000000          <2> 	mov esi , 10
-   329                              <2> 	
-   330                              <2> 
-   331                              <2> 
-   332                              <2> 	
-   333                              <2> 	.loop01:
-   334                              <2> 	
-   335 00000139 4831D2              <2> 		xor rdx , rdx
-   336                              <2> 		
-   337 0000013C F7F6                <2> 		div esi
-   338                              <2> 		
-   339                              <2> 		
-   340 0000013E 80C230              <2> 		add dl , '0'
-   341 00000141 52                  <2> 		push rdx
-   342                              <2> 		
-   343 00000142 FFC1                <2> 		inc ecx
-   344                              <2> 		
-   345 00000144 83F80A              <2> 		cmp eax , 10
-   346                              <2> 		
-   347 00000147 73F0                <2> 		jae .loop01
-   348                              <2> 	
-   349 00000149 0430                <2> 	add al , '0'	
-   350 0000014B 8807                <2> 	mov [rdi] , al
-   351                              <2> 		
-   352                              <2> 	
-   353                              <2> 		
-   354                              <2> vV_ascii_pop_digits:			; Need nb of digits currently on stack(ecx)
-   355                              <2> 						;dest in rdi
-   356 0000014D 41B801000000        <2> 		mov r8d , 1
-   357 00000153 FFC1                <2> 		inc ecx
-   358                              <2> 		
-   359 00000155 4439C9              <2> 		cmp ecx , r9d
-   360                              <2> 		
-   361 00000158 7212                <2> 		jb .loopstart
-   362                              <2> 		
-   363                              <2> 	
-   364 0000015A B81A000000          <2> 			mov rax , 26;	#TODO: Defined Errors code/ data in file
-   365 0000015F 4831D2              <2> 			xor rdx , rdx
-   366 00000162 89CA                <2> 			mov edx , ecx
-   367 00000164 4489C9              <2> 			mov ecx , r9d
-   368                              <2> 		
-   369 00000167 E8E0020000          <2> 			call w_forced_exit
-   370                              <2> 		
-   371                              <2> 						
-   372                              <2> 		.loopstart:
-   373                              <2> 		
-   374 0000016C 5A                  <2> 			pop rdx
-   375 0000016D 6742881407          <2> 			mov BYTE[edi + r8d] , dl
-   376 00000172 41FFC0              <2> 			inc r8d
-   377                              <2> 			
-   378 00000175 4139C8              <2> 			cmp r8d , ecx
-   379                              <2> 		
-   380 00000178 72F2                <2> 		jb .loopstart
-   381                              <2> 	
-   382                              <2> 	
-   383 0000017A 89C8                <2> 		mov eax , ecx
-   384                              <2> 		
-   385 0000017C C3                  <2> 		ret	
-   386                              <2> 	
-   387                              <2> 	
-   388                              <2> vV_ascii_int_to_bin:					;value in eax, 
-   389                              <2> 							
-   390                              <2> 
-   391                              <2> 
-   392 0000017D 31C9                <2> 	xor ecx , ecx
-   393                              <2> 	
-   394                              <2> 	
-   395                              <2> 	.loop01:
-   396                              <2> 	
-   397                              <2> 		
-   398 0000017F D1E8                <2> 		shr eax , 1
-   399                              <2> 		
-   400 00000181 7205                <2> 		jc .one
-   401                              <2> 		
-   402 00000183 B230                <2> 			mov dl , '0'
-   403 00000185 52                  <2> 			push rdx
-   404                              <2> 			
-   405 00000186 EB03                <2> 		jmp .next
-   406                              <2> 		.one:
-   407                              <2> 			
-   408 00000188 B231                <2> 			mov dl , '1'
-   409 0000018A 52                  <2> 			push rdx
-   410                              <2> 		
-   411                              <2> 		.next:
-   412                              <2> 		
-   413 0000018B FFC1                <2> 		inc ecx
-   414                              <2> 		
-   415 0000018D 83F801              <2> 		cmp eax , 1
-   416                              <2> 		
-   417 00000190 77ED                <2> 		ja .loop01
-   418                              <2> 	
-   419 00000192 0430                <2> 	add al , '0'	
-   420 00000194 8807                <2> 	mov [rdi] , al
-   421                              <2> 	
-   422 00000196 EBB5                <2> 	jmp vV_ascii_pop_digits
-   423                              <2> 	
-   424                              <2> 	
-   425                              <2> ;Will need a special version for String stack
-   426                              <2> 
-   427                              <2> 
-   428                              <2> 
-   429                              <2> 
-   430                              <2> 
-   431                              <2> 
-   432                              <2> 
+     3                              <1> 
+     4                              <1> segment .bss
+     5                              <1> 
+     6                              <1> 
+     7                              <1> 	ALIGNB 4
+     8                              <1> 		
+     9                              <1> 	vV_error_buffer:
+    10 00000040 <res 00000040>      <1> 	resb 64
+    11                              <1> 	vV_end_err_buff:
+    12                              <1> 	vV_error_buffer_size equ vV_end_err_buff-vV_error_buffer
+    13                              <1> 
+    14                              <1> 
+    15                              <1> 
+    16                              <1> 
+    17                              <1> segment .data
+    18                              <1> 
+    19                              <1> ;Error String	
+    20                              <1> 
+    21                              <1> 	
+    22                              <1> 	vV_error_msg:
+    23 00000100 556E68616E64656C65- <1> 	.default: db "Unhandeled Error "
+    23 00000109 64204572726F7220    <1>
+    24                              <1> 	default_size equ $-.default
+    25                              <1> 
+    26                              <1> 
+    27                              <1> 
+    28                              <1> segment .text
+    29                              <1> 
+    30                              <1> 
+    31                              <1> 
+    32                              <1> 
+    33                              <1> 	
+    34                              <1> vV_error_unhandeled:
+    35                              <1> 
+    36                              <1> 
+    37 0000008D 56                  <1> 	push rsi
+    38 0000008E 57                  <1> 	push rdi	;Save reg used by syscall
+    39 0000008F 4151                <1> 	push r9	;and by conversion func
+    40                              <1> 	
+    41                              <1> 	
+    42                              <1> ;push rax	;Save flags ( and value)
+    43                              <1> 
+    44 00000091 53                  <1> 	push rbx	;Save Arg
+    45 00000092 52                  <1> push rdx		;Save error code
+    46                              <1> 	
+    47                              <1> 	
+    48 00000093 BA11000000          <1> 	mov edx , default_size				;string lenght
+    49 00000098 48BE-               <1> 	mov rsi , vV_error_msg.default			;strng ptr
+    49 0000009A [0001000000000000]  <1>
+    50 000000A2 BF02000000          <1> 	mov rdi , 2				;file descriptor, stderr
+    51 000000A7 B801000000          <1> 	mov rax , 1				; Write sysCall
+    52 000000AC 0F05                <1> 	syscall	
+    53                              <1> 	
+    54                              <1> 	
+    55 000000AE 58                  <1> pop rax	;error code
+    56                              <1> 
+    57                              <1> 
+    58 000000AF C0E803              <1> 	shr al , 3
+    59                              <1> 	
+    60                              <1> 	
+    61 000000B2 BF[40000000]        <1> 	mov edi , vV_error_buffer
+    62 000000B7 41B940000000        <1> 	mov r9d , vV_error_buffer_size
+    63                              <1> 	
+    64                              <1> 
+    65 000000BD E83F030000          <1> 	call vV_ascii_int_to_dec	
+    66                              <1> 	
+    67                              <1> 		
+    68                              <1> 	
+    69 000000C2 67C680[40000000]20  <1> 	mov BYTE[vV_error_buffer + eax] , ' '
+    70                              <1> 	
+    71                              <1> 	
+    72 000000CA 67488DB8[41000000]  <1> 	lea rdi , [vV_error_buffer + eax + 1]
+    73 000000D2 4129F9              <1> 	sub r9d , edi
+    74                              <1> 	
+    75 000000D5 58                  <1> 	pop rax
+    76                              <1> 	
+    77 000000D6 E826030000          <1> 	call vV_ascii_int_to_dec
+    78                              <1> 	
+    79 000000DB 674C8D0C07          <1> 	lea r9 , [edi + eax]
+    80                              <1> 	
+    81 000000E0 41C6010A            <1> 	mov BYTE[r9] , 0xa
+    82                              <1> 	
+    83 000000E4 49FFC1              <1> 	inc r9
+    84                              <1> 	
+    85 000000E7 4981E9[40000000]    <1> 	sub r9 , vV_error_buffer
+    86                              <1> 	
+    87 000000EE 4489CA              <1> 	mov edx , r9d				;string lenght
+    88 000000F1 48BE-               <1> 	mov rsi , vV_error_buffer			;strng ptr
+    88 000000F3 [4000000000000000]  <1>
+    89 000000FB BF02000000          <1> 	mov rdi , 2				;file descriptor, stderr
+    90 00000100 B801000000          <1> 	mov rax , 1				; Write sysCall
+    91 00000105 0F05                <1> 	syscall
+    92                              <1> 	
+    93 00000107 4159                <1> 	pop r9
+    94 00000109 5F                  <1> 	pop rdi
+    95 0000010A 5E                  <1> 	pop rsi
+    96                              <1> 	
+    97                              <1> 	
+    98                              <1> 	
+    99                              <1> 	
+   100 0000010B C3                  <1> 	ret
+   101                              <1> 	
+   102                              <1> 	
+   103                              <1> 	
+   104                              <1> 		
+   105                              <1> 		
+   106                              <1> 		
+   107                              <1> 		
+   108                              <1> 		
+   109                              <1> 		
+   110                              <1> 		
+   111                              <1> 		
+   112                              <1> 		
+   113                              <1> 		
+   114                              <1> 		
+   115                              <1> 		
+   116                              <1> 		
+   117                              <1> 		
+   118                              <1> 		
+   119                              <1> 		
+   120                              <1> 		
+   121                              <1> 		
+   122                              <1> 		
+   123                              <1> 
+     6                                  %include "vVc/assembly/w_runtime/vV_system10.asm"		
+     1                              <1> 
+     2                              <1> segment .bss
+     3                              <1> 
+     4                              <1> 	ALIGNB 4
+     5                              <1> 	
+     6                              <1> 	
+     7                              <1> 	;------------Input Buffer
+     8                              <1> 
+     9                              <1> 
+    10                              <1> 	
+    11 00000080 <res 00000004>      <1> 	vV_input_buffer_content: resb 4			;Input Buffer current content
+    12 00000084 <res 000000FF>      <1> 	vV_input_buffer: resb vV_input_buffer_size		;Input Buffer of 256 char
+    13                              <1> 	
+    14                              <1> 	
+    15                              <1> 	
+    16                              <1> 	
+    17                              <1> ;------------Output Buffer
+    18                              <1> 
+    19                              <1> 
+    20                              <1> 
+    21                              <1> 	
+    22 00000183 <res 00000004>      <1> 	vV_output_buffer_content: resb 4			;Output Buffer current content
+    23 00000187 <res 000000FF>      <1> 	vV_output_buffer: resb vV_output_buffer_size		;Output Buffer of 256 char
+    24                              <1> 	
+    25                              <1> 	
+    26                              <1> 	
+    27                              <1> 	
+    28                              <1> ;------------Number Buffer
+    29                              <1> 
+    30                              <1> 
+    31                              <1> 	
+    32                              <1> 	
+    33                              <1> 	;w_number_buffer: resb 10				;Todo: Handle Bigger Numbers
+    34                              <1> 	;endofline: resb 1					;Maybe Not Needed
+    35                              <1> 	
+    36                              <1> 
+    37                              <1> 
+    38                              <1> segment .data
+    39 00000111 90<rept>            <1> 	ALIGN 4
+    40 00000114 [01040000]          <1> 	vV_sys_format_mode: dd vV_ascii_int_to_dec
+     7                                  %include "vVc/assembly/w_runtime/vV_io.asm"			
+     1                              <1> 
+     2                              <1> 
+     3                              <1> ;%include "vVc/assembly/w_runtime/vV_ascii.asm"
      4                              <1> 
      5                              <1> 
      6                              <1> ;Group all read/wrie syscalls
@@ -518,8 +456,8 @@
      8                              <1> ;global convert_to_string
      9                              <1> ;global convert_to_int
     10                              <1> 
-    11                              <1> ;extern w_input_buffer
-    12                              <1> ;extern w_output_buffer
+    11                              <1> ;extern vV_input_buffer
+    12                              <1> ;extern vV_output_buffer
     13                              <1> ;extern w_number_buffer
     14                              <1> 
     15                              <1> global wio_out
@@ -540,24 +478,24 @@
     30                              <1> 	
     31                              <1> 	
     32                              <1> 	
-    33 00000198 8B1425[87010000]    <1> 	mov edx , DWORD[wout_count]			;string lenght	
+    33 0000010C 8B1425[83010000]    <1> 	mov edx , DWORD[vV_output_buffer_content]			;string lenght	
     34                              <1> 	
-    35 0000019F C70425[87010000]00- <1> 	mov DWORD[wout_count] , 0
-    35 000001A7 000000              <1>
+    35 00000113 C70425[83010000]00- <1> 	mov DWORD[vV_output_buffer_content] , 0
+    35 0000011B 000000              <1>
     36                              <1> 	
-    37 000001AA 48BE-               <1> 	mov rsi , w_output_buffer			;strng ptr
-    37 000001AC [8B01000000000000]  <1>
+    37 0000011E 48BE-               <1> 	mov rsi , vV_output_buffer			;strng ptr
+    37 00000120 [8701000000000000]  <1>
     38                              <1> 		
-    39 000001B4 67C682[8B010000]0A  <1> 	mov BYTE[w_output_buffer + edx] , 0xa
-    40 000001BC FFC2                <1> 	inc edx
+    39 00000128 67C682[87010000]0A  <1> 	mov BYTE[vV_output_buffer + edx] , 0xa
+    40 00000130 FFC2                <1> 	inc edx
     41                              <1> 		
-    42 000001BE BF01000000          <1> 	mov rdi , 1					;file descriptor, stdout
-    43 000001C3 B801000000          <1> 	mov rax , 1					; Write sysCall
-    44 000001C8 0F05                <1> 	syscall
+    42 00000132 BF01000000          <1> 	mov rdi , 1					;file descriptor, stdout
+    43 00000137 B801000000          <1> 	mov rax , 1					; Write sysCall
+    44 0000013C 0F05                <1> 	syscall
     45                              <1> 	
     46                              <1> 	
     47                              <1> 	
-    48 000001CA C3                  <1> 	ret
+    48 0000013E C3                  <1> 	ret
     49                              <1> 	
     50                              <1> 		
     51                              <1> ;-------------------------------------------------------------------------------
@@ -565,15 +503,15 @@
     53                              <1> 	
     54                              <1> vV_io_out_buffer_default:
     55                              <1> 
-    56 000001CB 448B1425[40000000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
-    57 000001D3 E80F000000          <1> 	call vV_io_out_buffer
-    58 000001D8 C3                  <1> 	ret
+    56 0000013F 448B1425[14010000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
+    57 00000147 E80F000000          <1> 	call vV_io_out_buffer
+    58 0000014C C3                  <1> 	ret
     59                              <1> 	
     60                              <1> vV_io_out_default:
     61                              <1> 
-    62 000001D9 448B1425[40000000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
-    63 000001E1 E80C000000          <1> 	call vV_io_out
-    64 000001E6 C3                  <1> 	ret
+    62 0000014D 448B1425[14010000]  <1> 	mov r10d , DWORD[vV_sys_format_mode]	
+    63 00000155 E80C000000          <1> 	call vV_io_out
+    64 0000015A C3                  <1> 	ret
     65                              <1> 
     66                              <1> ;-------------------------------------------------------------------------------
     67                              <1> ;-------------------------------------------------------------------------------
@@ -581,18 +519,18 @@
     69                              <1> vV_io_out_buffer:				;print str repr of Top Of Stack element
     70                              <1> 						
     71                              <1> 						
-    72 000001E7 E811000000          <1> 	call vV_io_out01			
-    73 000001EC E84A000000          <1> 	call vV_io_out_buffer_end
-    74 000001F1 C3                  <1> 	ret
+    72 0000015B E811000000          <1> 	call vV_io_out01			
+    73 00000160 E84A000000          <1> 	call vV_io_out_buffer_end
+    74 00000165 C3                  <1> 	ret
     75                              <1> 
     76                              <1> ;-------------------------------------------------------------------------------
     77                              <1> 		
     78                              <1> vV_io_out:					;print str repr of Top Of Stack element
     79                              <1> 
     80                              <1> 
-    81 000001F2 E806000000          <1> 	call vV_io_out01					
-    82 000001F7 E826000000          <1> 	call vV_io_out_direct_end
-    83 000001FC C3                  <1> 	ret
+    81 00000166 E806000000          <1> 	call vV_io_out01					
+    82 0000016B E826000000          <1> 	call vV_io_out_direct_end
+    83 00000170 C3                  <1> 	ret
     84                              <1> 
     85                              <1> ;-------------------------------------------------------------------------------	
     86                              <1> ;-------------------------------------------------------------------------------	
@@ -602,23 +540,23 @@
     90                              <1> 
     91                              <1> 	vV_pop eax				;get value in eax
     91                              <2> 
-    91 000001FD 4983EF04            <2>  sub vV_sp , 4
-    91 00000201 418B07              <2>  mov %1 , [vV_sp]
+    91 00000171 4983EF04            <2>  sub vV_sp , 4
+    91 00000175 418B07              <2>  mov %1 , [vV_sp]
     91                              <2> 
     92                              <1> 	
-    93 00000204 BF[8B010000]        <1> 	mov edi , w_output_buffer		;set dest as O_buff
-    94 00000209 033C25[87010000]    <1> 	add edi ,DWORD[wout_count]		;set offset to start of freespace
+    93 00000178 BF[87010000]        <1> 	mov edi , vV_output_buffer		;set dest as O_buff
+    94 0000017D 033C25[83010000]    <1> 	add edi ,DWORD[vV_output_buffer_content]		;set offset to start of freespace
     95                              <1> 	
-    96 00000210 57                  <1> push rdi					;Save buffer origin
+    96 00000184 57                  <1> push rdi					;Save buffer origin
     97                              <1> 	
-    98 00000211 41B9FF000000        <1> 	mov r9 , 255				;set Max buffer available	
-    99 00000217 4129F9              <1> 	sub r9d , edi				;#TODO: Stop HardCoding VALUES!!!!
-   100 0000021A 41FFD2              <1> 		call r10			;call current conversion format function
-   101 0000021D 4831FF              <1> 	xor rdi , rdi
+    98 00000185 41B9FF000000        <1> 	mov r9 , 255				;set Max buffer available	
+    99 0000018B 4129F9              <1> 	sub r9d , edi				;#TODO: Stop HardCoding VALUES!!!!
+   100 0000018E 41FFD2              <1> 		call r10			;call current conversion format function
+   101 00000191 4831FF              <1> 	xor rdi , rdi
    102                              <1> 	
-   103 00000220 5F                  <1> pop rdi						;recover Buffer origin
+   103 00000194 5F                  <1> pop rdi						;recover Buffer origin
    104                              <1> 	
-   105 00000221 C3                  <1> 	ret
+   105 00000195 C3                  <1> 	ret
    106                              <1> 
    107                              <1> ;-------------------------------------------------------------------------------	
    108                              <1> 	
@@ -626,98 +564,98 @@
    110                              <1> 
    111                              <1> 
    112                              <1> 
-   113 00000222 67C604070A          <1> 	mov BYTE[edi + eax] , 0xa		;add new_line
+   113 00000196 67C604070A          <1> 	mov BYTE[edi + eax] , 0xa		;add new_line
    114                              <1> 		
-   115 00000227 FFC0                <1> 		inc eax
+   115 0000019B FFC0                <1> 		inc eax
    116                              <1> 		
-   117 00000229 89C2                <1> 		mov edx , eax				;string lenght		
-   118 0000022B 4889FE              <1> 		mov rsi , rdi				;strng ptr
-   119 0000022E BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
-   120 00000233 B801000000          <1> 		mov rax , 1				; Write sysCall
-   121 00000238 0F05                <1> 		syscall
+   117 0000019D 89C2                <1> 		mov edx , eax				;string lenght		
+   118 0000019F 4889FE              <1> 		mov rsi , rdi				;strng ptr
+   119 000001A2 BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
+   120 000001A7 B801000000          <1> 		mov rax , 1				; Write sysCall
+   121 000001AC 0F05                <1> 		syscall
    122                              <1> 	
-   123 0000023A C3                  <1> 		ret
+   123 000001AE C3                  <1> 		ret
    124                              <1> 
    125                              <1> ;-------------------------------------------------------------------------------		
    126                              <1> 		
    127                              <1> vV_io_out_buffer_end:
    128                              <1> 
-   129 0000023B 010425[87010000]    <1> 	add [wout_count] , eax
+   129 000001AF 010425[83010000]    <1> 	add [vV_output_buffer_content] , eax
    130                              <1> 
-   131 00000242 C3                  <1> 	ret
+   131 000001B6 C3                  <1> 	ret
    132                              <1> 
    133                              <1> ;-------------------------------------------------------------------------------
    134                              <1> 
    135                              <1> vV_io_out_char:
    136                              <1> 
    137                              <1> 	
-   138 00000243 E827000000          <1> 	call vV_io_read_char
-   139 00000248 E8D5FFFFFF          <1> 	call vV_io_out_direct_end
+   138 000001B7 E827000000          <1> 	call vV_io_read_char
+   139 000001BC E8D5FFFFFF          <1> 	call vV_io_out_direct_end
    140                              <1> 	
-   141 0000024D C3                  <1> 	ret
+   141 000001C1 C3                  <1> 	ret
    142                              <1> 	
    143                              <1> vV_io_out_packed_char:
    144                              <1> 
    145                              <1> 	
-   146 0000024E E842000000          <1> 	call vV_io_read_packed_char
+   146 000001C2 E842000000          <1> 	call vV_io_read_packed_char
    147                              <1> 	
-   148 00000253 E8CAFFFFFF          <1> 	call vV_io_out_direct_end
+   148 000001C7 E8CAFFFFFF          <1> 	call vV_io_out_direct_end
    149                              <1> 	
-   150 00000258 C3                  <1> 	ret
+   150 000001CC C3                  <1> 	ret
    151                              <1> 	
    152                              <1> vV_io_out_char_buffer:
    153                              <1> 
-   154 00000259 E811000000          <1> 	call vV_io_read_char
+   154 000001CD E811000000          <1> 	call vV_io_read_char
    155                              <1> 	
-   156 0000025E E8D8FFFFFF          <1> 	call vV_io_out_buffer_end
+   156 000001D2 E8D8FFFFFF          <1> 	call vV_io_out_buffer_end
    157                              <1> 	
-   158 00000263 C3                  <1> 	ret
+   158 000001D7 C3                  <1> 	ret
    159                              <1> 	
    160                              <1> vV_io_out_packed_char_buffer:
    161                              <1> 
-   162 00000264 E82C000000          <1> 	call vV_io_read_packed_char
+   162 000001D8 E82C000000          <1> 	call vV_io_read_packed_char
    163                              <1> 	
-   164 00000269 E8CDFFFFFF          <1> 	call vV_io_out_buffer_end
+   164 000001DD E8CDFFFFFF          <1> 	call vV_io_out_buffer_end
    165                              <1> 	
-   166 0000026E C3                  <1> 	ret
+   166 000001E2 C3                  <1> 	ret
    167                              <1> 	
    168                              <1> vV_io_read_char:
    169                              <1> 
    170                              <1> 	vV_pop eax
    170                              <2> 
-   170 0000026F 4983EF04            <2>  sub vV_sp , 4
-   170 00000273 418B07              <2>  mov %1 , [vV_sp]
+   170 000001E3 4983EF04            <2>  sub vV_sp , 4
+   170 000001E7 418B07              <2>  mov %1 , [vV_sp]
    170                              <2> 
    171                              <1> 	
-   172 00000276 48BF-               <1> 	mov rdi , w_output_buffer
-   172 00000278 [8B01000000000000]  <1>
-   173 00000280 033C25[87010000]    <1> 	add edi , [wout_count]
+   172 000001EA 48BF-               <1> 	mov rdi , vV_output_buffer
+   172 000001EC [8701000000000000]  <1>
+   173 000001F4 033C25[83010000]    <1> 	add edi , [vV_output_buffer_content]
    174                              <1> 	
-   175 00000287 678807              <1> 	mov [edi] , al
+   175 000001FB 678807              <1> 	mov [edi] , al
    176                              <1> 	
-   177 0000028A BF[8B010000]        <1> 	mov edi , w_output_buffer
-   178 0000028F B801000000          <1> 	mov eax , 1
+   177 000001FE BF[87010000]        <1> 	mov edi , vV_output_buffer
+   178 00000203 B801000000          <1> 	mov eax , 1
    179                              <1> 	
-   180 00000294 C3                  <1> 	ret	
+   180 00000208 C3                  <1> 	ret	
    181                              <1> 	
    182                              <1> vV_io_read_packed_char:
    183                              <1> 
    184                              <1> 	vV_pop eax
    184                              <2> 
-   184 00000295 4983EF04            <2>  sub vV_sp , 4
-   184 00000299 418B07              <2>  mov %1 , [vV_sp]
+   184 00000209 4983EF04            <2>  sub vV_sp , 4
+   184 0000020D 418B07              <2>  mov %1 , [vV_sp]
    184                              <2> 
    185                              <1> 	
-   186 0000029C 48BF-               <1> 	mov rdi , w_output_buffer
-   186 0000029E [8B01000000000000]  <1>
-   187 000002A6 033C25[87010000]    <1> 	add edi , [wout_count]
+   186 00000210 48BF-               <1> 	mov rdi , vV_output_buffer
+   186 00000212 [8701000000000000]  <1>
+   187 0000021A 033C25[83010000]    <1> 	add edi , [vV_output_buffer_content]
    188                              <1> 	
-   189 000002AD 678907              <1> 	mov [edi] , eax
+   189 00000221 678907              <1> 	mov [edi] , eax
    190                              <1> 	
-   191 000002B0 BF[8B010000]        <1> 	mov edi , w_output_buffer
-   192 000002B5 B804000000          <1> 	mov eax , 4	
+   191 00000224 BF[87010000]        <1> 	mov edi , vV_output_buffer
+   192 00000229 B804000000          <1> 	mov eax , 4	
    193                              <1> 	
-   194 000002BA C3                  <1> 	ret
+   194 0000022E C3                  <1> 	ret
    195                              <1> 		
    196                              <1> ;-------------------------------------------------------------------------------
    197                              <1> ;-------------------------------------------------------------------------------
@@ -730,1375 +668,1034 @@
    204                              <1> vV_io_read:
    205                              <1> 
    206                              <1> 								
-   207 000002BB 48BE-               <1> 		mov rsi , w_input_buffer		;ptr to string destination	
-   207 000002BD [8800000000000000]  <1>
-   208 000002C5 BAFF000000          <1> 		mov edx , 255				;string lenght	
-   209 000002CA BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
-   210 000002CF B800000000          <1> 		mov rax , 0				; read sysCall
+   207 0000022F 48BE-               <1> 		mov rsi , vV_input_buffer		;ptr to string destination	
+   207 00000231 [8400000000000000]  <1>
+   208 00000239 BAFF000000          <1> 		mov edx , vV_input_buffer_size				;string lenght	
+   209 0000023E BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
+   210 00000243 B800000000          <1> 		mov rax , 0				; read sysCall
    211                              <1> 		
-   212 000002D4 0F05                <1> 		syscall
+   212 00000248 0F05                <1> 		syscall
    213                              <1> 	
    214                              <1> ;-------------Buffer_Overflow_Execption  
    215                              <1> 
    216                              <1> 
    217                              <1> 
-   218 000002D6 3DFF000000          <1> 		cmp eax , 255				;Check if Buffer Is Full
+   218 0000024A 3DFF000000          <1> 		cmp eax , 255				;Check if Buffer Is Full
    219                              <1> 		
-   220 000002DB 7214                <1> 			jb .no_overflow
+   220 0000024F 721F                <1> 			jb .no_overflow
    221                              <1> 			
-   222 000002DD 803C25[86010000]0A  <1> 		cmp BYTE[w_input_buffer +254] , 0xa	;Check if Buffer end with "\n"
+   222 00000251 803C25[82010000]0A  <1> 		cmp BYTE[vV_input_buffer + vV_input_buffer_size-1] , 0xa	;Check if Buffer end with "\n"
    223                              <1> 		
-   224 000002E5 740A                <1> 			je .no_overflow
+   224 00000259 7415                <1> 			je .no_overflow
    225                              <1> 		
    226                              <1> 		
-   227 000002E7 B80C000000          <1> 			mov rax , 12		;placeholder value for now, 
-   228                              <1> 						;TODO: Make ERRORS constants
-   229 000002EC E85B010000          <1> 			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
-   230                              <1> 		
-   231                              <1> 		.no_overflow:
-   232                              <1> 		
-   233 000002F1 C3                  <1> 			ret
+   227 0000025B 50                  <1> 			push rax
+   228 0000025C 53                  <1> 			push rbx
+   229                              <1> 		
+   230 0000025D B401                <1> 			mov ah , vV_ERR_IO_I_OVERFLOW
+   231 0000025F 6683C800            <1> 			or ax , 0
+   232 00000263 4831DB              <1> 			xor rbx , rbx
+   233 00000266 4889F3              <1> 			mov rbx , rsi
    234                              <1> 		
-   235                              <1> 		
-   236                              <1> 	
-   237                              <1> 	
-   238                              <1> vV_io_get_default:
-   239                              <1> 
-   240 000002F2 41BA[42000000]      <1> 	mov r10d , vV_ascii_as_dec			;TODO: default settings
-   241 000002F8 E801000000          <1> 	call vV_io_get
-   242 000002FD C3                  <1> 	ret
-   243                              <1> 	
-   244                              <1> 	
-   245                              <1> vV_io_get:						;convert inputed value to 
-   246                              <1> 							;32bit int, push it on
-   247                              <1> 							;the stack
-   248 000002FE E8B8FFFFFF          <1> 	call vV_io_read
-   249                              <1> 		
-   250                              <1> ;----------------------------------------------	
-   251                              <1> 
-   252 00000303 53                  <1> 	push rbx				;Save rbx (conversion uses it) 
-   253                              <1> 
-   254 00000304 89C3                <1> 		mov ebx , eax 			;send char count by ebx
-   255 00000306 31FF                <1> 		xor edi , edi 			;zero out counter
-   256 00000308 BE[88000000]        <1> 		mov esi , w_input_buffer	;Set source to I_buffer
-   257                              <1> 		
-   258                              <1> 
-   259 0000030D 41FFD2              <1> 		call r10
+   235 00000269 E803FEFFFF          <1> 			call vV_error
+   236                              <1> 		
+   237 0000026E 5B                  <1> 			pop rbx
+   238 0000026F 58                  <1> 			pop rax
+   239                              <1> 		
+   240                              <1> 			;ret
+   241                              <1> 		
+   242                              <1> 		.no_overflow:
+   243                              <1> 		
+   244 00000270 C3                  <1> 			ret
+   245                              <1> 		
+   246                              <1> 		
+   247                              <1> 	
+   248                              <1> 	
+   249                              <1> vV_io_get_default:
+   250                              <1> 
+   251 00000271 41BA[11030000]      <1> 	mov r10d , vV_ascii_as_dec			;TODO: default settings
+   252 00000277 E801000000          <1> 	call vV_io_get
+   253 0000027C C3                  <1> 	ret
+   254                              <1> 	
+   255                              <1> 	
+   256                              <1> vV_io_get:						;convert inputed value to 
+   257                              <1> 							;32bit int, push it on
+   258                              <1> 							;the stack
+   259 0000027D E8ADFFFFFF          <1> 	call vV_io_read
    260                              <1> 		
-   261 00000310 5B                  <1> 	pop rbx
-   262                              <1> 	
-   263                              <1> 		vV_push eax
-   263                              <2> 
-   263 00000311 418907              <2>  mov DWORD[vV_sp] , %1
-   263 00000314 4983C704            <2>  add vV_sp , 4
-   263                              <2> 
-   264                              <1> 		
-   265 00000318 C3                  <1> 		ret
-   266                              <1> 
-   267                              <1> 
-   268                              <1> ;-------------------------------------------------------------------------------
-   269                              <1> ;-------------------------------------------------------------------------------
-   270                              <1> 
-   271                              <1> 
-   272                              <1> vV_io_get_char:
-   273                              <1> 
-   274                              <1> 
-   275 00000319 E89DFFFFFF          <1> 	call vV_io_read
-   276                              <1> 	
-   277 0000031E 31D2                <1> 	xor edx , edx
-   278                              <1> 	
-   279 00000320 8A1425[88000000]    <1> 	mov dl , [w_input_buffer]
-   280                              <1> 	
-   281                              <1> 	vV_push edx
-   281                              <2> 
-   281 00000327 418917              <2>  mov DWORD[vV_sp] , %1
-   281 0000032A 4983C704            <2>  add vV_sp , 4
-   281                              <2> 
-   282                              <1> 	
-   283 0000032E C3                  <1> 	ret
-   284                              <1> 	
-   285                              <1> vV_io_get_packed_char:
-   286                              <1> 
-   287 0000032F C70425[88000000]00- <1> 	mov DWORD [w_input_buffer] , 0
-   287 00000337 000000              <1>
-   288                              <1> 
-   289 0000033A E87CFFFFFF          <1> 	call vV_io_read
-   290                              <1> 	
-   291 0000033F 31D2                <1> 	xor edx , edx
-   292                              <1> 	
-   293 00000341 8B1425[88000000]    <1> 	mov edx, [w_input_buffer]
-   294                              <1> 	
-   295                              <1> 	vV_push edx
-   295                              <2> 
-   295 00000348 418917              <2>  mov DWORD[vV_sp] , %1
-   295 0000034B 4983C704            <2>  add vV_sp , 4
-   295                              <2> 
-   296                              <1> 	
-   297 0000034F C3                  <1> 	ret
-   298                              <1> 	
-   299                              <1> 		
-   300                              <1> 	
-   301                              <1> 		
-   302                              <1> 	wio_get:
+   261                              <1> ;----------------------------------------------	
+   262                              <1> 
+   263 00000282 53                  <1> 	push rbx				;Save rbx (conversion uses it) 
+   264                              <1> 
+   265 00000283 89C3                <1> 		mov ebx , eax 			;send char count by ebx
+   266 00000285 31FF                <1> 		xor edi , edi 			;zero out counter
+   267 00000287 BE[84000000]        <1> 		mov esi , vV_input_buffer	;Set source to I_buffer
+   268                              <1> 		
+   269                              <1> 
+   270 0000028C 41FFD2              <1> 		call r10
+   271                              <1> 		
+   272 0000028F 5B                  <1> 	pop rbx
+   273                              <1> 	
+   274                              <1> 		vV_push eax
+   274                              <2> 
+   274 00000290 418907              <2>  mov DWORD[vV_sp] , %1
+   274 00000293 4983C704            <2>  add vV_sp , 4
+   274                              <2> 
+   275                              <1> 		
+   276 00000297 C3                  <1> 		ret
+   277                              <1> 
+   278                              <1> 
+   279                              <1> ;-------------------------------------------------------------------------------
+   280                              <1> ;-------------------------------------------------------------------------------
+   281                              <1> 
+   282                              <1> 
+   283                              <1> vV_io_get_char:
+   284                              <1> 
+   285                              <1> 
+   286 00000298 E892FFFFFF          <1> 	call vV_io_read
+   287                              <1> 	
+   288 0000029D 31D2                <1> 	xor edx , edx
+   289                              <1> 	
+   290 0000029F 8A1425[84000000]    <1> 	mov dl , [vV_input_buffer]
+   291                              <1> 	
+   292                              <1> 	vV_push edx
+   292                              <2> 
+   292 000002A6 418917              <2>  mov DWORD[vV_sp] , %1
+   292 000002A9 4983C704            <2>  add vV_sp , 4
+   292                              <2> 
+   293                              <1> 	
+   294 000002AD C3                  <1> 	ret
+   295                              <1> 	
+   296                              <1> vV_io_get_packed_char:
+   297                              <1> 
+   298 000002AE C70425[84000000]00- <1> 	mov DWORD [vV_input_buffer] , 0
+   298 000002B6 000000              <1>
+   299                              <1> 
+   300 000002B9 E871FFFFFF          <1> 	call vV_io_read
+   301                              <1> 	
+   302 000002BE 31D2                <1> 	xor edx , edx
    303                              <1> 	
-   304                              <1> 	
-   305 00000350 48BE-               <1> 		mov rsi , w_input_buffer		;ptr to string destination	
-   305 00000352 [8800000000000000]  <1>
-   306 0000035A BAFF000000          <1> 		mov edx , 255				;string lenght		#TODO: handle multiple lenght numbers
-   307 0000035F BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
-   308 00000364 B800000000          <1> 		mov rax , 0				; read sysCall
-   309                              <1> 		
-   310 00000369 0F05                <1> 		syscall
+   304 000002C0 8B1425[84000000]    <1> 	mov edx, [vV_input_buffer]
+   305                              <1> 	
+   306                              <1> 	vV_push edx
+   306                              <2> 
+   306 000002C7 418917              <2>  mov DWORD[vV_sp] , %1
+   306 000002CA 4983C704            <2>  add vV_sp , 4
+   306                              <2> 
+   307                              <1> 	
+   308 000002CE C3                  <1> 	ret
+   309                              <1> 	
+   310                              <1> 		
    311                              <1> 		
-   312                              <1> 		
-   313                              <1> ;-------------Buffer_Overflow_Execption  (experiment) [Working for now]
+   312                              <1> 
+   313                              <1> 
    314                              <1> 
-   315                              <1> 
-   316                              <1> 
-   317 0000036B 3DFF000000          <1> 		cmp eax , 255
-   318                              <1> 		
-   319 00000370 7214                <1> 		jb .no_overflow
-   320                              <1> 		
-   321                              <1> 		
-   322 00000372 803C25[86010000]0A  <1> 		cmp BYTE[w_input_buffer +254] , 0xa
-   323                              <1> 		
-   324 0000037A 740A                <1> 		je .no_overflow
-   325                              <1> 		
-   326 0000037C B80C000000          <1> 			mov rax , 12		;placeholder value for now, 
-   327                              <1> 						;TODO: Make ERRORS constants
-   328                              <1> 		
-   329 00000381 E8C6000000          <1> 			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
-   330                              <1> 		
-   331                              <1> 		.no_overflow:
-   332                              <1> 		
-   333                              <1> ;----------------------------------------------
-   334                              <1> 
-   335                              <1> 
-   336 00000386 53                  <1> push rbx
-   337                              <1> 
-   338 00000387 89C3                <1> 		mov ebx , eax 	;char count
-   339 00000389 31FF                <1> 		xor edi , edi 
-   340 0000038B BE[88000000]        <1> 		mov esi , w_input_buffer
-   341                              <1> 		
-   342                              <1> 
-   343 00000390 E8ADFCFFFF          <1> 		call vV_ascii_as_dec
-   344                              <1> 		
-   345 00000395 5B                  <1> pop rbx
-   346                              <1> 		
-   347 00000396 418907              <1> 		mov [r15] , eax
-   348                              <1> 		
-   349 00000399 4983C704            <1> 		add r15 , 4
-   350                              <1> 		
-   351 0000039D C3                  <1> 		ret
-   352                              <1> 		
-   353                              <1> 	wio_get_str_raw:		;removes the new_line
-   354                              <1> 	
-   355 0000039E 49BA-               <1> 		mov r10 , .end
-   355 000003A0 [AA03000000000000]  <1>
-   356                              <1> 		
-   357                              <1> 		
-   358                              <1> 		
-   359                              <1> 		
-   360 000003A8 EB39                <1> 		jmp wio_get_str
-   361                              <1> 		
-   362                              <1> 		.end:
-   363                              <1> 		
-   364 000003AA FF0C25[84000000]    <1> 		dec DWORD [w_input_buffer-4]
-   365                              <1> 		
-   366                              <1> 	
-   367                              <1> 		
-   368 000003B1 C3                  <1> 		ret
-   369                              <1> 	
-   370                              <1> 	wio_get_str_null:		;null terminated
-   371                              <1> 	
-   372 000003B2 49BA-               <1> 		mov r10 , .end
-   372 000003B4 [BE03000000000000]  <1>
-   373                              <1> 		
-   374                              <1> 		
-   375 000003BC EB25                <1> 		jmp wio_get_str
-   376                              <1> 		
-   377                              <1> 		.end:
-   378                              <1> 		
-   379 000003BE 48BE-               <1> 		mov rsi , w_input_buffer
-   379 000003C0 [8800000000000000]  <1>
-   380                              <1> 		
-   381 000003C8 033425[84000000]    <1> 		add esi ,[w_input_buffer -4]
-   382                              <1> 		
-   383 000003CF 48FFCE              <1> 		dec rsi
-   384                              <1> 		
-   385 000003D2 C60600              <1> 		mov BYTE [rsi] , 0
-   386                              <1> 		
-   387                              <1> 		
-   388                              <1> 		
-   389 000003D5 C3                  <1> 		ret
-   390                              <1> 	
-   391                              <1> 	wio_get_str_nline:		;keep the new line
-   392                              <1> 	
-   393 000003D6 49BA-               <1> 		mov r10 , .end
-   393 000003D8 [E203000000000000]  <1>
-   394                              <1> 		
-   395                              <1> 		
-   396 000003E0 EB01                <1> 		jmp wio_get_str
-   397                              <1> 		
-   398                              <1> 		.end:
-   399                              <1> 		
-   400 000003E2 C3                  <1> 		ret
-   401                              <1> 		
-   402                              <1> 		
-   403                              <1> 	wio_get_str:				;arg: eax: size to read	r10: return adrr
-   404                              <1> 							; ?? may use rsi for dest info???
-   405                              <1> 							; then shouldn't increment rsi in get_str
-   406                              <1> 							; maybe make a get_string_direct later???
-   407                              <1> 							; or do adr calc before?
-   408                              <1> 							; maybe 2 entry point/ 1 exit point?
-   409                              <1> 	
-   410                              <1> 	
-   411 000003E3 48BE-               <1> 		mov rsi , w_input_buffer			;ptr to string destination	
-   411 000003E5 [8800000000000000]  <1>
-   412 000003ED 033425[84000000]    <1> 		add esi , [w_input_buffer - 4]
-   413 000003F4 89C2                <1> 		mov edx , eax				;string lenght		#TODO: handle multiple lenght numbers
-   414                              <1> 		;sub edx , [w_input_buffer - 4]
-   415 000003F6 BF00000000          <1> 		mov rdi , 0				;file descriptor, stdin
-   416 000003FB B800000000          <1> 		mov rax , 0				; read sysCall
-   417                              <1> 		
-   418 00000400 0F05                <1> 		syscall
-   419                              <1> 		
-   420                              <1> 		
-   421                              <1> 		
-   422                              <1> 		
-   423                              <1> 		
-   424                              <1> 		;dec eax
-   425                              <1> 		
-   426 00000402 010425[84000000]    <1> 		add [w_input_buffer-4] , eax
-   427                              <1> 		
-   428                              <1> 		
-   429 00000409 41FFE2              <1> 		jmp r10
-   430                              <1> 		
-   431                              <1> 		
-   432                              <1> 	wio_move_in_to_out:
-   433                              <1> 	
-   434                              <1> 	
-   435 0000040C 8B0C25[84000000]    <1> 		mov ecx , [w_input_buffer-4]
-   436 00000413 83C104              <1> 		add ecx , 4
-   437 00000416 BE[84000000]        <1> 		mov esi , w_input_buffer-4
-   438 0000041B BF[87010000]        <1> 		mov edi , w_output_buffer-4
-   439                              <1> 		
-   440 00000420 F3A4                <1> 		rep movsb
-   441                              <1> 		
-   442 00000422 C70425[84000000]00- <1> 		mov DWORD [w_input_buffer-4] , 0
-   442 0000042A 000000              <1>
-   443                              <1> 		
-   444                              <1> 		
-   445                              <1> 		
-   446 0000042D C3                  <1> 		ret
-   447                              <1> 	
-   448                              <1> 	
-   449                              <1> 		
-   450                              <1> 		
-   451                              <1> 	wio_flush:
-   452                              <1> 	
-   453                              <1> 	
-   454                              <1> 		
-   455 0000042E 8B1425[87010000]    <1> 		mov edx , [w_output_buffer - 4]		;string lenght
-   456 00000435 48BE-               <1> 		mov rsi , w_output_buffer			;strng ptr
-   456 00000437 [8B01000000000000]  <1>
-   457 0000043F BF01000000          <1> 		mov rdi , 1				;file descriptor, stdout
-   458 00000444 B801000000          <1> 		mov rax , 1				; Write sysCall
-   459 00000449 0F05                <1> 		syscall
-   460                              <1> 	
-   461 0000044B C3                  <1> 		ret
-   462                              <1> 		
-   463                              <1> 		
-   464                              <1> 		
-   465                              <1> 		
-   466                              <1> 		
-   467                              <1> 		
-   468                              <1> 		
-   469                              <1> 
-   470                              <1> 
-   471                              <1> 
-     4                                  %include "vVc/assembly/w_runtime/w_runtime.asm"		
-     1                              <1> %define SYS_EXIT 60
+     8                                  %include "vVc/assembly/w_runtime/vV_ascii.asm"		
+     1                              <1> 
      2                              <1> 
-     3                              <1> ;%include "wio.asm"
+     3                              <1> segment .text 
      4                              <1> 
      5                              <1> 
-     6                              <1> %include "vVc/assembly/w_runtime/vV_errors.asm"
-     1                              <2> 
-     2                              <2> 
-     3                              <2>  
-     4                              <2> 
-     5                              <2> 
-     6                              <2> ;segment .bss:		;TODO: allocate bss in system0x
-     7                              <2> 
-     8                              <2> 
-     9                              <2> 
-    10                              <2> 
-    11                              <2> 
-    12                              <2> segment .data:
-    13                              <2> 
-    14                              <2> 
-    15                              <2> 	vV_error_msg:
-    16 00000000 556E68616E64656C65- <2> 	.default: db "Unhandeled Error "
-    16 00000009 64204572726F7220    <2>
-    17                              <2> 	default_size equ $-.default
-    18                              <2> 	
-    19                              <2> 	vV_error_vectors:
-    20 00000011 [1C00000000000000]- <2> 	times 32 dq vV_error_unhandeled
-    20 00000011 <rept>              <2>
-    21                              <2> 
-    22                              <2> 
-    23                              <2> 
-    24                              <2> segment .text:
-    25                              <2> 
-    26                              <2> 
-    27                              <2> 
-    28                              <2> vV_error:
-    29                              <2> 
-    30 00000000 52                  <2> 	push rdx
-    31                              <2> 	
-    32 00000001 4831D2              <2> 	xor rdx , rdx
-    33                              <2> 	
-    34 00000004 88E2                <2> 	mov dl , ah
-    35                              <2> 	
-    36 00000006 C0E203              <2> 	shl dl , 3
-    37                              <2> 	
-    38 00000009 67FF92[11000000]    <2> 	call [vV_error_vectors + edx]
-    39                              <2> 	
-    40                              <2> 	
-    41 00000010 5A                  <2> 	pop rdx
-    42                              <2> 	
-    43 00000011 C3                  <2> 	ret
-    44                              <2> 	
-    45                              <2> 	
-    46                              <2> vV_error_fatal:
-    47                              <2> 
-    48                              <2> 	
-    49 00000012 88D0                <2> 	mov al , dl
-    50                              <2> 	
-    51 00000014 C0E803              <2> 	shr al , 3
-    52                              <2> 
-    53 00000017 E8(4C040000)        <2> 	call w_forced_exit
-    54                              <2> 	
-    55                              <2> vV_error_unhandeled:
-    56                              <2> 
-    57                              <2> 
-    58 0000001C 56                  <2> 	push rsi
-    59 0000001D 57                  <2> 	push rdi	;Save reg used by syscall
-    60 0000001E 4151                <2> 	push r9	;and by conversion func
-    61                              <2> 	
-    62                              <2> 	
-    63                              <2> ;push rax	;Save flags ( and value)
-    64                              <2> 
-    65 00000020 53                  <2> 	push rbx	;Save Arg
-    66 00000021 52                  <2> push rdx		;Save error code
-    67                              <2> 	
-    68                              <2> 	
-    69 00000022 BA11000000          <2> 	mov edx , default_size				;string lenght
-    70 00000027 48BE-               <2> 	mov rsi , vV_error_msg.default			;strng ptr
-    70 00000029 [0000000000000000]  <2>
-    71 00000031 BF02000000          <2> 	mov rdi , 2				;file descriptor, stderr
-    72 00000036 B801000000          <2> 	mov rax , 1				; Write sysCall
-    73 0000003B 0F05                <2> 	syscall	
-    74                              <2> 	
-    75                              <2> 	
-    76 0000003D 58                  <2> pop rax	;error code
-    77                              <2> 
-    78                              <2> 
-    79 0000003E C0E803              <2> 	shr al , 3
-    80                              <2> 	
-    81                              <2> 	
-    82 00000041 BF[44000000]        <2> 	mov edi , vV_error_buffer
-    83 00000046 41B940000000        <2> 	mov r9d , vV_error_buffer_size
-    84                              <2> 	
-    85                              <2> 
-    86 0000004C E8(32010000)        <2> 	call vV_ascii_int_to_dec	
-    87                              <2> 	
-    88                              <2> 		
-    89                              <2> 	
-    90 00000051 67C680[44000000]20  <2> 	mov BYTE[vV_error_buffer + eax] , ' '
-    91                              <2> 	
-    92                              <2> 	
-    93 00000059 67488DB8[45000000]  <2> 	lea rdi , [vV_error_buffer + eax + 1]
-    94 00000061 4129F9              <2> 	sub r9d , edi
-    95                              <2> 	
-    96 00000064 58                  <2> 	pop rax
-    97                              <2> 	
-    98 00000065 E8(32010000)        <2> 	call vV_ascii_int_to_dec
-    99                              <2> 	
-   100 0000006A 674C8D0C07          <2> 	lea r9 , [edi + eax]
-   101                              <2> 	
-   102 0000006F 41C6010A            <2> 	mov BYTE[r9] , 0xa
-   103                              <2> 	
-   104 00000073 49FFC1              <2> 	inc r9
-   105                              <2> 	
-   106 00000076 4981E9[44000000]    <2> 	sub r9 , vV_error_buffer
-   107                              <2> 	
-   108 0000007D 4489CA              <2> 	mov edx , r9d				;string lenght
-   109 00000080 48BE-               <2> 	mov rsi , vV_error_buffer			;strng ptr
-   109 00000082 [4400000000000000]  <2>
-   110 0000008A BF02000000          <2> 	mov rdi , 2				;file descriptor, stderr
-   111 0000008F B801000000          <2> 	mov rax , 1				; Write sysCall
-   112 00000094 0F05                <2> 	syscall
-   113                              <2> 	
-   114 00000096 4159                <2> 	pop r9
-   115 00000098 5F                  <2> 	pop rdi
-   116 00000099 5E                  <2> 	pop rsi
-   117                              <2> 	
-   118                              <2> 	
-   119                              <2> 	
-   120                              <2> 	
-   121 0000009A C3                  <2> 	ret
-   122                              <2> 	
-   123                              <2> 	
-   124                              <2> 	
-   125                              <2> 		
-   126                              <2> 		
-   127                              <2> 		
-   128                              <2> 		
-   129                              <2> 		
-   130                              <2> 		
-   131                              <2> 		
-   132                              <2> 		
-   133                              <2> 		
-   134                              <2> 		
-   135                              <2> 		
-   136                              <2> 		
-   137                              <2> 		
-   138                              <2> 		
-   139                              <2> 		
-   140                              <2> 		
-   141                              <2> 		
-   142                              <2> 		
-   143                              <2> 		
-   144                              <2> 
-     7                              <1> %include "vVc/assembly/w_runtime/vV_system0.asm"
-     1                              <2> 
-     2                              <2> segment .bss
-     3                              <2> 
-     4                              <2> 	ALIGNB 4
-     5 00000000 <res 00000040>      <2> 	vV_sys_start:	resd 16		;not used now
-     6                              <2> 
-     7 00000040 <res 00000004>      <2> 	vV_sys_format_mode: resd 1
-     8                              <2> 	
-     9                              <2> 	vV_error_buffer:
-    10 00000044 <res 00000040>      <2> 	resb 64
-    11                              <2> 	vV_end_err_buff:
-    12                              <2> 	vV_error_buffer_size equ vV_end_err_buff-vV_error_buffer
-     8                              <1> %include "vVc/assembly/w_runtime/vV_system1.asm"
-     1                              <2> 
-     2                              <2> segment .bss
-     3                              <2> 
-     4                              <2> 	ALIGNB 4
-     5                              <2> 	
-     6                              <2> 	
-     7                              <2> 	;------------Input Buffer
-     8                              <2> 
-     9                              <2> 
-    10                              <2> 	
-    11 00000084 <res 00000004>      <2> 	win_count: resb 4					;Input Buffer current content
-    12 00000088 <res 000000FF>      <2> 	w_input_buffer: resb 255					;Input Buffer of 256 char
-    13                              <2> 	
-    14                              <2> 	
-    15                              <2> 	
-    16                              <2> 	
-    17                              <2> ;------------Output Buffer
-    18                              <2> 
-    19                              <2> 
-    20                              <2> 
-    21                              <2> 	
-    22 00000187 <res 00000004>      <2> 	wout_count: resb 4					;Output Buffer current content
-    23 0000018B <res 000000FF>      <2> 	w_output_buffer: resb 255					;Output Buffer of 256 char
-    24                              <2> 	
-    25                              <2> 	
-    26                              <2> 	
-    27                              <2> 	
-    28                              <2> ;------------Number Buffer
-    29                              <2> 
-    30                              <2> 
-    31                              <2> 	
-    32                              <2> 	
-    33 0000028A <res 0000000A>      <2> 	w_number_buffer: resb 10				;Todo: Handle Bigger Numbers
-    34 00000294 <res 00000001>      <2> 	endofline: resb 1					;Maybe Not Needed
-    35                              <2> 	
-    36                              <2> 
-    37                              <2> 
-    38                              <2> 
-     9                              <1> %include "vVc/assembly/w_runtime/vV_memaloc.asm"
-     1                              <2> 
-     2                              <2> 
-     3                              <2> ;Will Be Needed in version 0.0.3 for vars
-     4                              <2> 
-     5                              <2> segment .bss
-     6                              <2> 
-     7                              <2> 	
-     8                              <2> 	
-     9                              <2> 	var_space:
-    10 00000295 <res 00000003>      <2> 	ALIGNB 4
-    11                              <2> ;---------------------------var reserved Space-----	
-    12                              <2> 
-    13                              <2> 	var_int:
-    14                              <2> 		
-    15 00000298 <res 00000800>      <2> 		resd	512
-    16                              <2> 		
-    17                              <2> 		
-    18                              <2> 	var_sting:
-    19                              <2> 	
-    20 00000A98 <res 00000800>      <2> 		resb 	2048
-    21                              <2> 		
-    22                              <2> 
-    10                              <1> %include "vVc/assembly/w_runtime/vV_stack_init.asm"
-     1                              <2> 
-     2                              <2> segment .bss
-     3                              <2> 
-     4                              <2> 	
-     5                              <2> 	
-     6                              <2> 	stacks: 
-     7                              <2> 
-     8                              <2> 
-     9 00001298 <res 00040000>      <2> 	string_stack_start: resb 262144
-    10                              <2> 
-    11                              <2> 
-    12                              <2> 	
-    13                              <2> 	
-    14                              <2> 						
-    15 00041298 <res 00020000>      <2> 	fake_stack_start: resb 131072
-    11                              <1> 
-    12                              <1> 
-    13                              <1> global _start
-    14                              <1> 
-    15                              <1> global w_input_buffer
-    16                              <1> global w_output_buffer
-    17                              <1> global w_number_buffer
-    18                              <1> 
-    19                              <1> ;extern w_entry_point			;Defined by main program
-    20                              <1> global w_forced_exit			;Error caused exit
-    21                              <1> 
-    22                              <1> 
+     6                              <1> 
+     7                              <1> 
+     8                              <1> vV_ascii_as_hex2:						;Jumped to from parse_num OR called
+     9                              <1> 								;use edi as counter/offset in string !Set if direct call
+    10                              <1> 								;use esi as source string
+    11                              <1> 								;concatenate result in eax
+    12                              <1> 								;parse digit in cl
+    13                              <1> 								
+    14                              <1> 								;use r8 for base
+    15                              <1> 								;use r9 for max_value
+    16                              <1> 								
+    17                              <1> 							
+    18                              <1> 	;mov r8 , 16	
+    19                              <1> 	
+    20                              <1> 	.start_loop:
+    21                              <1> 	
+    22 000002CF 678A0C3E            <1> 		mov cl , [esi + edi]
     23                              <1> 	
-    24                              <1> segment .data 
-    25                              <1> 
-    26 00000000 FF                  <1> 	is_main: db -1 			;May Be used for "lib" version of compile
-    27                              <1> 						; or maybe another runtime?
-    28 00000001 0A204572726F722028- <1> 	error: db 0xa," Error (wip) [code] [name]",0xa
-    28 0000000A 77697029205B636F64- <1>
-    28 00000013 655D205B6E616D655D- <1>
-    28 0000001C 0A                  <1>
-    29                              <1> 	errsize equ $-error
-    30                              <1> 
-    31                              <1> 	
-    32                              <1> 
-    33                              <1> segment .text 
-    34                              <1> 
-    35                              <1> 
-    36                              <1> 	w_forced_exit:				;rax hold exit code
-    37                              <1> 	
-    38 0000044C 50                  <1> 		push rax
-    39                              <1> 		
-    40                              <1> 	
-    41 0000044D BA1C000000          <1> 		mov edx , errsize				;string lenght
-    42 00000452 48BE-               <1> 		mov rsi , error			;strng ptr
-    42 00000454 [0100000000000000]  <1>
-    43 0000045C BF02000000          <1> 		mov rdi , 2				;file descriptor, stderr
-    44 00000461 B801000000          <1> 		mov rax , 1				; Write sysCall
-    45 00000466 0F05                <1> 		syscall
-    46                              <1> 		
+    24                              <1> 		
+    25 000002D3 80F930              <1> 		cmp cl , 48
+    26                              <1> 		
+    27 000002D6 7265                <1> 			jb vV_ascii_unvalid
+    28                              <1> 			
+    29 000002D8 80F93A              <1> 		cmp cl , 58
+    30                              <1> 		
+    31 000002DB 720D                <1> 			jb .pass_int
+    32                              <1> 			
+    33 000002DD 80F966              <1> 			cmp cl , 'f'
+    34                              <1> 			
+    35 000002E0 775B                <1> 				ja vV_ascii_unvalid
+    36                              <1> 			
+    37 000002E2 80F961              <1> 			cmp cl , 'a'
+    38                              <1> 			
+    39 000002E5 7256                <1> 				jb vV_ascii_unvalid
+    40                              <1> 				
+    41 000002E7 80E927              <1> 			sub cl , 39
+    42                              <1> 				
+    43                              <1> 			
+    44                              <1> 		.pass_int:	
+    45                              <1> 			
+    46 000002EA 80E930              <1> 		sub cl , '0'
     47                              <1> 		
-    48 00000468 5F                  <1> 		pop rdi
-    49                              <1> 		;mov rdi, rax
-    50 00000469 B83C000000          <1> 		mov rax, SYS_EXIT
-    51 0000046E 0F05                <1> 		syscall
-    52                              <1> 		
+    48                              <1> 		
+    49                              <1> 		
+    50 000002ED 31D2                <1> 		xor edx , edx
+    51                              <1> 		
+    52 000002EF F8                  <1> 		clc
     53                              <1> 		
-    54                              <1> 
-    55                              <1> 
-    56                              <1> 	save_regs:			;In case called from other process
-    57                              <1> 	
-    58 00000470 58                  <1> 		pop rax
-    59                              <1> 	
-    60 00000471 53                  <1> 		push rbx
-    61 00000472 4154                <1> 		push r12
-    62 00000474 4155                <1> 		push r13
-    63 00000476 4156                <1> 		push r14
-    64 00000478 4157                <1> 		push r15
+    54 000002F0 41F7E0              <1> 		mul r8d
+    55                              <1> 		
+    56 000002F3 725D                <1> 		jc vV_ascii_overflow
+    57                              <1> 		
+    58 000002F5 01C8                <1> 		add eax , ecx
+    59                              <1> 		
+    60                              <1> 		.pass02:
+    61                              <1> 		
+    62 000002F7 FFC7                <1> 		inc edi
+    63                              <1> 		
+    64 000002F9 39DF                <1> 		cmp edi , ebx
     65                              <1> 		
-    66 0000047A 50                  <1> 		push rax
-    67                              <1> 		
-    68 0000047B C3                  <1> 		ret
-    69                              <1> 		
-    70                              <1> 	restore_regs:
-    71                              <1> 	
-    72 0000047C 58                  <1> 		pop rax
-    73                              <1> 	
-    74 0000047D 415F                <1> 		pop r15
-    75 0000047F 415E                <1> 		pop r14
-    76 00000481 415D                <1> 		pop r13
-    77 00000483 415C                <1> 		pop r12
-    78 00000485 5B                  <1> 		pop rbx
-    79                              <1> 		
-    80 00000486 50                  <1> 		push rax
+    66 000002FB 72D2                <1> 		jb .start_loop
+    67                              <1> 
+    68                              <1> 		
+    69 000002FD C3                  <1> 		ret	
+    70                              <1> 		
+    71                              <1> 		
+    72                              <1> ;
+    73                              <1> ;				ebx		esi
+    74                              <1> ;	ascii_to_format( buffer_size , buffer_adress ) 
+    75                              <1> ;		
+    76                              <1> ;
+    77                              <1> ;	set:	rcx,rdx (rax) to 0
+    78                              <1> ;		r8,r9
+    79                              <1> ;		
+    80                              <1> ;	call: specialized dexodefunction
     81                              <1> 		
-    82 00000487 C3                  <1> 		ret
-    83                              <1> 		
-    84                              <1> 	setup_memory:
-    85                              <1> 	
-    86 00000488 C70425[84000000]00- <1> 		mov DWORD [win_count] , 0
-    86 00000490 000000              <1>
-    87 00000493 C70425[87010000]00- <1> 		mov DWORD [wout_count] , 0
-    87 0000049B 000000              <1>
-    88                              <1> 		
-    89 0000049E C70425[94020000]0A- <1> 		mov DWORD [endofline] , 0xa
-    89 000004A6 000000              <1>
-    90                              <1> 		
-    91 000004A9 C70425[40000000]-   <1> 		mov DWORD[vV_sys_format_mode] , vV_ascii_int_to_dec
-    91 000004B0 [32010000]          <1>
-    92                              <1> 		
-    93 000004B4 C3                  <1> 		ret
-    94                              <1> 		
-    95                              <1> 		
-    96                              <1> 	
-    97                              <1> 		
-    98                              <1> _start:				;Entry point of Every Program
-    99                              <1> 	
-   100                              <1> 		
+    82                              <1> vV_ascii_as_hex:
+    83                              <1> 	
+    84 000002FE FFCB                <1> 	dec ebx
+    85 00000300 41B810000000        <1> 	mov r8 , 16	
+    86 00000306 4831C0              <1> 	xor rax , rax 		;(just in case not switching from dec mode)			
+    87 00000309 4831C9              <1> 	xor rcx , rcx
+    88 0000030C 4831D2              <1> 	xor rdx , rdx
+    89 0000030F EBBE                <1> 	jmp vV_ascii_as_hex2
+    90                              <1> 
+    91                              <1> vV_ascii_as_dec:
+    92                              <1> 
+    93 00000311 FFCB                <1> 	dec ebx
+    94 00000313 41B80A000000        <1> 	mov r8 , 10			
+    95 00000319 41B93A000000        <1> 	mov r9 , 58
+    96 0000031F 4831C9              <1> 	xor rcx , rcx
+    97 00000322 4831D2              <1> 	xor rdx , rdx
+    98 00000325 EB5E                <1> 	jmp vV_ascii_as_decbin
+    99                              <1> 
+   100                              <1> vV_ascii_as_bin:
    101                              <1> 
-   102 000004B5 4889E5              <1> 	mov rbp, rsp				;Setup Stack Frame
-   103                              <1> 	
-   104 000004B8 49BF-               <1> 	mov r15 , fake_stack_start			;setup fake data stack
-   104 000004BA [9812040000000000]  <1>
-   105                              <1> 	
-   106 000004C2 E8A9FFFFFF          <1> 	call save_regs				;just in case
+   102 00000327 FFCB                <1> 	dec ebx
+   103 00000329 41B802000000        <1> 	mov r8 , 2			
+   104 0000032F 41B932000000        <1> 	mov r9 , 50
+   105 00000335 4831C9              <1> 	xor rcx , rcx
+   106 00000338 4831D2              <1> 	xor rdx , rdx
    107                              <1> 	
-   108                              <1> 	
-   109 000004C7 E8BCFFFFFF          <1> 	call setup_memory			;all memory setup at start
-   110                              <1> 	
+   108 0000033B EB48                <1> 	jmp vV_ascii_as_decbin
+   109                              <1> 	
+   110                              <1> vV_ascii_unvalid:
    111                              <1> 	
-   112                              <1> 	
-   113 000004CC E811000000          <1> 	call w_entry_point			;Start the program 
-   114                              <1> 	
-   115                              <1> 	
-   116 000004D1 E8A6FFFFFF          <1> 	call restore_regs
-   117                              <1> 	
-   118                              <1> ;-----------attempt to clean input buffer--------------------------------------
-   119                              <1> 	
-   120                              <1> 	
-   121                              <1> 	
-   122                              <1> 	
-   123                              <1> 	
-   124                              <1> 	;mov edx , [w_output_buffer - 4]		;string lenght
-   125                              <1> 	;	mov rsi , w_output_buffer			;strng ptr
-   126                              <1> 	;	mov rdi , 1				;file descriptor, stdout
-   127                              <1> 	;	mov rax , 1				; Write sysCall
-   128                              <1> 	;	syscall
-   129                              <1> 
-   130                              <1> ;------------------------------------------------------------------------------
-   131                              <1> 
-   132 000004D6 B83C000000          <1> 	mov rax, SYS_EXIT
-   133 000004DB BF00000000          <1> 	mov rdi, 0				;Normal exit procedure (no code returned from main, need to call exit(code) forhat)
-   134 000004E0 0F05                <1> 	syscall
-   135                              <1> 	
-   136                              <1> 	
+   112                              <1> 		;mov rax , 24;	#TODO: Defined Errors code/ data in file
+   113                              <1> 		;xor rdx , rdx
+   114                              <1> 		;mov dl , cl
+   115                              <1> 		
+   116                              <1> 		;call w_forced_exit
+   117                              <1> 		
+   118 0000033D 50                  <1> 		push rax
+   119 0000033E 53                  <1> 		push rbx
+   120                              <1> 		
+   121 0000033F B403                <1> 		mov ah , vV_ERR_IO_I_UNVALID
+   122 00000341 6683C800            <1> 		or ax , 0
+   123 00000345 4831DB              <1> 		xor rbx , rbx
+   124 00000348 88CB                <1> 		mov bl , cl
+   125                              <1> 		
+   126 0000034A E822FDFFFF          <1> 		call vV_error
+   127                              <1> 		
+   128 0000034F 5B                  <1> 		pop rbx
+   129 00000350 58                  <1> 		pop rax
+   130                              <1> 		
+   131 00000351 C3                  <1> 		ret
+   132                              <1> 		
+   133                              <1> 		
+   134                              <1> 		
+   135                              <1> 		
+   136                              <1> vV_ascii_overflow:
    137                              <1> 	
-   138                              <1> 	
-   139                              <1> 	
-     5                                  
-     6                                  
-     7                                  global w_entry_point
-     8                                  
-     9                                  
+   138 00000352 50                  <1> 		push rax
+   139 00000353 53                  <1> 		push rbx
+   140                              <1> 		
+   141 00000354 4831DB              <1> 		xor rbx , rbx
+   142 00000357 4889C3              <1> 		mov rbx , rax
+   143                              <1> 		
+   144                              <1> 		;or rbx , 0x00010000
+   145                              <1> 		
+   146 0000035A B401                <1> 		mov ah , vV_ERR_IO_I_OVERFLOW
+   147 0000035C 6683C800            <1> 		or ax , 0
+   148                              <1> 		
+   149                              <1> 		
+   150                              <1> 		
+   151 00000360 E80CFDFFFF          <1> 		call vV_error
+   152                              <1> 		
+   153 00000365 5B                  <1> 		pop rbx
+   154 00000366 58                  <1> 		pop rax
+   155                              <1> 		
+   156                              <1> 		;TODO: Maybe use vV_error return value for decision making
+   157                              <1> 		
+   158 00000367 B8FFFFFFFF          <1> 		mov eax , -1
+   159                              <1> 		
+   160 0000036C C3                  <1> 		ret
+   161                              <1> 		
+   162                              <1> 		
+   163                              <1> vV_ascii_change_to_hex:
+   164                              <1> 		
+   165 0000036D 83F800              <1> 		cmp eax , 0
+   166                              <1> 			
+   167 00000370 75CB                <1> 			jne vV_ascii_unvalid
+   168                              <1> 			
+   169 00000372 41B810000000        <1> 		mov r8 , 16
+   170 00000378 4831C9              <1> 		xor rcx , rcx
+   171 0000037B 4831C0              <1> 		xor rax ,rax
+   172                              <1> 				
+   173 0000037E FFC7                <1> 		inc edi
+   174 00000380 E94AFFFFFF          <1> 		jmp vV_ascii_as_hex2		
+   175                              <1> 		
+   176                              <1> 	
+   177                              <1> 
+   178                              <1> 
+   179                              <1> vV_ascii_as_decbin:						;ebx: number of char to read
+   180                              <1> 
+   181                              <1> 	
+   182                              <1> 
+   183                              <1> 								;use edi as counter/offset in string
+   184                              <1> 								;concatenate result in eax
+   185                              <1> 								;parse digit in cl
+   186                              <1> 								
+   187                              <1> 								;use r8 for base
+   188                              <1> 								;use r9 for max_value					
+   189                              <1> 								;itou
+   190                              <1> 	;xor edi, edi			;should be set by caller
+   191 00000385 4831C0              <1> 	xor rax , rax
+   192                              <1> 	
+   193 00000388 4831C9              <1> 	xor rcx , rcx
+   194                              <1> 	
+   195 0000038B 4831D2              <1> 	xor rdx , rdx
+   196                              <1> 	
+   197                              <1> 	
+   198                              <1> 	.start_loop:
+   199                              <1> 	
+   200 0000038E 678A0C3E            <1> 		mov cl , [esi + edi]
+   201                              <1> 		
+   202                              <1> 		
+   203 00000392 80F962              <1> 		cmp cl , 'b'										
+   204 00000395 7513                <1> 			jne .pass01
+   205                              <1> 		
+   206                              <1> 		.format_change:
+   207                              <1> 			
+   208 00000397 83F800              <1> 			cmp eax , 0
+   209                              <1> 			
+   210 0000039A 75A1                <1> 				jne vV_ascii_unvalid
+   211                              <1> 				
+   212 0000039C 41B802000000        <1> 			mov r8 , 2
+   213                              <1> 			
+   214 000003A2 41B932000000        <1> 			mov r9 , 50
+   215                              <1> 	
+   216 000003A8 EB26                <1> 			jmp .pass02
+   217                              <1> 		
+   218                              <1> 		
+   219                              <1> 	
+   220                              <1> 		.pass01:
+   221                              <1> 		
+   222 000003AA 80F968              <1> 		cmp cl , 'h'											
+   223 000003AD 74BE                <1> 			je vV_ascii_change_to_hex
+   224 000003AF 80F978              <1> 		cmp cl , 'x'											
+   225 000003B2 74B9                <1> 			je vV_ascii_change_to_hex
+   226                              <1> 			
+   227                              <1> 			
+   228 000003B4 4438C9              <1> 		cmp cl , r9b
+   229                              <1> 		
+   230 000003B7 7384                <1> 			jae vV_ascii_unvalid
+   231                              <1> 		
+   232 000003B9 80F930              <1> 		cmp cl , 48
+   233                              <1> 		
+   234 000003BC 0F827BFFFFFF        <1> 			jb vV_ascii_unvalid
+   235                              <1> 			
+   236                              <1> 		
+   237                              <1> 			
+   238 000003C2 80E930              <1> 		sub cl , 48
+   239                              <1> 		
+   240 000003C5 4831D2              <1> 		xor rdx , rdx
+   241 000003C8 F8                  <1> 		clc
+   242                              <1> 		
+   243 000003C9 41F7E0              <1> 		mul r8d
+   244                              <1> 		
+   245 000003CC 7284                <1> 		jc vV_ascii_overflow
+   246                              <1> 		
+   247 000003CE 01C8                <1> 		add eax , ecx
+   248                              <1> 		
+   249                              <1> 		.pass02:
+   250                              <1> 		
+   251 000003D0 FFC7                <1> 		inc edi
+   252                              <1> 		
+   253 000003D2 39DF                <1> 		cmp edi , ebx
+   254                              <1> 		
+   255 000003D4 72B8                <1> 		jb .start_loop
+   256                              <1> 		
+   257                              <1> 		
+   258 000003D6 C3                  <1> 		ret			; result should be in eax
+   259                              <1> 		
+   260                              <1> 
+   261                              <1> 	
+   262                              <1> ;------------------------------------------------------------------------------------------
+   263                              <1> ;------------------------------------------------------------------------------------------
+   264                              <1> 
+   265                              <1> 
+   266                              <1> 
+   267                              <1> vV_ascii_int_to_hex:					;value in eax
+   268                              <1> 						;dest in rdi
+   269                              <1> 
+   270                              <1> 
+   271                              <1> 
+   272 000003D7 31C9                <1> 	xor ecx , ecx	
+   273                              <1> 	
+   274 000003D9 BE10000000          <1> 	mov esi , 16
+   275                              <1> 
+   276                              <1> 	
+   277                              <1> 	.loop01:
+   278                              <1> 	
+   279 000003DE 4831D2              <1> 		xor rdx , rdx
+   280                              <1> 		
+   281 000003E1 F7F6                <1> 		div esi
+   282                              <1> 		
+   283                              <1> 		
+   284 000003E3 80FA0A              <1> 		cmp dl , 10
+   285                              <1> 		
+   286 000003E6 7203                <1> 		jb .dec
+   287                              <1> 		
+   288 000003E8 80C207              <1> 			add dl , 7
+   289                              <1> 		
+   290                              <1> 		.dec:
+   291                              <1> 		
+   292 000003EB 80C230              <1> 			add dl , '0'
+   293                              <1> 		
+   294                              <1> 		
+   295 000003EE 52                  <1> 		push rdx
+   296                              <1> 		
+   297 000003EF FFC1                <1> 		inc ecx
+   298                              <1> 		
+   299 000003F1 39F0                <1> 		cmp eax , esi
+   300                              <1> 		
+   301 000003F3 73E9                <1> 		jae .loop01
+   302                              <1> 	
+   303                              <1> 	
+   304 000003F5 3C0A                <1> 	cmp al , 10
+   305                              <1> 		
+   306 000003F7 7202                <1> 		jb .dec2
+   307                              <1> 		
+   308 000003F9 0407                <1> 			add al , 7
+   309                              <1> 		
+   310                              <1> 		.dec2:
+   311                              <1> 		
+   312 000003FB 0430                <1> 			add al , '0'	
+   313 000003FD 8807                <1> 	mov [rdi] , al
+   314                              <1> 	
+   315 000003FF EB1B                <1> 	jmp vV_ascii_pop_digits
+   316                              <1> 		
+   317                              <1> 	
+   318                              <1> 	
+   319                              <1> 	
+   320                              <1> vV_ascii_int_to_dec:					;value in eax
+   321                              <1> 						;dest in rdi
+   322                              <1> 						;max_dest_size in r9d
+   323                              <1> 
+   324                              <1> 
+   325                              <1> 
+   326 00000401 31C9                <1> 	xor ecx , ecx	
+   327                              <1> 	
+   328 00000403 BE0A000000          <1> 	mov esi , 10
+   329                              <1> 	
+   330                              <1> 
+   331                              <1> 
+   332                              <1> 	
+   333                              <1> 	.loop01:
+   334                              <1> 	
+   335 00000408 4831D2              <1> 		xor rdx , rdx
+   336                              <1> 		
+   337 0000040B F7F6                <1> 		div esi
+   338                              <1> 		
+   339                              <1> 		
+   340 0000040D 80C230              <1> 		add dl , '0'
+   341 00000410 52                  <1> 		push rdx
+   342                              <1> 		
+   343 00000411 FFC1                <1> 		inc ecx
+   344                              <1> 		
+   345 00000413 83F80A              <1> 		cmp eax , 10
+   346                              <1> 		
+   347 00000416 73F0                <1> 		jae .loop01
+   348                              <1> 	
+   349 00000418 0430                <1> 	add al , '0'	
+   350 0000041A 8807                <1> 	mov [rdi] , al
+   351                              <1> 		
+   352                              <1> 	
+   353                              <1> 		
+   354                              <1> vV_ascii_pop_digits:			; Need nb of digits currently on stack(ecx)
+   355                              <1> 						;dest in rdi
+   356 0000041C 41B801000000        <1> 		mov r8d , 1
+   357 00000422 FFC1                <1> 		inc ecx
+   358                              <1> 		
+   359 00000424 4439C9              <1> 		cmp ecx , r9d
+   360                              <1> 		
+   361 00000427 7219                <1> 		jb .loopstart
+   362                              <1> 		
+   363                              <1> 	
+   364 00000429 50                  <1> 			push rax
+   365 0000042A 53                  <1> 			push rbx
+   366                              <1> 		
+   367 0000042B B410                <1> 			mov ah , vV_ERR_MEMORY_BUFFER_LIMIT
+   368 0000042D 6683C800            <1> 			or ax , 0
+   369 00000431 4831DB              <1> 			xor rbx , rbx
+   370 00000434 89FB                <1> 			mov ebx , edi
+   371                              <1> 		
+   372 00000436 E836FCFFFF          <1> 			call vV_error
+   373                              <1> 		
+   374 0000043B 5B                  <1> 			pop rbx
+   375 0000043C 58                  <1> 			pop rax
+   376                              <1> 			
+   377 0000043D 4489C9              <1> 			mov ecx , r9d		;Should protect memory..
+   378 00000440 FFC9                <1> 			dec ecx		;will need testing
+   379                              <1> 		
+   380                              <1> 						
+   381                              <1> 		.loopstart:
+   382                              <1> 		
+   383 00000442 5A                  <1> 			pop rdx
+   384 00000443 6742881407          <1> 			mov BYTE[edi + r8d] , dl
+   385 00000448 41FFC0              <1> 			inc r8d
+   386                              <1> 			
+   387 0000044B 4139C8              <1> 			cmp r8d , ecx
+   388                              <1> 		
+   389 0000044E 72F2                <1> 		jb .loopstart
+   390                              <1> 	
+   391                              <1> 	
+   392 00000450 89C8                <1> 		mov eax , ecx
+   393                              <1> 		
+   394 00000452 C3                  <1> 		ret	
+   395                              <1> 	
+   396                              <1> 	
+   397                              <1> vV_ascii_int_to_bin:					;value in eax, 
+   398                              <1> 							
+   399                              <1> 
+   400                              <1> 
+   401 00000453 31C9                <1> 	xor ecx , ecx
+   402                              <1> 	
+   403                              <1> 	
+   404                              <1> 	.loop01:
+   405                              <1> 	
+   406                              <1> 		
+   407 00000455 D1E8                <1> 		shr eax , 1
+   408                              <1> 		
+   409 00000457 7205                <1> 		jc .one
+   410                              <1> 		
+   411 00000459 B230                <1> 			mov dl , '0'
+   412 0000045B 52                  <1> 			push rdx
+   413                              <1> 			
+   414 0000045C EB03                <1> 		jmp .next
+   415                              <1> 		.one:
+   416                              <1> 			
+   417 0000045E B231                <1> 			mov dl , '1'
+   418 00000460 52                  <1> 			push rdx
+   419                              <1> 		
+   420                              <1> 		.next:
+   421                              <1> 		
+   422 00000461 FFC1                <1> 		inc ecx
+   423                              <1> 		
+   424 00000463 83F801              <1> 		cmp eax , 1
+   425                              <1> 		
+   426 00000466 77ED                <1> 		ja .loop01
+   427                              <1> 	
+   428 00000468 0430                <1> 	add al , '0'	
+   429 0000046A 8807                <1> 	mov [rdi] , al
+   430                              <1> 	
+   431 0000046C EBAE                <1> 	jmp vV_ascii_pop_digits
+   432                              <1> 	
+   433                              <1> 	
+   434                              <1> ;Will need a special version for String stack
+   435                              <1> 
+   436                              <1> 
+   437                              <1> 
+   438                              <1> 
+   439                              <1> 
+   440                              <1> 
+   441                              <1> 
+     9                                  %include "vVc/assembly/w_runtime/vV_system90.asm"		
+     1                              <1> 
+     2                              <1> segment .bss
+     3                              <1> 
+     4                              <1> 	
+     5                              <1> 	
+     6                              <1> 	stacks: 
+     7                              <1> 
+     8                              <1> 
+     9 00000286 <res 00040000>      <1> 	string_stack_start: resb 262144
+    10                              <1> 
+    11                              <1> 
+    12                              <1> 	
+    13                              <1> 	
+    14                              <1> 						
+    15 00040286 <res 00020000>      <1> 	fake_stack_start: resb 131072
     10                                  
-    11                                  segment .text 
+    11                                  
     12                                  
-    13                                  
+    13                                  global w_entry_point
     14                                  
     15                                  
-    16                                  w_entry_point:
-    17                                  
+    16                                  
+    17                                  segment .text 
     18                                  
-    19 000004E2 4889E5                  	mov rbp, rsp			;Setup Stack Frame
-    20                                  	
-    21                                  	
-    22                                  
-    23                                  	wblock_9:		
+    19                                  
+    20                                  
+    21                                  
+    22                                  vV_entry_point:
+    23                                  
     24                                  
-    25                                  ;------------------------------------------------------
-    26                                  
-    27                                  
-    28                                   ;OpADR: [0]  ; DROP opcode 
+    25 0000046E 4889E5                  	mov rbp, rsp			;Setup Stack Frame
+    26                                  	
+    27                                  	
+    28                                   ;OpADR: [0]  ; PUSH opcode 
     29                                  
-    30 000004E5 4983EF04                	sub vV_sp , 4	
+    30                                  	vV_push 1848604960 
+    30                              <1> 
+    30 00000471 41C70720792F6E      <1>  mov DWORD[vV_sp] , %1
+    30 00000478 4983C704            <1>  add vV_sp , 4
+    30                              <1> 
     31                                  
-    32                                   ;OpADR: [1]  ; DROP opcode 
-    33                                  
-    34 000004E9 4983EF04                	sub vV_sp , 4	
-    35                                  
-    36                                   ;OpADR: [2]  ; DROP opcode 
+    32                                  
+    33                                   ;OpADR: [1]  ; PUSH opcode 
+    34                                  
+    35                                  	vV_push 538984302 
+    35                              <1> 
+    35 0000047C 41C7076E3F2020      <1>  mov DWORD[vV_sp] , %1
+    35 00000483 4983C704            <1>  add vV_sp , 4
+    35                              <1> 
+    36                                  
     37                                  
-    38 000004ED 4983EF04                	sub vV_sp , 4	
+    38                                   ;OpADR: [2]  ; PUSH opcode 
     39                                  
-    40                                   ;OpADR: [3]  ; DROP opcode 
+    40                                  	vV_push 1767991137 
+    40                              <1> 
+    40 00000487 41C70761676169      <1>  mov DWORD[vV_sp] , %1
+    40 0000048E 4983C704            <1>  add vV_sp , 4
+    40                              <1> 
     41                                  
-    42 000004F1 4983EF04                	sub vV_sp , 4	
-    43                                  
-    44                                   ;OpADR: [4]  ; DROP opcode 
-    45                                  
-    46 000004F5 4983EF04                	sub vV_sp , 4	
+    42                                  
+    43                                   ;OpADR: [3]  ; PUSH opcode 
+    44                                  
+    45                                  	vV_push 540701554 
+    45                              <1> 
+    45 00000492 41C70772733A20      <1>  mov DWORD[vV_sp] , %1
+    45 00000499 4983C704            <1>  add vV_sp , 4
+    45                              <1> 
+    46                                  
     47                                  
-    48                                   ;OpADR: [5]  ; FLUSH opcode					
+    48                                   ;OpADR: [4]  ; PUSH opcode 
     49                                  
-    50 000004F9 E89AFCFFFF              		call vV_io_flush	
+    50                                  	vV_push 1700949365 
+    50                              <1> 
+    50 0000049D 41C707756D6265      <1>  mov DWORD[vV_sp] , %1
+    50 000004A4 4983C704            <1>  add vV_sp , 4
+    50                              <1> 
     51                                  
-    52                                   ;OpADR: [6]  ; FLUSH opcode					
-    53                                  
-    54 000004FE E895FCFFFF              		call vV_io_flush	
-    55                                  
-    56                                   ;OpADR: [7]  ; OUT opcode (9)			
+    52                                  
+    53                                   ;OpADR: [5]  ; PUSH opcode 
+    54                                  
+    55                                  	vV_push 1847604256 
+    55                              <1> 
+    55 000004A8 41C7072034206E      <1>  mov DWORD[vV_sp] , %1
+    55 000004AF 4983C704            <1>  add vV_sp , 4
+    55                              <1> 
+    56                                  
     57                                  
-    58                                  								
-    59 00000503 E846FDFFFF              	call vV_io_out_packed_char				
-    60                                  						
+    58                                   ;OpADR: [6]  ; PUSH opcode 
+    59                                  
+    60                                  	vV_push 1701869940 
+    60                              <1> 
+    60 000004B3 41C70774797065      <1>  mov DWORD[vV_sp] , %1
+    60 000004BA 4983C704            <1>  add vV_sp , 4
+    60                              <1> 
     61                                  
-    62                                   ;OpADR: [8]  ; FLUSH opcode					
-    63                                  
-    64 00000508 E88BFCFFFF              		call vV_io_flush	
-    65                                  
-    66                                   ;OpADR: [9]  ; FLUSH opcode					
+    62                                  
+    63                                   ;OpADR: [7]  ; PUSH opcode 
+    64                                  
+    65                                  	vV_push 0 
+    65                              <1> 
+    65 000004BE 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+    65 000004C5 4983C704            <1>  add vV_sp , 4
+    65                              <1> 
+    66                                  
     67                                  
-    68 0000050D E886FCFFFF              		call vV_io_flush	
-    69                                  
-    70                                   ;OpADR: [10]  ; PUSH opcode 
-    71                                  
-    72                                  	vV_push 538983017 
-    72                              <1> 
-    72 00000512 41C707693A2020      <1>  mov DWORD[vV_sp] , %1
-    72 00000519 4983C704            <1>  add vV_sp , 4
-    72                              <1> 
+    68                                  
+    69                                  	wblock_4:		
+    70                                  
+    71                                  ;------------------------------------------------------
+    72                                  
     73                                  
-    74                                  
-    75                                   ;OpADR: [11]  ; PUSH opcode 
-    76                                  
-    77                                  	vV_push 1768125281 
-    77                              <1> 
-    77 0000051D 41C70761736369      <1>  mov DWORD[vV_sp] , %1
-    77 00000524 4983C704            <1>  add vV_sp , 4
-    77                              <1> 
-    78                                  
+    74                                   ;OpADR: [8]  ; DROP opcode 
+    75                                  
+    76 000004C9 4983EF04                	sub vV_sp , 4	
+    77                                  
+    78                                   ;OpADR: [9]  ; DUP opcode (7)			
     79                                  
-    80                                   ;OpADR: [12]  ; PUSH opcode 
+    80                                  	vV_dup 7			
+    80                              <1> 
+    80 000004CD B907000000          <1>  mov ecx , %1
+    80 000004D2 498D77E4            <1>  lea rsi , [vV_sp-cell(%1)]
+    80 000004D6 4C89FF              <1>  mov rdi , vV_sp
+    80                              <1> 
+    80 000004D9 F3A5                <1>  rep movsd
+    80                              <1> 
+    80 000004DB 4983C71C            <1>  add vV_sp , cell(%1)
+    80                              <1> 
     81                                  
-    82                                  	vV_push 980574568 
-    82                              <1> 
-    82 00000528 41C7076861723A      <1>  mov DWORD[vV_sp] , %1
-    82 0000052F 4983C704            <1>  add vV_sp , 4
-    82                              <1> 
-    83                                  
+    82                                  
+    83                                   ;OpADR: [10]  ; BUFF_OUT opcode (9)			
     84                                  
-    85                                   ;OpADR: [13]  ; PUSH opcode 
-    86                                  
-    87                                  	vV_push 1663054112 
-    87                              <1> 
-    87 00000533 41C70720312063      <1>  mov DWORD[vV_sp] , %1
-    87 0000053A 4983C704            <1>  add vV_sp , 4
-    87                              <1> 
+    85                                  
+    86 000004DF E8F4FCFFFF              	call vV_io_out_packed_char_buffer				
+    87                                  						
     88                                  
-    89                                  
-    90                                   ;OpADR: [14]  ; PUSH opcode 
+    89                                   ;OpADR: [11]  ; BUFF_OUT opcode (9)			
+    90                                  
     91                                  
-    92                                  	vV_push 1701869940 
-    92                              <1> 
-    92 0000053E 41C70774797065      <1>  mov DWORD[vV_sp] , %1
-    92 00000545 4983C704            <1>  add vV_sp , 4
-    92                              <1> 
-    93                                  
+    92 000004E4 E8EFFCFFFF              	call vV_io_out_packed_char_buffer				
+    93                                  						
     94                                  
-    95                                  
-    96                                  	wblock_1:		
+    95                                   ;OpADR: [12]  ; BUFF_OUT opcode (9)			
+    96                                  
     97                                  
-    98                                  ;------------------------------------------------------
-    99                                  
+    98 000004E9 E8EAFCFFFF              	call vV_io_out_packed_char_buffer				
+    99                                  						
    100                                  
-   101                                   ;OpADR: [15]  ; DUP opcode (5)			
+   101                                   ;OpADR: [13]  ; BUFF_OUT opcode (9)			
    102                                  
-   103                                  	vV_dup 5			
-   103                              <1> 
-   103 00000549 B905000000          <1>  mov ecx , %1
-   103 0000054E 498D77EC            <1>  lea rsi , [vV_sp-cell(%1)]
-   103 00000552 4C89FF              <1>  mov rdi , vV_sp
-   103                              <1> 
-   103 00000555 F3A5                <1>  rep movsd
-   103                              <1> 
-   103 00000557 4983C714            <1>  add vV_sp , cell(%1)
-   103                              <1> 
-   104                                  
-   105                                  
-   106                                   ;OpADR: [16]  ; BUFF_OUT opcode (9)			
-   107                                  
+   103                                  
+   104 000004EE E8E5FCFFFF              	call vV_io_out_packed_char_buffer				
+   105                                  						
+   106                                  
+   107                                   ;OpADR: [14]  ; FLUSH opcode					
    108                                  
-   109 0000055B E804FDFFFF              	call vV_io_out_packed_char_buffer				
-   110                                  						
-   111                                  
-   112                                   ;OpADR: [17]  ; BUFF_OUT opcode (9)			
-   113                                  
-   114                                  
-   115 00000560 E8FFFCFFFF              	call vV_io_out_packed_char_buffer				
-   116                                  						
+   109 000004F3 E814FCFFFF              		call vV_io_flush	
+   110                                  
+   111                                   ;OpADR: [15]  ; GET opcode (0)			
+   112                                  
+   113 000004F8 E874FDFFFF              	call vV_io_get_default			
+   114                                  						
+   115                                  
+   116                                   ;OpADR: [16]  ; GET opcode (0)			
    117                                  
-   118                                   ;OpADR: [18]  ; BUFF_OUT opcode (9)			
-   119                                  
+   118 000004FD E86FFDFFFF              	call vV_io_get_default			
+   119                                  						
    120                                  
-   121 00000565 E8FAFCFFFF              	call vV_io_out_packed_char_buffer				
-   122                                  						
-   123                                  
-   124                                   ;OpADR: [19]  ; FLUSH opcode					
+   121                                   ;OpADR: [17]  ; GET opcode (0)			
+   122                                  
+   123 00000502 E86AFDFFFF              	call vV_io_get_default			
+   124                                  						
    125                                  
-   126 0000056A E829FCFFFF              		call vV_io_flush	
+   126                                   ;OpADR: [18]  ; GET opcode (0)			
    127                                  
-   128                                   ;OpADR: [20]  ; GET opcode (8)			
-   129                                  
-   130                                  		
-   131 0000056F E8A5FDFFFF              	call vV_io_get_char				
-   132                                  						
-   133                                  
-   134                                   ;OpADR: [21]  ; FLUSH opcode					
-   135                                  
-   136 00000574 E81FFCFFFF              		call vV_io_flush	
-   137                                  
-   138                                   ;OpADR: [22]  ; SWAP opcode 
-   139                                  
+   128 00000507 E865FDFFFF              	call vV_io_get_default			
+   129                                  						
+   130                                  
+   131                                   ;OpADR: [19]  ; ADD opcode 					
+   132                                  
+   133 0000050C 418B47F8                	mov eax , vV_2nd			
+   134 00000510 410347FC                	add eax , vV_top			
+   135 00000514 418947F8                	mov vV_2nd , eax			
+   136                                  
+   137                                  	vV_dec_sp 1		
+   137                              <1> 
+   137 00000518 4983EF04            <1>  sub vV_sp , cell(%1)
+   137                              <1> 
+   138                                  
+   139                                   ;OpADR: [20]  ; ADD opcode 					
    140                                  
-   141                                  	vV_swap		
-   141                              <1> 
-   141 00000579 418B57FC            <1>  mov edx , [vV_sp-4]
-   141 0000057D 418B47F8            <1>  mov eax , [vV_sp-8]
-   141 00000581 418957F8            <1>  mov [vV_sp-8] , edx
-   141 00000585 418947FC            <1>  mov [vV_sp-4] , eax
-   141                              <1> 
-   142                                  
-   143                                  
-   144                                   ;OpADR: [23]  ; BUFF_OUT opcode (9)			
-   145                                  
+   141 0000051C 418B47F8                	mov eax , vV_2nd			
+   142 00000520 410347FC                	add eax , vV_top			
+   143 00000524 418947F8                	mov vV_2nd , eax			
+   144                                  
+   145                                  	vV_dec_sp 1		
+   145                              <1> 
+   145 00000528 4983EF04            <1>  sub vV_sp , cell(%1)
+   145                              <1> 
    146                                  
-   147 00000589 E8D6FCFFFF              	call vV_io_out_packed_char_buffer				
-   148                                  						
-   149                                  
-   150                                   ;OpADR: [24]  ; SWAP opcode 
-   151                                  
+   147                                   ;OpADR: [21]  ; ADD opcode 					
+   148                                  
+   149 0000052C 418B47F8                	mov eax , vV_2nd			
+   150 00000530 410347FC                	add eax , vV_top			
+   151 00000534 418947F8                	mov vV_2nd , eax			
    152                                  
-   153                                  	vV_swap		
+   153                                  	vV_dec_sp 1		
    153                              <1> 
-   153 0000058E 418B57FC            <1>  mov edx , [vV_sp-4]
-   153 00000592 418B47F8            <1>  mov eax , [vV_sp-8]
-   153 00000596 418957F8            <1>  mov [vV_sp-8] , edx
-   153 0000059A 418947FC            <1>  mov [vV_sp-4] , eax
+   153 00000538 4983EF04            <1>  sub vV_sp , cell(%1)
    153                              <1> 
    154                                  
-   155                                  
-   156                                   ;OpADR: [25]  ; BUFF_OUT opcode (9)			
-   157                                  
+   155                                   ;OpADR: [22]  ; FLUSH opcode					
+   156                                  
+   157 0000053C E8CBFBFFFF              		call vV_io_flush	
    158                                  
-   159 0000059E E8C1FCFFFF              	call vV_io_out_packed_char_buffer				
-   160                                  						
-   161                                  
-   162                                   ;OpADR: [26]  ; DUP opcode (1)			
+   159                                   ;OpADR: [23]  ; DUP opcode (1)			
+   160                                  
+   161                                  	vV_dup 1			
+   161                              <1> 
+   161 00000541 B901000000          <1>  mov ecx , %1
+   161 00000546 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+   161 0000054A 4C89FF              <1>  mov rdi , vV_sp
+   161                              <1> 
+   161 0000054D F3A5                <1>  rep movsd
+   161                              <1> 
+   161 0000054F 4983C704            <1>  add vV_sp , cell(%1)
+   161                              <1> 
+   162                                  
    163                                  
-   164                                  	vV_dup 1			
-   164                              <1> 
-   164 000005A3 B901000000          <1>  mov ecx , %1
-   164 000005A8 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   164 000005AC 4C89FF              <1>  mov rdi , vV_sp
-   164                              <1> 
-   164 000005AF F3A5                <1>  rep movsd
-   164                              <1> 
-   164 000005B1 4983C704            <1>  add vV_sp , cell(%1)
-   164                              <1> 
+   164                                   ;OpADR: [24]  ; OUT opcode (0)			
    165                                  
-   166                                  
-   167                                   ;OpADR: [27]  ; BUFF_OUT opcode (0)			
+   166 00000553 E8F5FBFFFF              	call vV_io_out_default			
+   167                                  						
    168                                  
-   169 000005B5 E811FCFFFF              	call vV_io_out_buffer_default			
-   170                                  						
-   171                                  
-   172                                   ;OpADR: [28]  ; FLUSH opcode					
-   173                                  
-   174 000005BA E8D9FBFFFF              		call vV_io_flush	
-   175                                  
-   176                                   ;OpADR: [29]  ; FLUSH opcode					
+   169                                   ;OpADR: [25]  ; FLUSH opcode					
+   170                                  
+   171 00000558 E8AFFBFFFF              		call vV_io_flush	
+   172                                  
+   173                                   ;OpADR: [26]  ; DUP opcode (1)			
+   174                                  
+   175                                  	vV_dup 1			
+   175                              <1> 
+   175 0000055D B901000000          <1>  mov ecx , %1
+   175 00000562 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+   175 00000566 4C89FF              <1>  mov rdi , vV_sp
+   175                              <1> 
+   175 00000569 F3A5                <1>  rep movsd
+   175                              <1> 
+   175 0000056B 4983C704            <1>  add vV_sp , cell(%1)
+   175                              <1> 
+   176                                  
    177                                  
-   178 000005BF E8D4FBFFFF              		call vV_io_flush	
+   178                                   ;OpADR: [27]  ; OUT opcode (3)			
    179                                  
-   180                                   ;OpADR: [30]  ; PUSH opcode 
-   181                                  
-   182                                  	vV_push 113 
-   182                              <1> 
-   182 000005C4 41C70771000000      <1>  mov DWORD[vV_sp] , %1
-   182 000005CB 4983C704            <1>  add vV_sp , 4
-   182                              <1> 
+   180 0000056F 41BA[D7030000]          	mov r10d , vV_FORMAT_HEX		
+   181 00000575 E8ECFBFFFF              	call vV_io_out				
+   182                                  						
    183                                  
-   184                                  
-   185                                   ;OpADR: [31]  ; EQUAL opcode					
-   186                                  
-   187 000005CF 418B47FC                	mov eax , vV_top			
-   188 000005D3 413947F8                	cmp DWORD vV_2nd , eax			
+   184                                   ;OpADR: [28]  ; FLUSH opcode					
+   185                                  
+   186 0000057A E88DFBFFFF              		call vV_io_flush	
+   187                                  
+   188                                   ;OpADR: [29]  ; OUT opcode (4)			
    189                                  
-   190 000005D7 75(0B)                  	jnz short 0xb				
-   191                                  
-   192 000005D9 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+   190 0000057F 41BA[53040000]          	mov r10d , vV_FORMAT_BIN		
+   191 00000585 E8DCFBFFFF              	call vV_io_out				
+   192                                  						
    193                                  
-   194 000005E1 EB(09)                  	jmp short 0x9				
+   194                                   ;OpADR: [30]  ; FLUSH opcode					
    195                                  
-   196 000005E3 41C747F800000000        			mov DWORD vV_2nd , 0	
+   196 0000058A E87DFBFFFF              		call vV_io_flush	
    197                                  
-   198                                  	vV_dec_sp 1				
-   198                              <1> 
-   198 000005EB 4983EF04            <1>  sub vV_sp , cell(%1)
-   198                              <1> 
+   198                                   ;OpADR: [31]  ; BUFF_OUT opcode (9)			
    199                                  
-   200                                   ;OpADR: [32]  ; IF opcode					
-   201                                  
-   202                                  	vV_dec_sp 1			
-   202                              <1> 
-   202 000005EF 4983EF04            <1>  sub vV_sp , cell(%1)
-   202                              <1> 
-   203 000005F3 418337FF                	xor DWORD[vV_sp] , -1			
-   204 000005F7 7502                    	jne wblock_0	
+   200                                  
+   201 0000058F E844FCFFFF              	call vV_io_out_packed_char_buffer				
+   202                                  						
+   203                                  
+   204                                   ;OpADR: [32]  ; BUFF_OUT opcode (9)			
    205                                  
-   206                                   ;OpADR: [33]  ; Break opcode					
-   207                                  
-   208 000005F9 EB19                    	jmp wblock_2		
+   206                                  
+   207 00000594 E83FFCFFFF              	call vV_io_out_packed_char_buffer				
+   208                                  						
    209                                  
-   210                                  
-   211                                  	wblock_0:		
+   210                                   ;OpADR: [33]  ; BUFF_OUT opcode (9)			
+   211                                  
    212                                  
-   213                                  ;------------------------------------------------------
-   214                                  
+   213 00000599 E83AFCFFFF              	call vV_io_out_packed_char_buffer				
+   214                                  						
    215                                  
-   216                                   ;OpADR: [34]  ; PUSH opcode 
+   216                                   ;OpADR: [34]  ; FLUSH opcode					
    217                                  
-   218                                  	vV_push 1 
-   218                              <1> 
-   218 000005FB 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   218 00000602 4983C704            <1>  add vV_sp , 4
-   218                              <1> 
+   218 0000059E E869FBFFFF              		call vV_io_flush	
    219                                  
-   220                                  
-   221                                   ;OpADR: [35]  ; WHILE opcode					
-   222                                  
-   223                                  	vV_dec_sp 1				
-   223                              <1> 
-   223 00000606 4983EF04            <1>  sub vV_sp , cell(%1)
-   223                              <1> 
-   224 0000060A 41830F00                	or DWORD[vV_sp] , 0			
-   225 0000060E 0F8535FFFFFF            	jne wblock_1		
-   226                                  
+   220                                   ;OpADR: [35]  ; GET opcode (8)			
+   221                                  
+   222                                  		
+   223 000005A3 E8F0FCFFFF              	call vV_io_get_char				
+   224                                  						
+   225                                  
+   226                                   ;OpADR: [36]  ; DUP opcode (1)			
    227                                  
-   228                                  	wblock_2:		
+   228                                  	vV_dup 1			
+   228                              <1> 
+   228 000005A8 B901000000          <1>  mov ecx , %1
+   228 000005AD 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+   228 000005B1 4C89FF              <1>  mov rdi , vV_sp
+   228                              <1> 
+   228 000005B4 F3A5                <1>  rep movsd
+   228                              <1> 
+   228 000005B6 4983C704            <1>  add vV_sp , cell(%1)
+   228                              <1> 
    229                                  
-   230                                  ;------------------------------------------------------
-   231                                  
+   230                                  
+   231                                   ;OpADR: [37]  ; PUSH opcode 
    232                                  
-   233                                   ;OpADR: [36]  ; PUSH opcode 
+   233                                  	vV_push 121 
+   233                              <1> 
+   233 000005BA 41C70779000000      <1>  mov DWORD[vV_sp] , %1
+   233 000005C1 4983C704            <1>  add vV_sp , 4
+   233                              <1> 
    234                                  
-   235                                  	vV_push 538983031 
-   235                              <1> 
-   235 00000614 41C707773A2020      <1>  mov DWORD[vV_sp] , %1
-   235 0000061B 4983C704            <1>  add vV_sp , 4
-   235                              <1> 
-   236                                  
+   235                                  
+   236                                   ;OpADR: [38]  ; EQUAL opcode					
    237                                  
-   238                                   ;OpADR: [37]  ; PUSH opcode 
-   239                                  
-   240                                  	vV_push 980574568 
-   240                              <1> 
-   240 0000061F 41C7076861723A      <1>  mov DWORD[vV_sp] , %1
-   240 00000626 4983C704            <1>  add vV_sp , 4
-   240                              <1> 
-   241                                  
+   238 000005C5 418B47FC                	mov eax , vV_top			
+   239 000005C9 413947F8                	cmp DWORD vV_2nd , eax			
+   240                                  
+   241 000005CD 75(0B)                  	jnz short 0xb				
    242                                  
-   243                                   ;OpADR: [38]  ; PUSH opcode 
+   243 000005CF 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
    244                                  
-   245                                  	vV_push 1663054880 
-   245                              <1> 
-   245 0000062A 41C70720342063      <1>  mov DWORD[vV_sp] , %1
-   245 00000631 4983C704            <1>  add vV_sp , 4
-   245                              <1> 
+   245 000005D7 EB(09)                  	jmp short 0x9				
    246                                  
-   247                                  
-   248                                   ;OpADR: [39]  ; PUSH opcode 
-   249                                  
-   250                                  	vV_push 1701869940 
-   250                              <1> 
-   250 00000635 41C70774797065      <1>  mov DWORD[vV_sp] , %1
-   250 0000063C 4983C704            <1>  add vV_sp , 4
-   250                              <1> 
-   251                                  
+   247 000005D9 41C747F800000000        			mov DWORD vV_2nd , 0	
+   248                                  
+   249                                  	vV_dec_sp 1				
+   249                              <1> 
+   249 000005E1 4983EF04            <1>  sub vV_sp , cell(%1)
+   249                              <1> 
+   250                                  
+   251                                   ;OpADR: [39]  ; IF opcode					
    252                                  
-   253                                  
-   254                                  	wblock_8:		
-   255                                  
-   256                                  ;------------------------------------------------------
-   257                                  
+   253                                  	vV_dec_sp 1			
+   253                              <1> 
+   253 000005E5 4983EF04            <1>  sub vV_sp , cell(%1)
+   253                              <1> 
+   254 000005E9 418337FF                	xor DWORD[vV_sp] , -1			
+   255 000005ED 750D                    	jne wblock_3	
+   256                                  
+   257                                   ;OpADR: [40]  ; PUSH opcode 
    258                                  
-   259                                   ;OpADR: [40]  ; DUP opcode (4)			
+   259                                  	vV_push 1 
+   259                              <1> 
+   259 000005EF 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   259 000005F6 4983C704            <1>  add vV_sp , 4
+   259                              <1> 
    260                                  
-   261                                  	vV_dup 4			
-   261                              <1> 
-   261 00000640 B904000000          <1>  mov ecx , %1
-   261 00000645 498D77F0            <1>  lea rsi , [vV_sp-cell(%1)]
-   261 00000649 4C89FF              <1>  mov rdi , vV_sp
-   261                              <1> 
-   261 0000064C F3A5                <1>  rep movsd
-   261                              <1> 
-   261 0000064E 4983C710            <1>  add vV_sp , cell(%1)
-   261                              <1> 
-   262                                  
+   261                                  
+   262                                   ;OpADR: [41]  ; ELIF opcode					
    263                                  
-   264                                   ;OpADR: [41]  ; BUFF_OUT opcode (9)			
+   264 000005FA EB5F                    	jmp wblock_2	
    265                                  
    266                                  
-   267 00000652 E80DFCFFFF              	call vV_io_out_packed_char_buffer				
-   268                                  						
-   269                                  
-   270                                   ;OpADR: [42]  ; BUFF_OUT opcode (9)			
+   267                                  	wblock_3:		
+   268                                  
+   269                                  ;------------------------------------------------------
+   270                                  
    271                                  
-   272                                  
-   273 00000657 E808FCFFFF              	call vV_io_out_packed_char_buffer				
-   274                                  						
+   272                                   ;OpADR: [42]  ; DUP opcode (1)			
+   273                                  
+   274                                  	vV_dup 1			
+   274                              <1> 
+   274 000005FC B901000000          <1>  mov ecx , %1
+   274 00000601 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+   274 00000605 4C89FF              <1>  mov rdi , vV_sp
+   274                              <1> 
+   274 00000608 F3A5                <1>  rep movsd
+   274                              <1> 
+   274 0000060A 4983C704            <1>  add vV_sp , cell(%1)
+   274                              <1> 
    275                                  
-   276                                   ;OpADR: [43]  ; BUFF_OUT opcode (9)			
-   277                                  
+   276                                  
+   277                                   ;OpADR: [43]  ; PUSH opcode 
    278                                  
-   279 0000065C E803FCFFFF              	call vV_io_out_packed_char_buffer				
-   280                                  						
+   279                                  	vV_push 89 
+   279                              <1> 
+   279 0000060E 41C70759000000      <1>  mov DWORD[vV_sp] , %1
+   279 00000615 4983C704            <1>  add vV_sp , 4
+   279                              <1> 
+   280                                  
    281                                  
-   282                                   ;OpADR: [44]  ; FLUSH opcode					
+   282                                   ;OpADR: [44]  ; EQUAL opcode					
    283                                  
-   284 00000661 E832FBFFFF              		call vV_io_flush	
-   285                                  
-   286                                   ;OpADR: [45]  ; GET opcode (9)			
-   287                                  
-   288                                  								
-   289 00000666 E8C4FCFFFF              	call vV_io_get_packed_char				
-   290                                  						
-   291                                  
-   292                                   ;OpADR: [46]  ; FLUSH opcode					
-   293                                  
-   294 0000066B E828FBFFFF              		call vV_io_flush	
-   295                                  
-   296                                   ;OpADR: [47]  ; SWAP opcode 
-   297                                  
+   284 00000619 418B47FC                	mov eax , vV_top			
+   285 0000061D 413947F8                	cmp DWORD vV_2nd , eax			
+   286                                  
+   287 00000621 75(0B)                  	jnz short 0xb				
+   288                                  
+   289 00000623 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+   290                                  
+   291 0000062B EB(09)                  	jmp short 0x9				
+   292                                  
+   293 0000062D 41C747F800000000        			mov DWORD vV_2nd , 0	
+   294                                  
+   295                                  	vV_dec_sp 1				
+   295                              <1> 
+   295 00000635 4983EF04            <1>  sub vV_sp , cell(%1)
+   295                              <1> 
+   296                                  
+   297                                   ;OpADR: [45]  ; IF opcode					
    298                                  
-   299                                  	vV_swap		
+   299                                  	vV_dec_sp 1			
    299                              <1> 
-   299 00000670 418B57FC            <1>  mov edx , [vV_sp-4]
-   299 00000674 418B47F8            <1>  mov eax , [vV_sp-8]
-   299 00000678 418957F8            <1>  mov [vV_sp-8] , edx
-   299 0000067C 418947FC            <1>  mov [vV_sp-4] , eax
+   299 00000639 4983EF04            <1>  sub vV_sp , cell(%1)
    299                              <1> 
-   300                                  
-   301                                  
-   302                                   ;OpADR: [48]  ; BUFF_OUT opcode (9)			
-   303                                  
+   300 0000063D 418337FF                	xor DWORD[vV_sp] , -1			
+   301 00000641 750D                    	jne wblock_1	
+   302                                  
+   303                                   ;OpADR: [46]  ; PUSH opcode 
    304                                  
-   305 00000680 E8DFFBFFFF              	call vV_io_out_packed_char_buffer				
-   306                                  						
+   305                                  	vV_push 1 
+   305                              <1> 
+   305 00000643 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   305 0000064A 4983C704            <1>  add vV_sp , 4
+   305                              <1> 
+   306                                  
    307                                  
-   308                                   ;OpADR: [49]  ; DUP opcode (1)			
+   308                                   ;OpADR: [47]  ; ELIF opcode					
    309                                  
-   310                                  	vV_dup 1			
-   310                              <1> 
-   310 00000685 B901000000          <1>  mov ecx , %1
-   310 0000068A 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   310 0000068E 4C89FF              <1>  mov rdi , vV_sp
-   310                              <1> 
-   310 00000691 F3A5                <1>  rep movsd
-   310                              <1> 
-   310 00000693 4983C704            <1>  add vV_sp , cell(%1)
-   310                              <1> 
+   310 0000064E EB0B                    	jmp wblock_2	
    311                                  
    312                                  
-   313                                   ;OpADR: [50]  ; BUFF_OUT opcode (0)			
+   313                                  	wblock_1:		
    314                                  
-   315 00000697 E82FFBFFFF              	call vV_io_out_buffer_default			
-   316                                  						
+   315                                  ;------------------------------------------------------
+   316                                  
    317                                  
-   318                                   ;OpADR: [51]  ; FLUSH opcode					
+   318                                   ;OpADR: [48]  ; PUSH opcode 
    319                                  
-   320 0000069C E8F7FAFFFF              		call vV_io_flush	
+   320                                  	vV_push 0 
+   320                              <1> 
+   320 00000650 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   320 00000657 4983C704            <1>  add vV_sp , 4
+   320                              <1> 
    321                                  
-   322                                   ;OpADR: [52]  ; FLUSH opcode					
+   322                                  
    323                                  
-   324 000006A1 E8F2FAFFFF              		call vV_io_flush	
+   324                                  	wblock_2:		
    325                                  
-   326                                   ;OpADR: [53]  ; DUP opcode (1)			
+   326                                  ;------------------------------------------------------
    327                                  
-   328                                  	vV_dup 1			
-   328                              <1> 
-   328 000006A6 B901000000          <1>  mov ecx , %1
-   328 000006AB 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   328 000006AF 4C89FF              <1>  mov rdi , vV_sp
-   328                              <1> 
-   328 000006B2 F3A5                <1>  rep movsd
-   328                              <1> 
-   328 000006B4 4983C704            <1>  add vV_sp , cell(%1)
-   328                              <1> 
-   329                                  
+   328                                  
+   329                                   ;OpADR: [49]  ; WHILE opcode					
    330                                  
-   331                                   ;OpADR: [54]  ; PUSH opcode 
-   332                                  
-   333                                  	vV_push 1918986339 
-   333                              <1> 
-   333 000006B8 41C70763686172      <1>  mov DWORD[vV_sp] , %1
-   333 000006BF 4983C704            <1>  add vV_sp , 4
-   333                              <1> 
-   334                                  
-   335                                  
-   336                                   ;OpADR: [55]  ; EQUAL opcode					
-   337                                  
-   338 000006C3 418B47FC                	mov eax , vV_top			
-   339 000006C7 413947F8                	cmp DWORD vV_2nd , eax			
-   340                                  
-   341 000006CB 75(0B)                  	jnz short 0xb				
-   342                                  
-   343 000006CD 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   344                                  
-   345 000006D5 EB(09)                  	jmp short 0x9				
-   346                                  
-   347 000006D7 41C747F800000000        			mov DWORD vV_2nd , 0	
-   348                                  
-   349                                  	vV_dec_sp 1				
-   349                              <1> 
-   349 000006DF 4983EF04            <1>  sub vV_sp , cell(%1)
-   349                              <1> 
-   350                                  
-   351                                   ;OpADR: [56]  ; IF opcode					
-   352                                  
-   353                                  	vV_dec_sp 1			
-   353                              <1> 
-   353 000006E3 4983EF04            <1>  sub vV_sp , cell(%1)
-   353                              <1> 
-   354 000006E7 418337FF                	xor DWORD[vV_sp] , -1			
-   355 000006EB 7530                    	jne wblock_7	
-   356                                  
-   357                                   ;OpADR: [57]  ; PUSH opcode 
-   358                                  
-   359                                  	vV_push 1346983712 
-   359                              <1> 
-   359 000006ED 41C70720574950      <1>  mov DWORD[vV_sp] , %1
-   359 000006F4 4983C704            <1>  add vV_sp , 4
-   359                              <1> 
-   360                                  
-   361                                  
-   362                                   ;OpADR: [58]  ; OUT opcode (9)			
-   363                                  
-   364                                  								
-   365 000006F8 E851FBFFFF              	call vV_io_out_packed_char				
-   366                                  						
-   367                                  
-   368                                   ;OpADR: [59]  ; FLUSH opcode					
-   369                                  
-   370 000006FD E896FAFFFF              		call vV_io_flush	
-   371                                  
-   372                                   ;OpADR: [60]  ; PUSH opcode 
-   373                                  
-   374                                  	vV_push 1 
-   374                              <1> 
-   374 00000702 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   374 00000709 4983C704            <1>  add vV_sp , 4
-   374                              <1> 
-   375                                  
-   376                                  
-   377                                   ;OpADR: [61]  ; PUSH opcode 
-   378                                  
-   379                                  	vV_push 0 
-   379                              <1> 
-   379 0000070D 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-   379 00000714 4983C704            <1>  add vV_sp , 4
-   379                              <1> 
-   380                                  
-   381                                  
-   382                                   ;OpADR: [62]  ; ELIF opcode					
-   383                                  
-   384 00000718 E9BB000000              	jmp wblock_6	
-   385                                  
-   386                                  
-   387                                  	wblock_7:		
-   388                                  
-   389                                  ;------------------------------------------------------
-   390                                  
-   391                                  
-   392                                   ;OpADR: [63]  ; DUP opcode (1)			
-   393                                  
-   394                                  	vV_dup 1			
-   394                              <1> 
-   394 0000071D B901000000          <1>  mov ecx , %1
-   394 00000722 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   394 00000726 4C89FF              <1>  mov rdi , vV_sp
-   394                              <1> 
-   394 00000729 F3A5                <1>  rep movsd
-   394                              <1> 
-   394 0000072B 4983C704            <1>  add vV_sp , cell(%1)
-   394                              <1> 
-   395                                  
-   396                                  
-   397                                   ;OpADR: [64]  ; PUSH opcode 
-   398                                  
-   399                                  	vV_push 1919443824 
-   399                              <1> 
-   399 0000072F 41C70770636872      <1>  mov DWORD[vV_sp] , %1
-   399 00000736 4983C704            <1>  add vV_sp , 4
-   399                              <1> 
-   400                                  
-   401                                  
-   402                                   ;OpADR: [65]  ; EQUAL opcode					
-   403                                  
-   404 0000073A 418B47FC                	mov eax , vV_top			
-   405 0000073E 413947F8                	cmp DWORD vV_2nd , eax			
-   406                                  
-   407 00000742 75(0B)                  	jnz short 0xb				
-   408                                  
-   409 00000744 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   410                                  
-   411 0000074C EB(09)                  	jmp short 0x9				
-   412                                  
-   413 0000074E 41C747F800000000        			mov DWORD vV_2nd , 0	
-   414                                  
-   415                                  	vV_dec_sp 1				
-   415                              <1> 
-   415 00000756 4983EF04            <1>  sub vV_sp , cell(%1)
-   415                              <1> 
-   416                                  
-   417                                   ;OpADR: [66]  ; IF opcode					
-   418                                  
-   419                                  	vV_dec_sp 1			
-   419                              <1> 
-   419 0000075A 4983EF04            <1>  sub vV_sp , cell(%1)
-   419                              <1> 
-   420 0000075E 418337FF                	xor DWORD[vV_sp] , -1			
-   421 00000762 7517                    	jne wblock_5	
-   422                                  
-   423                                   ;OpADR: [67]  ; PUSH opcode 
-   424                                  
-   425                                  	vV_push 1346983712 
-   425                              <1> 
-   425 00000764 41C70720574950      <1>  mov DWORD[vV_sp] , %1
-   425 0000076B 4983C704            <1>  add vV_sp , 4
-   425                              <1> 
-   426                                  
-   427                                  
-   428                                   ;OpADR: [68]  ; OUT opcode (9)			
-   429                                  
-   430                                  								
-   431 0000076F E8DAFAFFFF              	call vV_io_out_packed_char				
-   432                                  						
-   433                                  
-   434                                   ;OpADR: [69]  ; FLUSH opcode					
-   435                                  
-   436 00000774 E81FFAFFFF              		call vV_io_flush	
-   437                                  
-   438                                   ;OpADR: [70]  ; ELIF opcode					
-   439                                  
-   440 00000779 EB5D                    	jmp wblock_6	
-   441                                  
-   442                                  
-   443                                  	wblock_5:		
-   444                                  
-   445                                  ;------------------------------------------------------
-   446                                  
-   447                                  
-   448                                   ;OpADR: [71]  ; DUP opcode (1)			
-   449                                  
-   450                                  	vV_dup 1			
-   450                              <1> 
-   450 0000077B B901000000          <1>  mov ecx , %1
-   450 00000780 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   450 00000784 4C89FF              <1>  mov rdi , vV_sp
-   450                              <1> 
-   450 00000787 F3A5                <1>  rep movsd
-   450                              <1> 
-   450 00000789 4983C704            <1>  add vV_sp , cell(%1)
-   450                              <1> 
-   451                                  
-   452                                  
-   453                                   ;OpADR: [72]  ; PUSH opcode 
-   454                                  
-   455                                  	vV_push 1953068401 
-   455                              <1> 
-   455 0000078D 41C70771756974      <1>  mov DWORD[vV_sp] , %1
-   455 00000794 4983C704            <1>  add vV_sp , 4
-   455                              <1> 
-   456                                  
-   457                                  
-   458                                   ;OpADR: [73]  ; EQUAL opcode					
-   459                                  
-   460 00000798 418B47FC                	mov eax , vV_top			
-   461 0000079C 413947F8                	cmp DWORD vV_2nd , eax			
-   462                                  
-   463 000007A0 75(0B)                  	jnz short 0xb				
-   464                                  
-   465 000007A2 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   466                                  
-   467 000007AA EB(09)                  	jmp short 0x9				
-   468                                  
-   469 000007AC 41C747F800000000        			mov DWORD vV_2nd , 0	
-   470                                  
-   471                                  	vV_dec_sp 1				
-   471                              <1> 
-   471 000007B4 4983EF04            <1>  sub vV_sp , cell(%1)
-   471                              <1> 
-   472                                  
-   473                                   ;OpADR: [74]  ; IF opcode					
-   474                                  
-   475                                  	vV_dec_sp 1			
-   475                              <1> 
-   475 000007B8 4983EF04            <1>  sub vV_sp , cell(%1)
-   475                              <1> 
-   476 000007BC 418337FF                	xor DWORD[vV_sp] , -1			
-   477 000007C0 7516                    	jne wblock_6	
-   478                                  
-   479                                   ;OpADR: [75]  ; PUSH opcode 
-   480                                  
-   481                                  	vV_push 0 
-   481                              <1> 
-   481 000007C2 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-   481 000007C9 4983C704            <1>  add vV_sp , 4
-   481                              <1> 
-   482                                  
-   483                                  
-   484                                   ;OpADR: [76]  ; PUSH opcode 
-   485                                  
-   486                                  	vV_push 0 
-   486                              <1> 
-   486 000007CD 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-   486 000007D4 4983C704            <1>  add vV_sp , 4
-   486                              <1> 
-   487                                  
-   488                                  
-   489                                  
-   490                                  	wblock_6:		
-   491                                  
-   492                                  ;------------------------------------------------------
-   493                                  
-   494                                  
-   495                                   ;OpADR: [77]  ; WHILE opcode					
-   496                                  
-   497                                  	vV_dec_sp 1				
-   497                              <1> 
-   497 000007D8 4983EF04            <1>  sub vV_sp , cell(%1)
-   497                              <1> 
-   498 000007DC 41830F00                	or DWORD[vV_sp] , 0			
-   499 000007E0 0F855AFEFFFF            	jne wblock_8		
-   500                                  
-   501                                   ;OpADR: [78]  ; WHILE opcode					
-   502                                  
-   503                                  	vV_dec_sp 1				
-   503                              <1> 
-   503 000007E6 4983EF04            <1>  sub vV_sp , cell(%1)
-   503                              <1> 
-   504 000007EA 41830F00                	or DWORD[vV_sp] , 0			
-   505 000007EE 0F85F1FCFFFF            	jne wblock_9		
-   506                                  		
-   507 000007F4 C3                      		ret
-   508                                  
-   509                                  ;Transpiled from vV with vVc version 0.0.1.5
-   510                                  		
-   511                                  		
+   331                                  	vV_dec_sp 1				
+   331                              <1> 
+   331 0000065B 4983EF04            <1>  sub vV_sp , cell(%1)
+   331                              <1> 
+   332 0000065F 41830F00                	or DWORD[vV_sp] , 0			
+   333 00000663 0F8560FEFFFF            	jne wblock_4		
+   334                                  		
+   335 00000669 C3                      		ret
+   336                                  
+   337                                  ;Transpiled from vV with vVc version 0.0.2.3.1
+   338                                  		
+   339                                  		

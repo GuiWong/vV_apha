@@ -1,6 +1,6 @@
 
 
-%include "vVc/assembly/w_runtime/vV_ascii.asm"
+;%include "vVc/assembly/w_runtime/vV_ascii.asm"
 
 
 ;Group all read/wrie syscalls
@@ -8,8 +8,8 @@
 ;global convert_to_string
 ;global convert_to_int
 
-;extern w_input_buffer
-;extern w_output_buffer
+;extern vV_input_buffer
+;extern vV_output_buffer
 ;extern w_number_buffer
 
 global wio_out
@@ -30,13 +30,13 @@ vV_io_flush:
 	
 	
 	
-	mov edx , DWORD[wout_count]			;string lenght	
+	mov edx , DWORD[vV_output_buffer_content]			;string lenght	
 	
-	mov DWORD[wout_count] , 0
+	mov DWORD[vV_output_buffer_content] , 0
 	
-	mov rsi , w_output_buffer			;strng ptr
+	mov rsi , vV_output_buffer			;strng ptr
 		
-	mov BYTE[w_output_buffer + edx] , 0xa
+	mov BYTE[vV_output_buffer + edx] , 0xa
 	inc edx
 		
 	mov rdi , 1					;file descriptor, stdout
@@ -90,8 +90,8 @@ vV_io_out01:					;print str repr of Top Of Stack element
 
 	vV_pop eax				;get value in eax
 	
-	mov edi , w_output_buffer		;set dest as O_buff
-	add edi ,DWORD[wout_count]		;set offset to start of freespace
+	mov edi , vV_output_buffer		;set dest as O_buff
+	add edi ,DWORD[vV_output_buffer_content]		;set offset to start of freespace
 	
 push rdi					;Save buffer origin
 	
@@ -126,7 +126,7 @@ vV_io_out_direct_end:
 		
 vV_io_out_buffer_end:
 
-	add [wout_count] , eax
+	add [vV_output_buffer_content] , eax
 
 	ret
 
@@ -169,12 +169,12 @@ vV_io_read_char:
 
 	vV_pop eax
 	
-	mov rdi , w_output_buffer
-	add edi , [wout_count]
+	mov rdi , vV_output_buffer
+	add edi , [vV_output_buffer_content]
 	
 	mov [edi] , al
 	
-	mov edi , w_output_buffer
+	mov edi , vV_output_buffer
 	mov eax , 1
 	
 	ret	
@@ -183,12 +183,12 @@ vV_io_read_packed_char:
 
 	vV_pop eax
 	
-	mov rdi , w_output_buffer
-	add edi , [wout_count]
+	mov rdi , vV_output_buffer
+	add edi , [vV_output_buffer_content]
 	
 	mov [edi] , eax
 	
-	mov edi , w_output_buffer
+	mov edi , vV_output_buffer
 	mov eax , 4	
 	
 	ret
@@ -204,8 +204,8 @@ vV_io_read_packed_char:
 vV_io_read:
 
 								
-		mov rsi , w_input_buffer		;ptr to string destination	
-		mov edx , 255				;string lenght	
+		mov rsi , vV_input_buffer		;ptr to string destination	
+		mov edx , vV_input_buffer_size				;string lenght	
 		mov rdi , 0				;file descriptor, stdin
 		mov rax , 0				; read sysCall
 		
@@ -219,14 +219,25 @@ vV_io_read:
 		
 			jb .no_overflow
 			
-		cmp BYTE[w_input_buffer +254] , 0xa	;Check if Buffer end with "\n"
+		cmp BYTE[vV_input_buffer + vV_input_buffer_size-1] , 0xa	;Check if Buffer end with "\n"
 		
 			je .no_overflow
 		
 		
-			mov rax , 12		;placeholder value for now, 
-						;TODO: Make ERRORS constants
-			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
+			push rax
+			push rbx
+		
+			mov ah , vV_ERR_IO_I_OVERFLOW
+			or ax , 0
+			xor rbx , rbx
+			mov rbx , rsi
+		
+			call vV_error
+		
+			pop rbx
+			pop rax
+		
+			;ret
 		
 		.no_overflow:
 		
@@ -253,7 +264,7 @@ vV_io_get:						;convert inputed value to
 
 		mov ebx , eax 			;send char count by ebx
 		xor edi , edi 			;zero out counter
-		mov esi , w_input_buffer	;Set source to I_buffer
+		mov esi , vV_input_buffer	;Set source to I_buffer
 		
 
 		call r10
@@ -276,7 +287,7 @@ vV_io_get_char:
 	
 	xor edx , edx
 	
-	mov dl , [w_input_buffer]
+	mov dl , [vV_input_buffer]
 	
 	vV_push edx
 	
@@ -284,186 +295,18 @@ vV_io_get_char:
 	
 vV_io_get_packed_char:
 
-	mov DWORD [w_input_buffer] , 0
+	mov DWORD [vV_input_buffer] , 0
 
 	call vV_io_read
 	
 	xor edx , edx
 	
-	mov edx, [w_input_buffer]
+	mov edx, [vV_input_buffer]
 	
 	vV_push edx
 	
 	ret
 	
-		
-	
-		
-	wio_get:
-	
-	
-		mov rsi , w_input_buffer		;ptr to string destination	
-		mov edx , 255				;string lenght		#TODO: handle multiple lenght numbers
-		mov rdi , 0				;file descriptor, stdin
-		mov rax , 0				; read sysCall
-		
-		syscall
-		
-		
-;-------------Buffer_Overflow_Execption  (experiment) [Working for now]
-
-
-
-		cmp eax , 255
-		
-		jb .no_overflow
-		
-		
-		cmp BYTE[w_input_buffer +254] , 0xa
-		
-		je .no_overflow
-		
-			mov rax , 12		;placeholder value for now, 
-						;TODO: Make ERRORS constants
-		
-			call w_forced_exit 	;NOTE: should handle ret adress? #TODO
-		
-		.no_overflow:
-		
-;----------------------------------------------
-
-
-push rbx
-
-		mov ebx , eax 	;char count
-		xor edi , edi 
-		mov esi , w_input_buffer
-		
-
-		call vV_ascii_as_dec
-		
-pop rbx
-		
-		mov [r15] , eax
-		
-		add r15 , 4
-		
-		ret
-		
-	wio_get_str_raw:		;removes the new_line
-	
-		mov r10 , .end
-		
-		
-		
-		
-		jmp wio_get_str
-		
-		.end:
-		
-		dec DWORD [w_input_buffer-4]
-		
-	
-		
-		ret
-	
-	wio_get_str_null:		;null terminated
-	
-		mov r10 , .end
-		
-		
-		jmp wio_get_str
-		
-		.end:
-		
-		mov rsi , w_input_buffer
-		
-		add esi ,[w_input_buffer -4]
-		
-		dec rsi
-		
-		mov BYTE [rsi] , 0
-		
-		
-		
-		ret
-	
-	wio_get_str_nline:		;keep the new line
-	
-		mov r10 , .end
-		
-		
-		jmp wio_get_str
-		
-		.end:
-		
-		ret
-		
-		
-	wio_get_str:				;arg: eax: size to read	r10: return adrr
-							; ?? may use rsi for dest info???
-							; then shouldn't increment rsi in get_str
-							; maybe make a get_string_direct later???
-							; or do adr calc before?
-							; maybe 2 entry point/ 1 exit point?
-	
-	
-		mov rsi , w_input_buffer			;ptr to string destination	
-		add esi , [w_input_buffer - 4]
-		mov edx , eax				;string lenght		#TODO: handle multiple lenght numbers
-		;sub edx , [w_input_buffer - 4]
-		mov rdi , 0				;file descriptor, stdin
-		mov rax , 0				; read sysCall
-		
-		syscall
-		
-		
-		
-		
-		
-		;dec eax
-		
-		add [w_input_buffer-4] , eax
-		
-		
-		jmp r10
-		
-		
-	wio_move_in_to_out:
-	
-	
-		mov ecx , [w_input_buffer-4]
-		add ecx , 4
-		mov esi , w_input_buffer-4
-		mov edi , w_output_buffer-4
-		
-		rep movsb
-		
-		mov DWORD [w_input_buffer-4] , 0
-		
-		
-		
-		ret
-	
-	
-		
-		
-	wio_flush:
-	
-	
-		
-		mov edx , [w_output_buffer - 4]		;string lenght
-		mov rsi , w_output_buffer			;strng ptr
-		mov rdi , 1				;file descriptor, stdout
-		mov rax , 1				; Write sysCall
-		syscall
-	
-		ret
-		
-		
-		
-		
-		
 		
 		
 

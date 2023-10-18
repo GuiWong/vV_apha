@@ -361,12 +361,21 @@ vV_ascii_pop_digits:			; Need nb of digits currently on stack(ecx)
 		jb .loopstart
 		
 	
-			mov rax , 26;	#TODO: Defined Errors code/ data in file
-			xor rdx , rdx
-			mov edx , ecx
-			mov ecx , r9d
+			push rax
+			push rbx
 		
-			call w_forced_exit
+			mov ah , vV_ERR_MEMORY_BUFFER_LIMIT
+			or ax , 0
+			xor rbx , rbx
+			mov ebx , edi
+		
+			call vV_error
+		
+			pop rbx
+			pop rax
+			
+			mov ecx , r9d		;Should protect memory..
+			dec ecx		;will need testing
 		
 						
 		.loopstart:

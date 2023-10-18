@@ -1,5 +1,5 @@
 
-import w.VM_Opcode as OP
+import vV.VM_Opcode as OP
 import precompiler.Opcode as Opcode
 import Program
 

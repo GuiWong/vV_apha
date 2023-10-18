@@ -1,10 +1,26 @@
 
+
+
+;------------------Variables From Project-------------
+
+
+%define vV_input_buffer_size 255
+%define vV_output_buffer_size 255
+
+
+
+;------------------Implementation Relative-------------
+
 %deftok vV_sp 'r15'
 
 %deftok vV_spS 'r14'
 
 %deftok vV_sdir '-'
 
+
+
+
+;------------------Stack Shortcuts--------------------
 
 %define cell(a) (a*4)
 
@@ -15,12 +31,15 @@
 %define vV_stack_v(a) ([vV_sp vV_sdir %+ cell(a)])
 
 
+;-------------------Out_Format Pointer------------------
 
 %deftok vV_FORMAT_BIN "vV_ascii_int_to_bin"
 %deftok vV_FORMAT_DEC "vV_ascii_int_to_dec"
 %deftok vV_FORMAT_HEX "vV_ascii_int_to_hex"
 
 
+
+;--------------------Op Macros--------------------------
 
 %macro vV_push 1
 

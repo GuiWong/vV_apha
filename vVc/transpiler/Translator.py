@@ -1,5 +1,5 @@
 
-import w.VM_Opcode as OP
+import vV.VM_Opcode as OP
 import precompiler.Opcode as Opcode
 import vm.Program 
 
@@ -66,8 +66,18 @@ class Translator:
 		self.output+= '\
 %include "'+self.lib_path+'vV_defines.asm"		\n\
 %include "'+self.lib_path+'vV_error_code.asm"		\n\
+%include "'+self.lib_path+'vV_runtime.asm"		\n\
+\
+%include "'+self.lib_path+'vV_system00.asm"		\n\
+%include "'+self.lib_path+'vV_errors.asm"		\n\
+\
+%include "'+self.lib_path+'vV_system10.asm"		\n\
 %include "'+self.lib_path+'vV_io.asm"			\n\
-%include "'+self.lib_path+'w_runtime.asm"		\n'
+%include "'+self.lib_path+'vV_ascii.asm"		\n\
+\
+%include "'+self.lib_path+'vV_system90.asm"		\n\
+\
+\n'
 
 
 		self.output+= '''
@@ -81,7 +91,7 @@ segment .text
 
 
 
-w_entry_point:
+vV_entry_point:
 
 
 	mov rbp, rsp			;Setup Stack Frame
@@ -115,7 +125,7 @@ w_entry_point:
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.1.5
+;Transpiled from vV with vVc version 0.0.2.3.1
 		
 		'''
 		

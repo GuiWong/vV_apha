@@ -1,4 +1,4 @@
-import w.VM_Opcode as OP
+import vV.VM_Opcode as OP
 import WErrors
 import precompiler.Pre_Compiler_states as State
 

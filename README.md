@@ -8,7 +8,9 @@ but vV is already different in implementation and in planning.
 
 
 
-	Update 0.0.2: Basic I/O
+	Update 0.0.2.4: 
+			Reworking Assembly code structure
+			
 
 
 Planned Updates:
@@ -18,11 +20,12 @@ Planned Updates:
 	0.0.2.5:	
 			-Cleanup labels, files
 			-Define Errors
+			-char/pckdchar in editor
 	
 	
 	0.0.3:	
 			Basic "Functions"
-			char/pckdchar in editor
+			
 			
 
 

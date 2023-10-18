@@ -1,7 +1,13 @@
 %include "vVc/assembly/w_runtime/vV_defines.asm"		
 %include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
 %include "vVc/assembly/w_runtime/vV_io.asm"			
-%include "vVc/assembly/w_runtime/w_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
 
 
 global w_entry_point
@@ -13,7 +19,7 @@ segment .text
 
 
 
-w_entry_point:
+vV_entry_point:
 
 
 	mov rbp, rsp			;Setup Stack Frame
@@ -246,19 +252,19 @@ w_entry_point:
 
 	vV_dec_sp 1			
 	xor DWORD[vV_sp] , -1			
-	jne wblock_0	
+	jne wblock_3	
 
  ;OpADR: [40]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [41]  ; ELSE opcode					
+ ;OpADR: [41]  ; ELIF opcode					
 
-	jmp wblock_3	
+	jmp wblock_2	
 
 
-	wblock_0:		
+	wblock_3:		
 
 ;------------------------------------------------------
 
@@ -299,9 +305,9 @@ w_entry_point:
 	vV_push 1 
 
 
- ;OpADR: [47]  ; ELSE opcode					
+ ;OpADR: [47]  ; ELIF opcode					
 
-	jmp wblock_3	
+	jmp wblock_2	
 
 
 	wblock_1:		
@@ -315,7 +321,7 @@ w_entry_point:
 
 
 
-	wblock_3:		
+	wblock_2:		
 
 ;------------------------------------------------------
 
@@ -324,10 +330,10 @@ w_entry_point:
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
-	jne wblock_4	
+	jne wblock_4		
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.1.5
+;Transpiled from vV with vVc version 0.0.2.3.1
 		
 		

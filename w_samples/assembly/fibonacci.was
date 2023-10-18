@@ -1,0 +1,103 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+
+vV_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: [0]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [1]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [2]  ; DUP opcode (2)			
+
+	vV_dup 2			
+
+
+ ;OpADR: [3]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [4]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [5]  ; OUT opcode (3)			
+
+	mov r10d , vV_FORMAT_HEX		
+	call vV_io_out				
+						
+
+ ;OpADR: [6]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [7]  ; PUSH opcode 
+
+	vV_push 2147483647 
+
+
+ ;OpADR: [8]  ; LESS opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [9]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_0		
+		
+		ret
+
+;Transpiled from vV with vVc version 0.0.2.3.1
+		
+		

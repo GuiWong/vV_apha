@@ -1,56 +1,35 @@
 
 
- 
+
+segment .bss
 
 
-;segment .bss:		;TODO: allocate bss in system0x
+	ALIGNB 4
+		
+	vV_error_buffer:
+	resb 64
+	vV_end_err_buff:
+	vV_error_buffer_size equ vV_end_err_buff-vV_error_buffer
 
 
 
 
+segment .data
 
-segment .data:
+;Error String	
 
-
+	
 	vV_error_msg:
 	.default: db "Unhandeled Error "
 	default_size equ $-.default
-	
-	vV_error_vectors:
-	times 32 dq vV_error_unhandeled
 
 
 
-segment .text:
+segment .text
 
 
 
-vV_error:
 
-	push rdx
-	
-	xor rdx , rdx
-	
-	mov dl , ah
-	
-	shl dl , 3
-	
-	call [vV_error_vectors + edx]
-	
-	
-	pop rdx
-	
-	ret
-	
-	
-vV_error_fatal:
-
-	
-	mov al , dl
-	
-	shr al , 3
-
-	call w_forced_exit
 	
 vV_error_unhandeled:
 

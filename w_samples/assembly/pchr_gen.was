@@ -1,7 +1,13 @@
 %include "vVc/assembly/w_runtime/vV_defines.asm"		
 %include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
 %include "vVc/assembly/w_runtime/vV_io.asm"			
-%include "vVc/assembly/w_runtime/w_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
 
 
 global w_entry_point
@@ -13,7 +19,7 @@ segment .text
 
 
 
-w_entry_point:
+vV_entry_point:
 
 
 	mov rbp, rsp			;Setup Stack Frame

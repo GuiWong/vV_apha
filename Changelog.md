@@ -3,14 +3,16 @@
 
 
 
-
-
-Current Version:	0.0.2.3:	
 	
-		-Support for char, packedchar, binary and hexadecimal in source file
-		-Reworked Error management, Still in progress
-		-new "block" logic, allowing sub_blocks
-		- break keyword, to exit a loop
+
+	0.0.2.3.1:	
+				-Project structure cleanup
+				-Support for char, packedchar, binary and hexadecimal in source file
+		
+	0.0.2.2:
+				-Reworked Error management, Still in progress
+				-new "block" logic, allowing sub_blocks
+				- break keyword, to exit a loop
 	
 	
 	

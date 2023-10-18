@@ -1,0 +1,5 @@
+0 1
+
+do
+
+2dup + dup xout dup 2147483647 <? while
