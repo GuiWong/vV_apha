@@ -18,6 +18,9 @@ segment .text
 
 
 
+		
+
+
 
 vV_entry_point:
 
@@ -334,6 +337,6 @@ vV_entry_point:
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.2.3.1
+;Transpiled from vV with vVc version 0.0.3
 		
 		

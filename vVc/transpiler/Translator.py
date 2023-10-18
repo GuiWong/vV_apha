@@ -27,6 +27,8 @@ class Translator:
 		self.label_names = {}
 		self.output = ''
 		
+		self.def_label_names = {}
+		
 		
 		self.pc = -1
 		self.sp = 0#64
@@ -35,10 +37,16 @@ class Translator:
 		
 		self.label_count = 0
 		
+		self.inserted = ''
+		
 	def fetch(self):
 	
 		self.pc += 1
 		self.current_op = self.program.code[self.pc]
+		
+	def add_inserted_code(self,raw):
+	
+		self.inserted = raw
 		
 	def generate_label_names(self):
 	
@@ -80,6 +88,10 @@ class Translator:
 \n'
 
 
+		
+
+
+
 		self.output+= '''
 
 global w_entry_point
@@ -88,6 +100,11 @@ global w_entry_point
 
 segment .text 
 
+
+'''
+		self.output+=self.inserted
+		self.output+= '''
+		
 
 
 
@@ -112,6 +129,10 @@ vV_entry_point:
 		
 			self.output += self.generate_label(self.label_names[self.pc])
 			
+		if self.pc in self.def_label_names.keys():
+		
+			self.output += self.generate_label(self.def_label_names[self.pc])
+			
 		self.output += '\n ;OpADR: ['+str(self.pc)+']  '
 			
 		self.translate_opcode()
@@ -125,7 +146,7 @@ vV_entry_point:
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.2.3.1
+;Transpiled from vV with vVc version 0.0.3
 		
 		'''
 		
@@ -205,7 +226,7 @@ vV_entry_point:
 ; SUB opcode 					\n\
 \n\
 	mov eax , vV_2nd			\n\
-	add eax , vV_top			\n\
+	sub eax , vV_top			\n\
 	mov vV_2nd, eax			\n\
 \n\
 	vV_dec_sp 1		\n'
@@ -572,6 +593,21 @@ vV_entry_point:
 		call vV_io_flush	\n'
 
 
+
+		elif op == OP.ENDEF:
+
+			txt = '\
+; End of func opcode					\n\
+\n\
+		ret			\n'
+		
+		elif op == OP.CALL:
+
+			txt = '\
+; Function Call					\n\
+\n\
+		call '+arg+'			\n'
+	
 
 
 

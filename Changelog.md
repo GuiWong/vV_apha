@@ -2,6 +2,17 @@
 
 
 
+Function Update	0.0.3:
+
+				-basic support for functions
+				- def and enddef keywords
+				- 32 Possible Errors Type, with pointers to handler stored in memory
+				- 2 default error policy:
+					-fatal : exit with exit code == Error type
+					--unhandeled : print info to stdout
+					
+				
+				
 
 	
 

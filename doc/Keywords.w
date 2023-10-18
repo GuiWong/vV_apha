@@ -11,7 +11,7 @@
 	
 2.0: Boolean checks	
 	
-	<? >? =?					#Need lessandequal itou more
+	<? >? =?					
 
 3.0: flow control
 
@@ -19,15 +19,18 @@
 	if 	el	,
 	
 	do	while
+	
+	break
 
 4.0: Stack manipulation
 
- 	(push) ' '	 xdup   	swp		drp		
+ 	(push) ' '	 dup   	swp		drp		
+ 			2dup
+ 			  |
+ 			9dup
  
  
- 
- 
-5.0 To implement:
+5.0 I/O Update (0.0.2.x)
  
  
  DONE	get	[read input, send int data tostack]
@@ -52,23 +55,38 @@
  Implicit|	(xget)	|
  	  \	(bget)	/
  		
- 		getc
- 		getw
+ 		getc	\	Done
+ 		getw	/
  
  
-   28	 	out	\		out_
- 		dout	|		dout_
- 		sout	|done		sout_
- 		xout	|		xout_
- 		bout	/		bout_
+   28	 	out	\		out_	\
+ 		dout	|		dout_	|
+ 		sout	|done		sout_	|
+ 		xout	|		xout_	|
+ 		bout	/		bout_	|	Done
+ 						|
+ 		cout	\ done		cout_	|
+ 		wout	/		wout_	/
  		
- 		cout			cout_
- 		wout			wout_
+ 		
+ 		
+ 	All format are Recognised by compiler ( 32  <=> ' ' <=> 0x20 ) 
  
  	
  ------------------------------------------------------
  
-6.0[next version]STRING STACK
+ 6.0 Function Update (0.0.3)
+ 
+ 
+ 	def name	\
+ 			|
+ 			|	Define a function name
+ 			|
+ 	endef		/
+ 	
+ 	
+ 
+7.0[next version]STRING STACK
  	
  	new instr for str:
  

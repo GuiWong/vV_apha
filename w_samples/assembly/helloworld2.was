@@ -1,7 +1,13 @@
 %include "vVc/assembly/w_runtime/vV_defines.asm"		
 %include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
 %include "vVc/assembly/w_runtime/vV_io.asm"			
-%include "vVc/assembly/w_runtime/w_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
 
 
 global w_entry_point
@@ -13,29 +19,34 @@ segment .text
 
 
 
-w_entry_point:
+	chardata:		
+
+;------------------------------------------------------
 
 
-	mov rbp, rsp			;Setup Stack Frame
-	
-	
- ;OpADR: [0]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [1]  ; PUSH opcode 
+ ;OpADR: [0]  ; PUSH opcode 
 
 	vV_push 543452274 
 
 
- ;OpADR: [2]  ; PUSH opcode 
+ ;OpADR: [1]  ; PUSH opcode 
 
 	vV_push 1867980911 
 
 
- ;OpADR: [3]  ; PUSH opcode 
+ ;OpADR: [2]  ; PUSH opcode 
 
 	vV_push 1819043144 
+
+
+ ;OpADR: [3]  ; End of func opcode					
+
+		ret			
+
+
+	print3:		
+
+;------------------------------------------------------
 
 
  ;OpADR: [4]  ; BUFF_OUT opcode (9)			
@@ -60,12 +71,80 @@ w_entry_point:
 
 		call vV_io_flush	
 
- ;OpADR: [8]  ; FLUSH opcode					
+ ;OpADR: [8]  ; End of func opcode					
+
+		ret			
+
+
+	helloworld:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [9]  ; Function Call					
+
+		call chardata			
+
+ ;OpADR: [10]  ; Function Call					
+
+		call print3			
+
+ ;OpADR: [11]  ; End of func opcode					
+
+		ret			
+
+
+	newline:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [12]  ; FLUSH opcode					
 
 		call vV_io_flush	
+
+ ;OpADR: [13]  ; End of func opcode					
+
+		ret			
+
+
+	main:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [14]  ; Function Call					
+
+		call newline			
+
+ ;OpADR: [15]  ; Function Call					
+
+		call helloworld			
+
+ ;OpADR: [16]  ; Function Call					
+
+		call newline			
+
+ ;OpADR: [17]  ; End of func opcode					
+
+		ret			
+
+		
+
+
+
+vV_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: [0]  ; Function Call					
+
+		call main			
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.1.5
+;Transpiled from vV with vVc version 0.0.3
 		
 		

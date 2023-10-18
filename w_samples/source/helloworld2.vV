@@ -1,0 +1,31 @@
+
+def chardata 
+	'rld ' 'o Wo' 'Hell'
+endef
+	
+def print3
+
+	wout_ wout_ wout_ flush
+
+	endef
+
+def
+
+	helloworld
+
+	chardata
+
+	print3
+
+endef
+
+
+		def newline flush endef
+
+def main 	newline
+		helloworld
+		newline
+	endef
+
+
+main

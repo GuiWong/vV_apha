@@ -8,25 +8,13 @@ but vV is already different in implementation and in planning.
 
 
 
-	Update 0.0.2.4: 
-			Reworking Assembly code structure
+	Update 0.0.3: 
+			Basic Functions Working
 			
 
 
 Planned Updates:
 
-
-
-	0.0.2.5:	
-			-Cleanup labels, files
-			-Define Errors
-			-char/pckdchar in editor
-	
-	
-	0.0.3:	
-			Basic "Functions"
-			
-			
 
 
 
@@ -54,9 +42,10 @@ Could be called "double-u" or "double-v") is a stack based programming language.
 
 For now, it only has:
 	- basic operations ( + - mul div < > ! & ^ % )
-	- if , else , end , do , while for flow control
-	- output of number kinda works
-	-all assembly is here for int and string input, just need to add the keywords
+	- if , else , end , do , while , break for flow control
+	- numeric and ascii input/output
+	- basic Error Managment
+
 	
 	
 stack is in .bss for now, pointed to by r15

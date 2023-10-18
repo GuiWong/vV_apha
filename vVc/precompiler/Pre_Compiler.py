@@ -340,6 +340,17 @@ class Symbol_Solver:
 		pass
 		
 		
+class Function_Registerer:
+
+	functions = {}
+	
+	def __init__(self):
+	
+		self.functions = {}
+		
+	
+		
+		
 class Operation_Decoder:
 
 	def __init__(self):
@@ -422,6 +433,12 @@ class Operation_Decoder:
 			'''
 #04: composed Ops
 
+
+
+#05: Defined keyword
+
+		#elif cmd in 
+
 #-1: catch errors
 
 		else:
@@ -464,9 +481,16 @@ class Pre_Compiler:
 	
 		self.context = Context()
 		
+		self.def_context = Context()
+		
 		self.stacks = Block_Stack()
 		
 		self.symbol_solver = Symbol_Solver()
+		
+		
+		self.function_registerer = Function_Registerer()
+		
+		
 		
 		self.file_loader = File_Loader()
 		
@@ -478,9 +502,13 @@ class Pre_Compiler:
 		self.block_manager = Block_Manager()
 		
 		
-		self. op_array = []
+		self.op_array = []
 		
 		self.raw_data = []
+		
+		#trying function
+		
+		self.def_op_array = []
 		
 	def setup_startup(self,flags):		#TODO: DEFINE FLAGS
 		
@@ -504,6 +532,7 @@ class Pre_Compiler:
 				#---update state--------------------------------------------------
 		
 		self.context.state = State.READY
+		
 		
 	def start_block(self,adr,block_type,orf_adr):
 	
@@ -554,6 +583,10 @@ class Pre_Compiler:
 		file_end = 0
 		
 		
+		
+		def_state = 0	#not def (0:ndef 1:start_def 2:setname 3:def 4:endef
+		
+		
 		while not file_end:
 		
 			in_quotes = 0
@@ -594,8 +627,40 @@ class Pre_Compiler:
 						
 					else:
 					
+					
 						self.context.state =State.DECODING
 						mode = 0
+						
+						if buff in OP.define.keys():
+						
+							self.context.state=State.DEFINING
+							
+							'''
+							print "\n"
+							print def_state
+							print buff
+							print OP.define[buff]
+							print OP.ENDEF
+							print OP.DEF
+							print "\n"
+							'''
+							
+						
+							#check end of def
+							if def_state == 3 and OP.define[buff] == OP.ENDEF:
+							
+								def_state = 4
+						
+							elif def_state == 0 and OP.define[buff] == OP.DEF:
+							
+								def_state = 1
+								
+							else:
+							
+								assert False,"Definition Boundary Mismatch"
+						
+						
+						
 				else:
 				
 					if mode == 0:
@@ -634,8 +699,31 @@ class Pre_Compiler:
 			if file_end and mode == 1:
 			
 				break
-		
+				
+				
+			#if self.context.state == State.DEFINING or def_state == 2:
+			
+				#self.context.state =State.ISOLATING
+				
 			self.context.state =State.ISOLATING
+				
+			if def_state == 2:
+			
+				print "Name  "
+				self.function_registerer.functions[len(self.def_op_array)] = buff
+				def_state = 3
+				continue
+				
+			if def_state == 1:
+				
+				
+				print "Define : "
+				def_state = 2
+				continue
+				
+				
+		
+			
 			
 			if self.flags & O.VERBOSE:
 				print 'o Isolated: ' +buff +'		Col: ' +str(self.context.current_col) + ' line: ' +str(self.context.current_line)
@@ -646,10 +734,43 @@ class Pre_Compiler:
 			
 			
 			op, info = self.operation_decoder.solve(buff)
-		
-			op.adress = len(self.op_array)
 			
-			self.op_array.append(op)
+			
+			if op.value == 0:
+			
+				if buff in self.function_registerer.functions.values():
+				
+					op.value = OP.CALL
+					op.arg = buff
+			
+			
+			
+			
+			
+			
+			arrptr = self.op_array
+			
+			contxptr = self.context	
+			other_ctx = self.def_context
+			
+			
+			
+			if def_state != 0:
+		
+				arrptr = self.def_op_array
+				contxptr = self.def_context
+				other_ctx = self.context
+				
+			if def_state == 4:
+			
+				def_state = 0
+				
+			
+				
+				
+			op.adress = len(arrptr)
+			
+			arrptr.append(op)
 			
 			
 			
@@ -691,26 +812,29 @@ class Pre_Compiler:
 						
 							if b.b_type in [ OP.Block_Type.IF , OP.Block_Type.ELSE ]:
 							
-								self.op_array[b.adress].arg = b.arg_adress
-								self.context.add_label(b.arg_adress,b.b_type)
+								arrptr[b.adress].arg = b.arg_adress
+								contxptr.add_label(b.arg_adress,b.b_type)
+								other_ctx.label_count +=1
 								
 								for a in b.sub_blocks:
 								
-									self.op_array[a].arg = superblock_end
+									arrptr[a].arg = superblock_end
 									
 							elif b.b_type == OP.Block_Type.DO:
 							
-								self.op_array[b.arg_adress].arg = b.adress
-								self.context.add_label(b.adress,b.b_type)
+								arrptr[b.arg_adress].arg = b.adress
+								contxptr.add_label(b.adress,b.b_type)
+								other_ctx.label_count +=1
 								
 								for a in b.sub_blocks:
 								
-									self.op_array[a].arg = superblock_end + 1
-									self.context.add_label(superblock_end + 1,b.b_type)
+									arrptr[a].arg = superblock_end + 1
+									contxptr.add_label(superblock_end + 1,b.b_type)
+									other_ctx.label_count +=1
 									
 								for a in b.sub_blocks_inverted:
 								
-									self.op_array[a].arg = b.adress
+									arrptr[a].arg = b.adress
 									
 							else:
 							
@@ -721,113 +845,29 @@ class Pre_Compiler:
 					
 					if op.value in [OP.DO,OP.END_BLOCK]:
 					
-						self.op_array.pop()
+						arrptr.pop()
 						
 					elif op.value == OP.ELIF:
 					
 						tmpopcode = Opcode.Opcode()
 						tmpopcode.value = OP.ELIF2
-						tmpopcode.adress = len(self.op_array)
+						tmpopcode.adress = len(arrptr)
 						tmpopcode.arg = 0
 			
-						self.op_array.append(tmpopcode)
-			
-			'''					
-				
-				
-				elif op.value == OP.IF:
-				
-					self.context.start_block(op.adress,OP.block_type[op.value])
-					
-				elif op.value == OP.ELSE:
-				
-					starter = self.context.get_current_block_type()
-					
-					assert starter in [ OP.Block_Type.IF ], "TODO: HANDLE BLOCK ERRORS"
-					
-					a, t, oa = self.context.end_block()
-					 
-					self.op_array[a].arg = op.adress + 1
-					
-					
-					
-					self.context.add_label(op.adress + 1,OP.block_type[op.value])
-					
-					
-				
-					self.context.start_block(op.adress,OP.block_type[op.value])
-					
-					#self.op_array.pop()
-					
-			#		print 'Setting adress of Op at '+str(a)+ ' to be '+str(op.adress + 1)
-				
-					
-				elif op.value == OP.DO:
-				
-					self.context.start_block(op.adress,OP.block_type[op.value])
-					
-					self.op_array.pop()		#remove the do from Opcodes
-					
-				elif op.value == OP.WHILE:
-				
-					starter = self.context.get_current_block_type()
-					
-					assert starter in[ OP.Block_Type.DO] , "TODO: HANDLE BLOCK ERRORS"
-					
-					a, t, oa = self.context.end_block()
-					
-					self.op_array[-1].arg = a
-					
-					
-					
-					
-					self.context.add_label(a,t)
-					
-					
-					
-					
-				elif op.value == OP.END_BLOCK:
-				
-					starter = self.context.get_current_block_type()
-					
-					assert starter in [ OP.Block_Type.IF , OP.Block_Type.ELSE], "TODO: HANDLE BLOCK ERRORS"
-					
-					a, t, oa = self.context.end_block()
-					 
-					self.op_array[a].arg = op.adress
-					
-					
-					
-					
-					
-					
-					self.context.add_label(op.adress,OP.block_type[op.value])
-					
-					
-					
-					
-					
-					
-					self.op_array.pop()		#remove the end from Opcodes
-					
-					print 'Setting adress of Op at '+str(a)+ ' to be '+str(op.adress + 1)
-			
-			#	print'   >block boundary detected'
+						arrptr.append(tmpopcode)
 			
 			
-			
-			
-			
-			'''
 				
 				
 			if self.flags & O.VERBOSE:	
-				print"current Op adress: " + str(len(self.op_array))
+				print"current Op adress: " + str(len(arrptr))
+				
+			#print def_state
 				
 				
 		
-	 
-		return self.op_array , self.context.labels
+	 	print self.def_op_array , self.function_registerer.functions
+		return [self.op_array , self.context.labels] , [self.def_op_array , self.context.labels , self.function_registerer.functions]
 
 
 

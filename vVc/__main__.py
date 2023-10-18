@@ -4,6 +4,7 @@ import precompiler.Pre_Compiler_states as State
 
 import precompiler.Pre_Compiler as Precompiler
 
+
 import options as O
 
 import precompiler.Opcode
@@ -16,6 +17,7 @@ import vm.Program
 import vm.Machine
 
 import transpiler.Translator as Trans
+#import transpiler.Pre_Translator as Pre_Trans
 
 
 
@@ -163,15 +165,47 @@ print'	file '+source_file+' loaded'
 print'	'	
 print'	starting pass 1'
 
-code_arr , labels = pre_compiler.first_pass()
+
+
+a, b = pre_compiler.first_pass()
+
+code_arr = a[0]
+labels = a[1]
+
+
+def_arr = b[0]
+v2_lab = b[1]
+def_lab = b[2]
+
 
 #print labels
+
+
+prog2 = vm.Program.Program(def_arr)
+
+
+piler2 = Trans.Translator(prog2,v2_lab,output_file)
+piler2.generate_label_names()
+piler2.def_label_names = def_lab
+
+for p in range(prog2.size):
+
+
+	piler2.step_compile()
+
+
+
+
 
 prog = vm.Program.Program(code_arr)
 
 vm = vm.Machine.Emul(prog)
 
 piler = Trans.Translator(prog,labels,output_file)
+
+
+
+piler.add_inserted_code(piler2.output)
 
 
 piler.generate_label_names()

@@ -109,6 +109,15 @@ GET = 99
 
 
 
+
+
+
+DEF = 192
+ENDEF = 193
+CALL = 194
+RET = 195
+
+
 SQUOTES = 250
 DQUOTES = 251
 
@@ -138,6 +147,13 @@ class Opcode_descriptor:
 	name = ''
 	
 '''
+
+define = {
+
+	'def' : DEF,
+	'endef' : ENDEF
+	
+	}
 
 
 quotes = {
@@ -270,6 +286,7 @@ virtual_op = {
 	BREAK : 'break'
 	
 	
+	
 	}
 
 
@@ -307,7 +324,11 @@ direct_op = {
 	OUT: "out",
 	BUFF_OUT:"out_",
 	
-	FLUSH : "flush"
+	FLUSH : "flush",
+	
+	
+	
+	ENDEF : "endef"
 }
 
 
