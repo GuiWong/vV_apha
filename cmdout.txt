@@ -9,107 +9,172 @@
 	file w_samples/source/vartest.vV loaded
 	
 	starting pass 1
-
- Isolated: 1848604960 defState: 0
-
- Isolated: 538984302 defState: 0
-
- Isolated: 1767991137 defState: 0
 Begin var init...
 
- Isolated: global defState: 0
+ Isolated: global defState: 0 var_def_sate: 1
 
- Isolated: 134 defState: 0
+ Isolated: 50 defState: 0 var_def_sate: 1
 value found before type, defining it...
-134 [True, 134]
+50 [True, 50]
 
- Isolated: vara defState: 0
-defining var name: vara
+ Isolated: foo defState: 0 var_def_sate: 3
+defining var name: foo
+test12
 
-Var vara 
+Var foo 
  Scope: global
  Type: int
- With Value: 134 
+ With Value: 50 
 
 Var should be saved
-Begin var init...
-
- Isolated: var defState: 0
-
- Isolated: 765 defState: 0
-value found before type, defining it...
-765 [True, 765]
-
- Isolated: value defState: 0
-defining var name: value
-
-Var value 
- Scope: global
- Type: int
- With Value: 765 
-
-Var should be saved
-def found w_samples/sourcevartest.vV::10:1
+def found w_samples/sourcevartest.vV::6:1
 def
 
- Isolated: def defState: 1
- Function Definition: def w_samples/sourcevartest.vV::10:1
+ Isolated: def defState: 1 var_def_sate: 0
+ Function Definition: def w_samples/sourcevartest.vV::6:1
 
- Isolated: bar defState: 2
- Function Name : bar w_samples/sourcevartest.vV::10:5
+ Isolated: bar defState: 2 var_def_sate: 0
+ Function Name : bar w_samples/sourcevartest.vV::6:5
+
+ Isolated: foo defState: 3 var_def_sate: 0
+push global var foo
+endef found w_samples/sourcevartest.vV::10:1
+
+ Isolated: endef defState: 4 var_def_sate: 0
+Finishing func
+def found w_samples/sourcevartest.vV::12:1
+def
+
+ Isolated: def defState: 1 var_def_sate: 0
+ Function Definition: def w_samples/sourcevartest.vV::12:1
+
+ Isolated: barloc defState: 2 var_def_sate: 0
+ Function Name : barloc w_samples/sourcevartest.vV::12:5
 Begin var init...
 
- Isolated: local defState: 3
-setting var type...
+ Isolated: local defState: 3 var_def_sate: 1
 
- Isolated: int defState: 3
+ Isolated: 60 defState: 3 var_def_sate: 1
+value found before type, defining it...
+60 [True, 60]
 
- Isolated: a defState: 3
-defining var name: a
-Var a 
+ Isolated: foo defState: 3 var_def_sate: 3
+defining var name: foo
+test12
+Var foo 
  Scope: local
  Type: int
- With Value: 765
-Var should be saved
-Begin var init...
-
- Isolated: local defState: 3
-setting var type...
-
- Isolated: int defState: 3
-
- Isolated: b defState: 3
-defining var name: b
-Var b 
- Scope: local
- Type: int
- With Value: 765
+ With Value: 60
 Var should be saved
 
- Isolated: 2dup defState: 3
+ Isolated: foo defState: 3 var_def_sate: 0
+push local var foo
+endef found w_samples/sourcevartest.vV::17:1
 
- Isolated: a= defState: 3
-assign potential var a
+ Isolated: endef defState: 4 var_def_sate: 0
+Finishing func
 
- Isolated: value= defState: 3
-assign potential var value
+ Isolated: "#1  " defState: 0 var_def_sate: 0
 
- Isolated: + defState: 3
+ Isolated: wout defState: 0 var_def_sate: 0
 
- Isolated: vara defState: 3
-push global var vara
+ Isolated: bar defState: 0 var_def_sate: 0
 
- Isolated: a defState: 3
-push local var a
+ Isolated: out defState: 0 var_def_sate: 0
 
- Isolated: + defState: 3
+ Isolated: barloc defState: 0 var_def_sate: 0
 
- Isolated: b= defState: 3
+ Isolated: out defState: 0 var_def_sate: 0
+
+ Isolated: 75 defState: 0 var_def_sate: 0
+
+ Isolated: foo= defState: 0 var_def_sate: 0
+assign potential var foo
+
+ Isolated: "#2  " defState: 0 var_def_sate: 0
+
+ Isolated: wout defState: 0 var_def_sate: 0
+
+ Isolated: bar defState: 0 var_def_sate: 0
+
+ Isolated: out defState: 0 var_def_sate: 0
+
+ Isolated: barloc defState: 0 var_def_sate: 0
+
+ Isolated: out defState: 0 var_def_sate: 0
+
+ Isolated: '----' defState: 0 var_def_sate: 0
+
+ Isolated: wout defState: 0 var_def_sate: 0
+---------------------------------------
+Function : barloc
+	fooTrue
+
+
+
+
+barloc:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 16	;Space for local vars	
+
+;------Init Phase
+mov DWORD[rbp  - 8 ] , 60		; space for lvar 0 (foo)	
+
+.tailcall:		;Body Section	
+
 [False]
-assign potential var b
+[False]
 
- Isolated: cout= defState: 3
-assign potential var cout
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+Function : bar
+
+
+
+
+bar:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+
+[False]
+[False]
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+---------------------------------------
+1
+foo
+Var foo 
+ Scope: global
+ Type: int
+ With Value: 50
+[False]
+[True, 234]
+[False]
+[False]
+foo
+foo
+foo
+file successfully created
 
 w_samples/w_samples/assembly/vartest.was
 w_samples/w_samples/assembly/vartest.o

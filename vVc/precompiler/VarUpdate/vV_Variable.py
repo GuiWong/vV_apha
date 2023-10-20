@@ -41,9 +41,20 @@ class vV_Variable:
 		self.is_init = is_init
 		self.init_value = init_value
 		
+	def value_debug_txt(self):
+	
+	
+		if self.is_init:
+		
+			return "With Value: "+str(self.init_value)
+			
+		else:
+		
+			return "not initialized to any value"
+		
 		
 	def __str__(self):
 	
-		return "Var "+self.name+" \n Scope: "+OP.var_define.keys()[OP.var_define.values().index(self.scope)]+"\n Type: "+OP.var_type.keys()[OP.var_type.values().index(self.var_type)]+"\n With Value: "+str(self.init_value)
+		return "Var "+self.name+" \n Scope: "+OP.var_define.keys()[OP.var_define.values().index(self.scope)]+"\n Type: "+OP.var_type.keys()[OP.var_type.values().index(self.var_type)]+"\n "+ self.value_debug_txt()
 		
 		

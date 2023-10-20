@@ -51,3 +51,34 @@ class NameSpace_Manager:
 		self.global_vars[var_obj.name] = var_obj  #vV_Variable.vV_Variable()
 		
 		return 0
+		
+		
+		
+	def solve_var(self,varname,scope = None):
+	
+		ret_val = ''
+		
+		if scope in self.functions:
+		
+			loc = self.functions[scope].solve_var(varname)
+			
+			if loc[0] != 0:			#May need to check for ptr type
+			
+				return [True,loc[1],False]
+				
+		if varname in self.global_vars:
+		
+				
+			return [True,  self.global_vars[varname].name,True]
+			
+		else:
+		
+			return [False]
+		
+			
+		
+		
+		
+		
+		
+		

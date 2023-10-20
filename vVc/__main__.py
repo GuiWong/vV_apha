@@ -17,6 +17,7 @@ import vm.Program
 import vm.Machine
 
 import transpiler.Translator as Trans
+import transpiler.Var_Solver as Var_Solver
 #import transpiler.Pre_Translator as Pre_Trans
 
 
@@ -167,7 +168,7 @@ print'	starting pass 1'
 
 
 
-a, b = pre_compiler.first_pass()
+a, b , c = pre_compiler.first_pass()
 
 code_arr = a[0]
 labels = a[1]
@@ -178,14 +179,27 @@ v2_lab = b[1]
 def_lab = b[2]
 
 
+vs = Var_Solver.Var_Solver(c)
+
+#vs.generate_var_decl()
+#print "\n\n\n\n"
+#print vs.generate_var_file()
+
+
+
+
 #print labels
-print def_lab
+#print def_lab
 
 
 prog2 = vm.Program.Program(def_arr)
 
 
-piler2 = Trans.Translator(prog2,v2_lab,output_file)
+
+
+
+
+piler2 = Trans.Translator(prog2,v2_lab,vs,output_file)
 piler2.generate_label_names()
 piler2.def_label_names = def_lab
 
@@ -202,7 +216,7 @@ prog = vm.Program.Program(code_arr)
 
 vm = vm.Machine.Emul(prog)
 
-piler = Trans.Translator(prog,labels,output_file)
+piler = Trans.Translator(prog,labels,vs,output_file)
 
 
 
@@ -218,6 +232,7 @@ for p in range(prog.size):
 	piler.step_compile()
 	
 piler.end_file()
+piler.generate_var_file()
 piler.print_file()
 
 

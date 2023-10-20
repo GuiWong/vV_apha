@@ -8,8 +8,8 @@ but vV is already different in implementation and in planning.
 
 
 
-	Update 0.0.3: 
-			Basic Functions Working
+	Update 0.0.4: 
+			Global and Local Variables, reworked functions
 			
 
 

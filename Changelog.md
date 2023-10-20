@@ -2,6 +2,22 @@
 
 
 
+
+Var Update		0.0.4
+
+				-Global and local vars
+				-reworked function to use stack frame
+				- 2 new Opcodes: pushvar and popvar
+					- var	:push value of var on the stack
+					- var=	:set var value to top ofthe stack(and pops it)
+					
+				
+
+
+
+
+
+
 Function Update	0.0.3:
 
 				-basic support for functions

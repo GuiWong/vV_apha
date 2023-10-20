@@ -17,15 +17,18 @@ global w_entry_point
 segment .text 
 
 
+xprint:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
 
 
 	wblock_0:		
-
-;------------------------------------------------------
-
-
-
-	xprint:		
 
 ;------------------------------------------------------
 
@@ -96,13 +99,22 @@ segment .text
 
  ;OpADR: [10]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	quit_cmd:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+quit_cmd:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [11]  ; PUSH opcode 
 
@@ -111,13 +123,22 @@ segment .text
 
  ;OpADR: [12]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	help_cmd:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+help_cmd:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [13]  ; PUSH opcode 
 
@@ -126,13 +147,22 @@ segment .text
 
  ;OpADR: [14]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	calc_cmd:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+calc_cmd:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [15]  ; PUSH opcode 
 
@@ -141,13 +171,22 @@ segment .text
 
  ;OpADR: [16]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	frmt_cmd:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+frmt_cmd:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [17]  ; PUSH opcode 
 
@@ -156,13 +195,22 @@ segment .text
 
  ;OpADR: [18]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	help:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+help:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [19]  ; Function Call					
 
@@ -266,13 +314,22 @@ segment .text
 
  ;OpADR: [39]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	welcome_msg:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+welcome_msg:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [40]  ; PUSH opcode 
 
@@ -316,13 +373,22 @@ segment .text
 
  ;OpADR: [48]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	goodbye_msg:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+goodbye_msg:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [49]  ; PUSH opcode 
 
@@ -346,13 +412,22 @@ segment .text
 
  ;OpADR: [53]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	calc_msg01:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+calc_msg01:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [54]  ; PUSH opcode 
 
@@ -381,13 +456,22 @@ segment .text
 
  ;OpADR: [59]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	calc_msg02:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+calc_msg02:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [60]  ; PUSH opcode 
 
@@ -431,13 +515,22 @@ segment .text
 
  ;OpADR: [68]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	calc_msg03:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+calc_msg03:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [69]  ; PUSH opcode 
 
@@ -466,13 +559,22 @@ segment .text
 
  ;OpADR: [74]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	say_welcome:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+say_welcome:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [75]  ; Function Call					
 
@@ -484,13 +586,22 @@ segment .text
 
  ;OpADR: [77]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	cmd_prompt:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+cmd_prompt:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [78]  ; PUSH opcode 
 
@@ -505,13 +616,22 @@ segment .text
 
  ;OpADR: [80]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	input_cmd:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+input_cmd:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [81]  ; GET opcode (9)			
 
@@ -521,13 +641,22 @@ segment .text
 
  ;OpADR: [82]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	check_operand:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+check_operand:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [83]  ; DUP opcode (1)			
 
@@ -818,13 +947,22 @@ segment .text
 
  ;OpADR: [120]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	solve_operand:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+solve_operand:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [121]  ; DUP opcode (1)			
 
@@ -1093,13 +1231,22 @@ segment .text
 
  ;OpADR: [155]  ; End of func opcode					
 
-		ret			
 
+;------Cleanup Phase
 
-	check_cmd:		
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+check_cmd:		
+	push rbp	
+	mov rbp , rsp	
 
-;------------------------------------------------------
+;------Setup Phase
 
+;------Init Phase
+
+.tailcall:		;Body Section	
 
  ;OpADR: [156]  ; DUP opcode (1)			
 
@@ -1281,7 +1428,13 @@ segment .text
 
  ;OpADR: [179]  ; End of func opcode					
 
-		ret			
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
 
 		
 

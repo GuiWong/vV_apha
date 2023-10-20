@@ -1,52 +1,33 @@
 
-1848604960 538984302 1767991137
 
-
-global 134 vara
-var 765 value
-
+global 50 foo		;global variable foo
 
 
 def bar
 
-local int a
+	foo		;put value of foo on stack
 
-local int b
+endef
 
-2dup a= value= + vara a + b= 
+def barloc
+
+	local 60 foo	;local var foo
+	foo		;put value of local foo on stack
 
 endef
 
 
-540701554 1700949365 1847604256 1701869940
 
-0
-do
-	drp
-	7dup
+"#1  " wout		;print "#1  "
 
-	wout_ wout_ wout_ wout_
-	
-	flush
+bar out barloc out	;should print 50 and 60
 
-	get get get get + + +
-	
-	flush
-	
-	dup out flush
-	dup xout flush
-	bout flush
-	
-	wout_ wout_ wout_ flush
 
-	cget dup 121 =? if
-				1
-	
-			el
-			dup 89 =? if
-				1
-			el
-				0
-			,
-		,
-	while
+
+75 foo=		;set value of global foo to 75
+
+
+"#2  " wout		;print "#2  "
+
+bar out barloc out	;should print 75 and 60
+'----' wout

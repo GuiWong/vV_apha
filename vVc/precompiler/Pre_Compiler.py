@@ -42,6 +42,10 @@ def check_numeric_format(txt):
 		
 		if txt[0] not in ["'" , '"' ]:
 			return [False]
+			
+		else:
+		
+			v=0
 	
 
 	try:
@@ -644,6 +648,29 @@ class Pre_Compiler:
 				r = self.raw_data[line][col]
 				#print 'r'
 				
+				if r in OP.comment and in_quotes == 0:
+				
+				
+					if mode == 0:
+					
+						col=0
+						line+=1
+						#continue
+						
+					elif mode == 1:
+				
+						self.context.state =State.DECODING
+						mode = 0
+						col=0
+						line+=1
+						
+					if line >= len(self.raw_data):
+					
+						file_end = True
+						break
+					continue
+					
+				
 				if r in OP.quotes.keys():
 				
 					if in_quotes != 0 and OP.quotes[r] == in_quotes:
@@ -699,14 +726,14 @@ class Pre_Compiler:
 							if def_state == 3 and OP.define[buff] == OP.ENDEF:
 							
 							
-								print "endef found "+ str(self.context.build_location())
+								#print "endef found "+ str(self.context.build_location())
 							
 								def_state = 4
 						
 							elif def_state == 0 and OP.define[buff] == OP.DEF:
 							
-								print "def found "+ str(self.context.build_location())
-								print buff
+								#print "def found "+ str(self.context.build_location())
+								#print buff
 							
 								def_state = 1
 								
@@ -735,11 +762,15 @@ class Pre_Compiler:
 								
 									assert False , "UNABLE TO define variable scope "+ str(self.context.build_location())
 
-
+								
+								var_def_state = 1
+								
 
 							else:
 							
 								current_var_scope = OP.var_define[buff]
+								
+								var_def_state = 1
 								
 								
 							self.context.state=State.VAR_DEFINING
@@ -748,7 +779,7 @@ class Pre_Compiler:
 							print "Begin var init..."
 							
 
-							var_def_state = 1	
+								
 							
 						elif buff in OP.var_type:
 						
@@ -819,7 +850,7 @@ class Pre_Compiler:
 			
 			
 			
-			print "\n Isolated: " + buff + " defState: "+str(def_state)
+		#	print "\n Isolated: " + buff + " defState: "+str(def_state) +" var_def_sate: "+str(var_def_state)
 			
 			if file_end and mode == 1:
 			
@@ -839,7 +870,7 @@ class Pre_Compiler:
 				
 			if def_state == 2:
 			
-				print " Function Name : "+buff+" "+str(self.context.build_location())
+		#		print " Function Name : "+buff+" "+str(self.context.build_location())
 				
 				
 				self.function_registerer.functions[len(self.def_op_array)] = buff
@@ -856,7 +887,7 @@ class Pre_Compiler:
 			if def_state == 1:
 				
 				
-				print " Function Definition: "+buff+" "+str(self.context.build_location())
+		#		print " Function Definition: "+buff+" "+str(self.context.build_location())
 				
 				def_state = 2
 				continue
@@ -876,7 +907,7 @@ class Pre_Compiler:
 			
 				tmpre = check_numeric_format(buff) 
 				
-				print buff,tmpre
+		#		print buff,tmpre
 				
 				if tmpre[0]:
 				
@@ -896,14 +927,32 @@ class Pre_Compiler:
 				
 				
 				
-			if var_def_state >=2:	#Scoped and typed, maybe inited
+			elif var_def_state >=2:#for now, debugging	#Scoped and typed, and inited
 			
 			
-				print "defining var name: " +buff
-				var_name = buff
-				varo = vV_Var.vV_Variable(var_name,current_var_scope,current_var_type,current_var_init,current_var_value)
+				vlu = check_numeric_format(buff) 
+				if var_def_state == 2 and vlu[0]:		#Uninitialized
 				
+					print "setting var value"
 				
+					
+		#			print buff,vlu
+				
+
+					current_var_value = vlu[1]
+					current_var_init = True
+					
+					var_def_state = 3
+					continue
+					
+				else:
+			
+			
+					print "defining var name: " +buff
+					var_name = buff
+					varo = vV_Var.vV_Variable(var_name,current_var_scope,current_var_type,current_var_init,current_var_value)
+				
+				#print"test12"
 				#print varo.name
 				#print varo.var_type
 				#print varo.scope
@@ -917,7 +966,8 @@ class Pre_Compiler:
 				
 					if self.namespace_manager.define_global(varo)== 0:
 				
-						print "\n",varo,"\n"
+		#				print "\n",varo,"\n"
+						pass
 					
 					else:
 				
@@ -927,7 +977,8 @@ class Pre_Compiler:
 				
 					if self.namespace_manager.functions[current_func_name].add_local_var(varo)==0:
 				
-						print varo
+		#				print varo
+						pass
 					
 					else:
 				
@@ -935,24 +986,32 @@ class Pre_Compiler:
 				
 				var_def_state = 0
 				
+				current_var_scope = 0
+				current_var_type = 0
+				current_var_init = False
+				current_var_value = 0
+				
+				
 				print "Var should be saved"
 
 				continue
 
+
+			'''
 				
-			if var_def_state == 2:		#scoped, typed
+			elif var_def_state == 2:		#scoped, typed
 			
 			
-				print "value found after ype"
+				print "can be name or value"
 			
-				tmpre = check_numeric_format(buff) 
+				tmpre2 = check_numeric_format(buff) 
 				
-				print buff,tmpre
+				print buff,tmpre2
 				
-				if tmpre[0]:
+				if tmpre2[0]:
 				
 					current_var_type = OP.UINT_32
-					current_var_value = tmpre[1]
+					current_var_value = tmpre2[1]
 					current_var_init = True
 					
 				else:
@@ -964,12 +1023,16 @@ class Pre_Compiler:
 					
 					
 				continue
+				
+				
+			'''
 
 #----------------------------------Var Update--------------------------------------------------------------------------------------------				
 		
 			
-			
+		
 			if self.flags & O.VERBOSE:
+			
 				print 'o Isolated: ' +buff +'		Col: ' +str(self.context.current_col) + ' line: ' +str(self.context.current_line)
 			
 			
@@ -1029,6 +1092,11 @@ class Pre_Compiler:
 				if def_state == 3 and op.arg in self.namespace_manager.functions[current_func_name].local_vars:
 				
 					pass
+					#op.arg = 
+					
+					#print "\n-----------------------\n\n"								
+					#print self.namespace_manager.functions[current_func_name].solve_var(op.arg)
+					#print "\n-----------------------\n\n"
 					
 				elif op.arg in self.namespace_manager.global_vars:
 				
@@ -1065,7 +1133,7 @@ class Pre_Compiler:
 			if def_state == 4:
 			
 			
-				print "Finishing func"
+	#			print "Finishing func"
 				def_state = 0
 				
 			
@@ -1198,12 +1266,27 @@ class Pre_Compiler:
 			#print self.context.labels
 			#print self.def_context.labels
 		
+		'''
 		
 		print "---------------------------------------"		
 			
 		for key in self.namespace_manager.functions:
 			
-			print key , self.namespace_manager.functions[key].name ,  self.namespace_manager.functions[key].local_vars 
+			print "Function : " + self.namespace_manager.functions[key].name 
+			
+			for va in self.namespace_manager.functions[key].local_vars:
+			
+				print "	"+ va + str(self.namespace_manager.functions[key].local_vars[va].is_init)
+				
+				
+			print '\n\n\n'
+			print self.namespace_manager.functions[key].generate_head()
+			
+			print self.namespace_manager.solve_var("a","bar")
+			
+			print self.namespace_manager.solve_var("value","bar")
+			
+			print self.namespace_manager.functions[key].generate_foot()
 			
 			
 		print "---------------------------------------"
@@ -1216,9 +1299,13 @@ class Pre_Compiler:
 		
 			print key
 			print self.namespace_manager.global_vars[key]
+			
+		'''	
+			
+
 		
 	 	#print self.def_op_array , self.function_registerer.functions
-		return [self.op_array , self.context.labels] , [self.def_op_array , self.def_context.labels , self.function_registerer.functions]
+		return [self.op_array , self.context.labels] , [self.def_op_array , self.def_context.labels , self.function_registerer.functions] , self.namespace_manager
 
 
 

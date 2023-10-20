@@ -108,8 +108,10 @@ def check_cmd
 do
 
 	do
-
+		
 		say_welcome
+
+
 		input_cmd
 
 

@@ -19,7 +19,7 @@ class Translator:
 
 
 
-	def __init__(self,prog,labs,filename='output'):
+	def __init__(self,prog,labs,var_solver,filename='output'):
 	
 		self.filename = filename
 		self.program = prog
@@ -38,6 +38,13 @@ class Translator:
 		self.label_count = 0
 		
 		self.inserted = ''
+		
+		
+		
+		
+		self.current_scope =None	#V0.0.4
+		self.var_solver = var_solver
+		
 		
 	def fetch(self):
 	
@@ -71,6 +78,17 @@ class Translator:
 		return '\n\n	'+name+':		\n\n\
 ;------------------------------------------------------\n\n'
 
+
+	def generate_var_file(self):
+	
+		self.var_solver.generate_var_decl()
+	
+		outf= self.out_path+self.filename+'_vars.was'
+		
+		with open(outf, 'w+') as imp:
+		
+			imp.write(self.var_solver.generate_var_file())
+
 	def generate_header(self):
 	
 	
@@ -86,6 +104,7 @@ class Translator:
 %include "'+self.lib_path+'vV_io.asm"			\n\
 %include "'+self.lib_path+'vV_ascii.asm"		\n\
 \
+%include "'+self.out_path+self.filename+'_vars.was"	\n\
 %include "'+self.lib_path+'vV_system90.asm"		\n\
 \
 \n'
@@ -128,13 +147,20 @@ vV_entry_point:
 	
 		self.fetch()
 		
-		if self.pc in self.labels.keys():
 		
-			self.output += self.generate_label(self.label_names[self.pc])
 			
 		if self.pc in self.def_label_names.keys():
 		
-			self.output += self.generate_label(self.def_label_names[self.pc])
+			#self.output += self.generate_label(self.def_label_names[self.pc])
+			
+			
+			
+			self.current_scope = self.def_label_names[self.pc]	
+			self.output += self.var_solver.namespace.functions[self.def_label_names[self.pc]].generate_head()
+			
+		if self.pc in self.labels.keys():
+		
+			self.output += self.generate_label(self.label_names[self.pc])
 			
 		self.output += '\n ;OpADR: ['+str(self.pc)+']  '
 			
@@ -149,7 +175,7 @@ vV_entry_point:
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.3
+;Transpiled from vV with vVc version 0.0.4
 		
 		'''
 		
@@ -601,8 +627,9 @@ vV_entry_point:
 
 			txt = '\
 ; End of func opcode					\n\
-\n\
-		ret			\n'
+\n'
+			txt += self.var_solver.namespace.functions[self.current_scope].generate_foot()
+			self.current_scope = None
 		
 		elif op == OP.CALL:
 
@@ -612,6 +639,28 @@ vV_entry_point:
 		call '+arg+'			\n'
 	
 
+		elif op == OP.PUSH_VAR:
+
+			txt = '\
+; Var invocation					\n\
+\n'
+			print arg
+			txt += self.var_solver.push_var(arg,self.current_scope)
+			#assert False ,"TODO: MANAGE VARSOLVING"
+		
+		elif op == OP.ASSIGN:
+
+			txt = '\
+; Var assignement					\n\
+\n'
+			print arg
+			txt += self.var_solver.pop_var(arg,self.current_scope)
+		
+			#assert False ,"TODO: MANAGE VARSOLVING"
+		
+		
+		
+		
 
 
 

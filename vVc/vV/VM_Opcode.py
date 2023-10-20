@@ -188,6 +188,13 @@ var_type = {
 
 
 	}
+	
+	
+comment = {
+
+	 ';':COMMENT 
+
+}
 
 
 quotes = {
@@ -202,7 +209,7 @@ separator = {
 	' ' : SPACE,
 	'\n': N_LINE,
 	'	' : TAB,
-	';' : COMMENT
+	#';' : COMMENT
 	}	
 	
 	

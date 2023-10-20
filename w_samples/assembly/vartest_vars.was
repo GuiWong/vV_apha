@@ -1,0 +1,7 @@
+ segment .data 
+
+ i_global:
+.foo: dq 50
+ segment .bss 
+
+	u_global:
