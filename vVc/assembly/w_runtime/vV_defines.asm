@@ -3,9 +3,11 @@
 
 ;------------------Variables From Project-------------
 
+	;------------------Should come from io module(need refactoring)
 
-%define vV_input_buffer_size 255
-%define vV_output_buffer_size 255
+
+	%define vV_input_buffer_size 255
+	%define vV_output_buffer_size 255
 
 
 

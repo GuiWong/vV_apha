@@ -1,0 +1,116 @@
+	Running wcs default mode (only mode for now) 
+	source file provided: w_samples/source/vartest.vV
+	format:	raw
+	output file:	vartest
+	
+	press enter to proceed to precompile step
+	
+	
+	file w_samples/source/vartest.vV loaded
+	
+	starting pass 1
+
+ Isolated: 1848604960 defState: 0
+
+ Isolated: 538984302 defState: 0
+
+ Isolated: 1767991137 defState: 0
+Begin var init...
+
+ Isolated: global defState: 0
+
+ Isolated: 134 defState: 0
+value found before type, defining it...
+134 [True, 134]
+
+ Isolated: vara defState: 0
+defining var name: vara
+
+Var vara 
+ Scope: global
+ Type: int
+ With Value: 134 
+
+Var should be saved
+Begin var init...
+
+ Isolated: var defState: 0
+
+ Isolated: 765 defState: 0
+value found before type, defining it...
+765 [True, 765]
+
+ Isolated: value defState: 0
+defining var name: value
+
+Var value 
+ Scope: global
+ Type: int
+ With Value: 765 
+
+Var should be saved
+def found w_samples/sourcevartest.vV::10:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcevartest.vV::10:1
+
+ Isolated: bar defState: 2
+ Function Name : bar w_samples/sourcevartest.vV::10:5
+Begin var init...
+
+ Isolated: local defState: 3
+setting var type...
+
+ Isolated: int defState: 3
+
+ Isolated: a defState: 3
+defining var name: a
+Var a 
+ Scope: local
+ Type: int
+ With Value: 765
+Var should be saved
+Begin var init...
+
+ Isolated: local defState: 3
+setting var type...
+
+ Isolated: int defState: 3
+
+ Isolated: b defState: 3
+defining var name: b
+Var b 
+ Scope: local
+ Type: int
+ With Value: 765
+Var should be saved
+
+ Isolated: 2dup defState: 3
+
+ Isolated: a= defState: 3
+assign potential var a
+
+ Isolated: value= defState: 3
+assign potential var value
+
+ Isolated: + defState: 3
+
+ Isolated: vara defState: 3
+push global var vara
+
+ Isolated: a defState: 3
+push local var a
+
+ Isolated: + defState: 3
+
+ Isolated: b= defState: 3
+[False]
+assign potential var b
+
+ Isolated: cout= defState: 3
+assign potential var cout
+
+w_samples/w_samples/assembly/vartest.was
+w_samples/w_samples/assembly/vartest.o
+w_samples/vartest

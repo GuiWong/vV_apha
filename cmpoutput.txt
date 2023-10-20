@@ -1,0 +1,718 @@
+	Running wcs default mode (only mode for now) 
+	source file provided: w_samples/source/firstapp.vV
+	format:	raw
+	output file:	firstapp
+	
+	press enter to proceed to precompile step
+	
+	
+	file w_samples/source/firstapp.vV loaded
+	
+	starting pass 1
+def found w_samples/sourcefirstapp.vV::2:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::2:1
+
+ Isolated: xprint defState: 2
+ Function Name : xprint w_samples/sourcefirstapp.vV::2:5
+
+ Isolated: do defState: 3
+
+ Isolated: swp defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: - defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: 0 defState: 3
+
+ Isolated: >? defState: 3
+
+ Isolated: while defState: 3
+
+ Isolated: flush defState: 3
+
+ Isolated: drp defState: 3
+endef found w_samples/sourcefirstapp.vV::2:54
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::4:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::4:1
+
+ Isolated: quit_cmd defState: 2
+ Function Name : quit_cmd w_samples/sourcefirstapp.vV::4:5
+
+ Isolated: 'quit' defState: 3
+endef found w_samples/sourcefirstapp.vV::4:21
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::5:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::5:1
+
+ Isolated: help_cmd defState: 2
+ Function Name : help_cmd w_samples/sourcefirstapp.vV::5:5
+
+ Isolated: 'help' defState: 3
+endef found w_samples/sourcefirstapp.vV::5:21
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::6:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::6:1
+
+ Isolated: calc_cmd defState: 2
+ Function Name : calc_cmd w_samples/sourcefirstapp.vV::6:5
+
+ Isolated: 'calc' defState: 3
+endef found w_samples/sourcefirstapp.vV::6:21
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::7:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::7:1
+
+ Isolated: frmt_cmd defState: 2
+ Function Name : frmt_cmd w_samples/sourcefirstapp.vV::7:5
+
+ Isolated: 'frmt' defState: 3
+endef found w_samples/sourcefirstapp.vV::7:21
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::9:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::9:1
+
+ Isolated: help defState: 2
+ Function Name : help w_samples/sourcefirstapp.vV::9:5
+
+ Isolated: quit_cmd defState: 3
+
+ Isolated: help_cmd defState: 3
+
+ Isolated: calc_cmd defState: 3
+
+ Isolated: frmt_cmd defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: ' WIP' defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: flush defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: ' OK ' defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: flush defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: ' OK ' defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: flush defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: ' OK ' defState: 3
+
+ Isolated: wout_ defState: 3
+
+ Isolated: flush defState: 3
+endef found w_samples/sourcefirstapp.vV::16:1
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::20:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::20:1
+
+ Isolated: welcome_msg defState: 2
+ Function Name : welcome_msg w_samples/sourcefirstapp.vV::20:5
+
+ Isolated: ' cmd' defState: 3
+
+ Isolated: 't of' defState: 3
+
+ Isolated: ' lis' defState: 3
+
+ Isolated: 'or a' defState: 3
+
+ Isolated: 'p  f' defState: 3
+
+ Isolated: ' hel' defState: 3
+
+ Isolated: 'Type' defState: 3
+
+ Isolated: 7 defState: 3
+endef found w_samples/sourcefirstapp.vV::20:70
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::22:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::22:1
+
+ Isolated: goodbye_msg defState: 2
+ Function Name : goodbye_msg w_samples/sourcefirstapp.vV::22:5
+
+ Isolated: ' :) ' defState: 3
+
+ Isolated: 'bye ' defState: 3
+
+ Isolated: 'Good' defState: 3
+
+ Isolated: 3 defState: 3
+endef found w_samples/sourcefirstapp.vV::22:40
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::24:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::24:1
+
+ Isolated: calc_msg01 defState: 2
+ Function Name : calc_msg01 w_samples/sourcefirstapp.vV::24:5
+
+ Isolated: 'er: ' defState: 3
+
+ Isolated: 'numb' defState: 3
+
+ Isolated: 'r a ' defState: 3
+
+ Isolated: 'Ente' defState: 3
+
+ Isolated: 4 defState: 3
+endef found w_samples/sourcefirstapp.vV::24:47
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::25:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::25:1
+
+ Isolated: calc_msg02 defState: 2
+ Function Name : calc_msg02 w_samples/sourcefirstapp.vV::25:5
+
+ Isolated: 'uit)' defState: 3
+
+ Isolated: 'to q' defState: 3
+
+ Isolated: ' (q ' defState: 3
+
+ Isolated: 'and:' defState: 3
+
+ Isolated: 'oper' defState: 3
+
+ Isolated: 'r a ' defState: 3
+
+ Isolated: 'Ente' defState: 3
+
+ Isolated: 7 defState: 3
+endef found w_samples/sourcefirstapp.vV::25:68
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::26:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::26:1
+
+ Isolated: calc_msg03 defState: 2
+ Function Name : calc_msg03 w_samples/sourcefirstapp.vV::26:5
+
+ Isolated: 'and' defState: 3
+
+ Isolated: 'oper' defState: 3
+
+ Isolated: 'lid ' defState: 3
+
+ Isolated: 'Inva' defState: 3
+
+ Isolated: 4 defState: 3
+endef found w_samples/sourcefirstapp.vV::26:46
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::31:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::31:1
+
+ Isolated: say_welcome defState: 2
+ Function Name : say_welcome w_samples/sourcefirstapp.vV::31:5
+
+ Isolated: welcome_msg defState: 3
+
+ Isolated: xprint defState: 3
+endef found w_samples/sourcefirstapp.vV::31:36
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::34:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::34:1
+
+ Isolated: cmd_prompt defState: 2
+ Function Name : cmd_prompt w_samples/sourcefirstapp.vV::34:5
+
+ Isolated: 'cmd:' defState: 3
+
+ Isolated: wout defState: 3
+endef found w_samples/sourcefirstapp.vV::34:28
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::38:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::38:1
+
+ Isolated: input_cmd defState: 2
+ Function Name : input_cmd w_samples/sourcefirstapp.vV::38:5
+
+ Isolated: wget defState: 3
+endef found w_samples/sourcefirstapp.vV::38:20
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::41:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::41:1
+
+ Isolated: check_operand defState: 2
+ Function Name : check_operand w_samples/sourcefirstapp.vV::41:5
+
+ Isolated: dup defState: 3
+
+ Isolated: '+' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '-' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '*' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '/' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '%' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: 'q' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: 0 defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+endef found w_samples/sourcefirstapp.vV::68:1
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::74:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::74:1
+
+ Isolated: solve_operand defState: 2
+ Function Name : solve_operand w_samples/sourcefirstapp.vV::74:5
+
+ Isolated: dup defState: 3
+
+ Isolated: '+' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: drp defState: 3
+
+ Isolated: + defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '-' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: drp defState: 3
+
+ Isolated: - defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '*' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: drp defState: 3
+
+ Isolated: * defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '/' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: drp defState: 3
+
+ Isolated: / defState: 3
+
+ Isolated: el defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: '%' defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: drp defState: 3
+
+ Isolated: % defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: , defState: 3
+endef found w_samples/sourcefirstapp.vV::93:1
+
+ Isolated: endef defState: 4
+Finishing func
+def found w_samples/sourcefirstapp.vV::96:1
+def
+
+ Isolated: def defState: 1
+ Function Definition: def w_samples/sourcefirstapp.vV::96:1
+
+ Isolated: check_cmd defState: 2
+ Function Name : check_cmd w_samples/sourcefirstapp.vV::96:5
+
+ Isolated: dup defState: 3
+
+ Isolated: quit_cmd defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: 0 defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: help_cmd defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: help defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: calc_cmd defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 0 defState: 3
+
+ Isolated: 0 defState: 3
+
+ Isolated: , defState: 3
+
+ Isolated: dup defState: 3
+
+ Isolated: frmt_cmd defState: 3
+
+ Isolated: =? defState: 3
+
+ Isolated: if defState: 3
+
+ Isolated: 1 defState: 3
+
+ Isolated: , defState: 3
+endef found w_samples/sourcefirstapp.vV::103:2
+
+ Isolated: endef defState: 4
+Finishing func
+
+ Isolated: do defState: 0
+
+ Isolated: do defState: 0
+
+ Isolated: say_welcome defState: 0
+
+ Isolated: input_cmd defState: 0
+
+ Isolated: check_cmd defState: 0
+
+ Isolated: while defState: 0
+
+ Isolated: if defState: 0
+
+ Isolated: break defState: 0
+
+ Isolated: , defState: 0
+
+ Isolated: do defState: 0
+
+ Isolated: calc_msg01 defState: 0
+
+ Isolated: xprint defState: 0
+
+ Isolated: get defState: 0
+
+ Isolated: do defState: 0
+
+ Isolated: calc_msg02 defState: 0
+
+ Isolated: xprint defState: 0
+
+ Isolated: cget defState: 0
+
+ Isolated: check_operand defState: 0
+
+ Isolated: if defState: 0
+
+ Isolated: 0 defState: 0
+
+ Isolated: el defState: 0
+
+ Isolated: drp defState: 0
+
+ Isolated: calc_msg03 defState: 0
+
+ Isolated: xprint defState: 0
+
+ Isolated: 1 defState: 0
+
+ Isolated: , defState: 0
+
+ Isolated: while defState: 0
+
+ Isolated: dup defState: 0
+
+ Isolated: 'q' defState: 0
+
+ Isolated: =? defState: 0
+
+ Isolated: if defState: 0
+
+ Isolated: drp defState: 0
+
+ Isolated: drp defState: 0
+
+ Isolated: break defState: 0
+
+ Isolated: , defState: 0
+
+ Isolated: calc_msg01 defState: 0
+
+ Isolated: xprint defState: 0
+
+ Isolated: get defState: 0
+
+ Isolated: swp defState: 0
+
+ Isolated: solve_operand defState: 0
+
+ Isolated: out defState: 0
+
+ Isolated: 1 defState: 0
+
+ Isolated: while defState: 0
+
+ Isolated: 1 defState: 0
+
+ Isolated: while defState: 0
+
+ Isolated: goodbye_msg defState: 0
+
+ Isolated: xprint defState: 0
+---------------------------------------
+calc_msg03 calc_msg03 {}
+xprint xprint {}
+help help {}
+check_operand check_operand {}
+calc_cmd calc_cmd {}
+check_cmd check_cmd {}
+input_cmd input_cmd {}
+quit_cmd quit_cmd {}
+calc_msg02 calc_msg02 {}
+calc_msg01 calc_msg01 {}
+cmd_prompt cmd_prompt {}
+help_cmd help_cmd {}
+frmt_cmd frmt_cmd {}
+welcome_msg welcome_msg {}
+say_welcome say_welcome {}
+goodbye_msg goodbye_msg {}
+solve_operand solve_operand {}
+---------------------------------------
+0
+{0: 'xprint', 83: 'check_operand', 75: 'say_welcome', 69: 'calc_msg03', 81: 'input_cmd', 49: 'goodbye_msg', 40: 'welcome_msg', 156: 'check_cmd', 11: 'quit_cmd', 13: 'help_cmd', 78: 'cmd_prompt', 15: 'calc_cmd', 17: 'frmt_cmd', 19: 'help', 54: 'calc_msg01', 121: 'solve_operand', 60: 'calc_msg02'}
+0
+21
+22
+8
+19
+23
+6
+17
+24
+4
+25
+15
+2
+11
+12
+20
+10
+34
+33
+35
+32
+30
+29
+28
+31
+file successfully created
+
+w_samples/w_samples/assembly/firstapp.was
+w_samples/w_samples/assembly/firstapp.o
+w_samples/firstapp

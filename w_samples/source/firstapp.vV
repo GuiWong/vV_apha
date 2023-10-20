@@ -1,0 +1,148 @@
+
+def xprint do swp wout_ 1 - dup 0 >? while flush drp endef
+
+def quit_cmd 'quit' endef 
+def help_cmd 'help' endef
+def calc_cmd 'calc' endef
+def frmt_cmd 'frmt' endef
+
+def help quit_cmd help_cmd calc_cmd frmt_cmd 
+
+	wout_ ' WIP' wout_ flush
+	wout_ ' OK ' wout_ flush
+	wout_ ' OK ' wout_ flush
+	wout_ ' OK ' wout_ flush
+
+endef
+
+
+
+def welcome_msg ' cmd' 't of' ' lis'  'or a'  'p  f' ' hel' 'Type' 7 endef
+
+def goodbye_msg ' :) ' 'bye ' 'Good' 3 endef
+
+def calc_msg01  'er: ' 'numb' 'r a ' 'Ente' 4 endef
+def calc_msg02  'uit)' 'to q' ' (q ' 'and:' 'oper' 'r a ' 'Ente' 7 endef
+def calc_msg03  'and' 'oper' 'lid ' 'Inva' 4 endef
+
+
+
+
+def say_welcome welcome_msg xprint endef
+
+
+def cmd_prompt 'cmd:' wout endef
+
+
+
+def input_cmd wget endef
+
+
+def check_operand
+
+			dup '+' =? if 
+					1
+				el
+				dup '-' =? if
+						1
+					el
+					dup '*' =? if
+							1
+						el
+						dup '/' =? if
+								1
+							el
+							dup '%' =? if
+									1
+								el
+								dup 'q' =? if
+										1
+									el
+										0
+									,	
+								,
+							,
+						,
+					,
+				,
+endef
+
+
+
+
+
+def solve_operand 	dup '+' =? if 
+					drp +
+				el
+				dup '-' =? if
+						drp -
+					el
+					dup '*' =? if
+							drp *
+						el
+						dup '/' =? if
+								drp /
+							el
+							dup '%' =? if
+									drp %
+								,
+							,
+						,
+					,
+				,
+endef
+
+
+def check_cmd
+
+	dup quit_cmd =? if 1 0 ,
+	dup help_cmd =? if  help 1 ,
+	dup calc_cmd =? if 0 0 ,
+	dup frmt_cmd =? if 1 ,
+
+	endef
+
+
+
+
+do
+
+	do
+
+		say_welcome
+		input_cmd
+
+
+		check_cmd
+	while
+
+if break ,
+
+	do
+
+		calc_msg01 xprint
+		get
+		
+		do
+			calc_msg02 xprint
+			cget
+			check_operand if 0 el drp calc_msg03 xprint 1 ,
+			
+		while
+		
+		dup 'q' =? if drp drp break ,
+		
+		calc_msg01 xprint
+		get
+		
+		swp solve_operand
+		
+		out
+		
+		
+
+	1 while
+
+1 while
+
+goodbye_msg xprint

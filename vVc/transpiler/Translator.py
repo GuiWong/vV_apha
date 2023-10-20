@@ -53,6 +53,9 @@ class Translator:
 	
 		for l_adr in self.labels.keys():
 		
+		
+			print self.labels[l_adr]
+		
 			lbid = self.labels[l_adr]
 			
 			
@@ -393,8 +396,8 @@ vV_entry_point:
 ; IF opcode					\n\
 \n\
 	vV_dec_sp 1			\n\
-	xor DWORD[vV_sp] , -1			\n\
-	jne '+self.label_names[arg]+'	\n'
+	or DWORD[vV_sp] , 0			\n\
+	je '+self.label_names[arg]+'	\n'
 				
 				
 		elif op in [ OP.ELSE ]:		#Becomes a jump

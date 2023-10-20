@@ -179,6 +179,7 @@ def_lab = b[2]
 
 
 #print labels
+print def_lab
 
 
 prog2 = vm.Program.Program(def_arr)

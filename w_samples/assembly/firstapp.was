@@ -1,0 +1,1546 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
+
+
+	xprint:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [0]  ; SWAP opcode 
+
+
+	vV_swap		
+
+
+ ;OpADR: [1]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [2]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [3]  ; SUB opcode 					
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [4]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [5]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [6]  ; MORE opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jbe short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [7]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_0		
+
+ ;OpADR: [8]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [9]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [10]  ; End of func opcode					
+
+		ret			
+
+
+	quit_cmd:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [11]  ; PUSH opcode 
+
+	vV_push 1953068401 
+
+
+ ;OpADR: [12]  ; End of func opcode					
+
+		ret			
+
+
+	help_cmd:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [13]  ; PUSH opcode 
+
+	vV_push 1886152040 
+
+
+ ;OpADR: [14]  ; End of func opcode					
+
+		ret			
+
+
+	calc_cmd:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [15]  ; PUSH opcode 
+
+	vV_push 1668047203 
+
+
+ ;OpADR: [16]  ; End of func opcode					
+
+		ret			
+
+
+	frmt_cmd:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [17]  ; PUSH opcode 
+
+	vV_push 1953329766 
+
+
+ ;OpADR: [18]  ; End of func opcode					
+
+		ret			
+
+
+	help:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [19]  ; Function Call					
+
+		call quit_cmd			
+
+ ;OpADR: [20]  ; Function Call					
+
+		call help_cmd			
+
+ ;OpADR: [21]  ; Function Call					
+
+		call calc_cmd			
+
+ ;OpADR: [22]  ; Function Call					
+
+		call frmt_cmd			
+
+ ;OpADR: [23]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [24]  ; PUSH opcode 
+
+	vV_push 1346983712 
+
+
+ ;OpADR: [25]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [26]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [27]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [28]  ; PUSH opcode 
+
+	vV_push 541806368 
+
+
+ ;OpADR: [29]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [30]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [31]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [32]  ; PUSH opcode 
+
+	vV_push 541806368 
+
+
+ ;OpADR: [33]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [34]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [35]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [36]  ; PUSH opcode 
+
+	vV_push 541806368 
+
+
+ ;OpADR: [37]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [38]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [39]  ; End of func opcode					
+
+		ret			
+
+
+	welcome_msg:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [40]  ; PUSH opcode 
+
+	vV_push 1684890400 
+
+
+ ;OpADR: [41]  ; PUSH opcode 
+
+	vV_push 1718558836 
+
+
+ ;OpADR: [42]  ; PUSH opcode 
+
+	vV_push 1936288800 
+
+
+ ;OpADR: [43]  ; PUSH opcode 
+
+	vV_push 1629516399 
+
+
+ ;OpADR: [44]  ; PUSH opcode 
+
+	vV_push 1713381488 
+
+
+ ;OpADR: [45]  ; PUSH opcode 
+
+	vV_push 1818585120 
+
+
+ ;OpADR: [46]  ; PUSH opcode 
+
+	vV_push 1701869908 
+
+
+ ;OpADR: [47]  ; PUSH opcode 
+
+	vV_push 7 
+
+
+ ;OpADR: [48]  ; End of func opcode					
+
+		ret			
+
+
+	goodbye_msg:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [49]  ; PUSH opcode 
+
+	vV_push 539572768 
+
+
+ ;OpADR: [50]  ; PUSH opcode 
+
+	vV_push 543521122 
+
+
+ ;OpADR: [51]  ; PUSH opcode 
+
+	vV_push 1685024583 
+
+
+ ;OpADR: [52]  ; PUSH opcode 
+
+	vV_push 3 
+
+
+ ;OpADR: [53]  ; End of func opcode					
+
+		ret			
+
+
+	calc_msg01:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [54]  ; PUSH opcode 
+
+	vV_push 540701285 
+
+
+ ;OpADR: [55]  ; PUSH opcode 
+
+	vV_push 1651340654 
+
+
+ ;OpADR: [56]  ; PUSH opcode 
+
+	vV_push 543236210 
+
+
+ ;OpADR: [57]  ; PUSH opcode 
+
+	vV_push 1702129221 
+
+
+ ;OpADR: [58]  ; PUSH opcode 
+
+	vV_push 4 
+
+
+ ;OpADR: [59]  ; End of func opcode					
+
+		ret			
+
+
+	calc_msg02:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [60]  ; PUSH opcode 
+
+	vV_push 695495029 
+
+
+ ;OpADR: [61]  ; PUSH opcode 
+
+	vV_push 1897951092 
+
+
+ ;OpADR: [62]  ; PUSH opcode 
+
+	vV_push 544286752 
+
+
+ ;OpADR: [63]  ; PUSH opcode 
+
+	vV_push 979660385 
+
+
+ ;OpADR: [64]  ; PUSH opcode 
+
+	vV_push 1919250543 
+
+
+ ;OpADR: [65]  ; PUSH opcode 
+
+	vV_push 543236210 
+
+
+ ;OpADR: [66]  ; PUSH opcode 
+
+	vV_push 1702129221 
+
+
+ ;OpADR: [67]  ; PUSH opcode 
+
+	vV_push 7 
+
+
+ ;OpADR: [68]  ; End of func opcode					
+
+		ret			
+
+
+	calc_msg03:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [69]  ; PUSH opcode 
+
+	vV_push 6581857 
+
+
+ ;OpADR: [70]  ; PUSH opcode 
+
+	vV_push 1919250543 
+
+
+ ;OpADR: [71]  ; PUSH opcode 
+
+	vV_push 543451500 
+
+
+ ;OpADR: [72]  ; PUSH opcode 
+
+	vV_push 1635151433 
+
+
+ ;OpADR: [73]  ; PUSH opcode 
+
+	vV_push 4 
+
+
+ ;OpADR: [74]  ; End of func opcode					
+
+		ret			
+
+
+	say_welcome:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [75]  ; Function Call					
+
+		call welcome_msg			
+
+ ;OpADR: [76]  ; Function Call					
+
+		call xprint			
+
+ ;OpADR: [77]  ; End of func opcode					
+
+		ret			
+
+
+	cmd_prompt:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [78]  ; PUSH opcode 
+
+	vV_push 979660131 
+
+
+ ;OpADR: [79]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+
+ ;OpADR: [80]  ; End of func opcode					
+
+		ret			
+
+
+	input_cmd:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [81]  ; GET opcode (9)			
+
+								
+	call vV_io_get_packed_char				
+						
+
+ ;OpADR: [82]  ; End of func opcode					
+
+		ret			
+
+
+	check_operand:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [83]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [84]  ; PUSH opcode 
+
+	vV_push 43 
+
+
+ ;OpADR: [85]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [86]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_12	
+
+ ;OpADR: [87]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [88]  ; ELIF opcode					
+
+	jmp wblock_11	
+
+
+	wblock_12:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [89]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [90]  ; PUSH opcode 
+
+	vV_push 45 
+
+
+ ;OpADR: [91]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [92]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_10	
+
+ ;OpADR: [93]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [94]  ; ELIF opcode					
+
+	jmp wblock_11	
+
+
+	wblock_10:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [95]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [96]  ; PUSH opcode 
+
+	vV_push 42 
+
+
+ ;OpADR: [97]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [98]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_8	
+
+ ;OpADR: [99]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [100]  ; ELIF opcode					
+
+	jmp wblock_11	
+
+
+	wblock_8:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [101]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [102]  ; PUSH opcode 
+
+	vV_push 47 
+
+
+ ;OpADR: [103]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [104]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_6	
+
+ ;OpADR: [105]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [106]  ; ELIF opcode					
+
+	jmp wblock_11	
+
+
+	wblock_6:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [107]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [108]  ; PUSH opcode 
+
+	vV_push 37 
+
+
+ ;OpADR: [109]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [110]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_4	
+
+ ;OpADR: [111]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [112]  ; ELIF opcode					
+
+	jmp wblock_11	
+
+
+	wblock_4:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [113]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [114]  ; PUSH opcode 
+
+	vV_push 113 
+
+
+ ;OpADR: [115]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [116]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_2	
+
+ ;OpADR: [117]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [118]  ; ELIF opcode					
+
+	jmp wblock_11	
+
+
+	wblock_2:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [119]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+
+	wblock_11:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [120]  ; End of func opcode					
+
+		ret			
+
+
+	solve_operand:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [121]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [122]  ; PUSH opcode 
+
+	vV_push 43 
+
+
+ ;OpADR: [123]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [124]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_21	
+
+ ;OpADR: [125]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [126]  ; ADD opcode 					
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [127]  ; ELIF opcode					
+
+	jmp wblock_20	
+
+
+	wblock_21:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [128]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [129]  ; PUSH opcode 
+
+	vV_push 45 
+
+
+ ;OpADR: [130]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [131]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_19	
+
+ ;OpADR: [132]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [133]  ; SUB opcode 					
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+
+	vV_dec_sp 1		
+
+ ;OpADR: [134]  ; ELIF opcode					
+
+	jmp wblock_20	
+
+
+	wblock_19:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [135]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [136]  ; PUSH opcode 
+
+	vV_push 42 
+
+
+ ;OpADR: [137]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [138]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_17	
+
+ ;OpADR: [139]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [140]  ; MUL opcode 					
+
+
+	mov eax , vV_2nd			
+	mul DWORD vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1				
+						
+
+ ;OpADR: [141]  ; ELIF opcode					
+
+	jmp wblock_20	
+
+
+	wblock_17:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [142]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [143]  ; PUSH opcode 
+
+	vV_push 47 
+
+
+ ;OpADR: [144]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [145]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_15	
+
+ ;OpADR: [146]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [147]  ; DIV opcode 					
+
+	xor edx , edx				
+	mov eax , vV_2nd			
+	div DWORD vV_top			
+	mov vV_2nd , eax			
+
+	vV_dec_sp 1				
+
+ ;OpADR: [148]  ; ELIF opcode					
+
+	jmp wblock_20	
+
+
+	wblock_15:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [149]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [150]  ; PUSH opcode 
+
+	vV_push 37 
+
+
+ ;OpADR: [151]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [152]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_20	
+
+ ;OpADR: [153]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [154]  ; MOD opcode 					
+
+	xor edx , edx				
+	mov eax , vV_2nd			
+	div DWORD vV_top			
+	mov vV_2nd , edx			
+
+	sub r15 , 4				
+
+
+	wblock_20:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [155]  ; End of func opcode					
+
+		ret			
+
+
+	check_cmd:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [156]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [157]  ; Function Call					
+
+		call quit_cmd			
+
+ ;OpADR: [158]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [159]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_22	
+
+ ;OpADR: [160]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [161]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+
+	wblock_22:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [162]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [163]  ; Function Call					
+
+		call help_cmd			
+
+ ;OpADR: [164]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [165]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_23	
+
+ ;OpADR: [166]  ; Function Call					
+
+		call help			
+
+ ;OpADR: [167]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+
+	wblock_23:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [168]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [169]  ; Function Call					
+
+		call calc_cmd			
+
+ ;OpADR: [170]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [171]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_24	
+
+ ;OpADR: [172]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [173]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+
+	wblock_24:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [174]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [175]  ; Function Call					
+
+		call frmt_cmd			
+
+ ;OpADR: [176]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [177]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_25	
+
+ ;OpADR: [178]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+
+	wblock_25:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [179]  ; End of func opcode					
+
+		ret			
+
+		
+
+
+
+vV_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+
+	wblock_34:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [0]  ; Function Call					
+
+		call say_welcome			
+
+ ;OpADR: [1]  ; Function Call					
+
+		call input_cmd			
+
+ ;OpADR: [2]  ; Function Call					
+
+		call check_cmd			
+
+ ;OpADR: [3]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_34		
+
+ ;OpADR: [4]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_32	
+
+ ;OpADR: [5]  ; Break opcode					
+
+	jmp wblock_35		
+
+
+	wblock_32:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [6]  ; Function Call					
+
+		call calc_msg01			
+
+ ;OpADR: [7]  ; Function Call					
+
+		call xprint			
+
+ ;OpADR: [8]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+
+	wblock_30:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [9]  ; Function Call					
+
+		call calc_msg02			
+
+ ;OpADR: [10]  ; Function Call					
+
+		call xprint			
+
+ ;OpADR: [11]  ; GET opcode (8)			
+
+		
+	call vV_io_get_char				
+						
+
+ ;OpADR: [12]  ; Function Call					
+
+		call check_operand			
+
+ ;OpADR: [13]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_29	
+
+ ;OpADR: [14]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [15]  ; ELIF opcode					
+
+	jmp wblock_28	
+
+
+	wblock_29:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [16]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [17]  ; Function Call					
+
+		call calc_msg03			
+
+ ;OpADR: [18]  ; Function Call					
+
+		call xprint			
+
+ ;OpADR: [19]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+
+	wblock_28:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [20]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_30		
+
+ ;OpADR: [21]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [22]  ; PUSH opcode 
+
+	vV_push 113 
+
+
+ ;OpADR: [23]  ; EQUAL opcode					
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+ ;OpADR: [24]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_31	
+
+ ;OpADR: [25]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [26]  ; DROP opcode 
+
+	sub vV_sp , 4	
+
+ ;OpADR: [27]  ; Break opcode					
+
+	jmp wblock_33		
+
+
+	wblock_31:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [28]  ; Function Call					
+
+		call calc_msg01			
+
+ ;OpADR: [29]  ; Function Call					
+
+		call xprint			
+
+ ;OpADR: [30]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+ ;OpADR: [31]  ; SWAP opcode 
+
+
+	vV_swap		
+
+
+ ;OpADR: [32]  ; Function Call					
+
+		call solve_operand			
+
+ ;OpADR: [33]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [34]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [35]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_32		
+
+
+	wblock_33:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [36]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [37]  ; WHILE opcode					
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_34		
+
+
+	wblock_35:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [38]  ; Function Call					
+
+		call goodbye_msg			
+
+ ;OpADR: [39]  ; Function Call					
+
+		call xprint			
+		
+		ret
+
+;Transpiled from vV with vVc version 0.0.3
+		
+		

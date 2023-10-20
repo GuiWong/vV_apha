@@ -117,6 +117,17 @@ ENDEF = 193
 CALL = 194
 RET = 195
 
+IMPLICIT = 200
+GLOBAL = 201
+LOCAL = 202
+
+
+PUSH_VAR = 208
+ASSIGN = 209
+
+
+
+UINT_32 = 217
 
 SQUOTES = 250
 DQUOTES = 251
@@ -148,11 +159,34 @@ class Opcode_descriptor:
 	
 '''
 
+ref_suffix= {
+
+	'=' : ASSIGN
+	
+	}
+
 define = {
 
 	'def' : DEF,
 	'endef' : ENDEF
 	
+	}
+	
+var_define = {
+
+	'var' : IMPLICIT ,
+
+	'global' : GLOBAL ,
+	'local' : LOCAL
+
+	}
+	
+var_type = {
+
+	'int' : UINT_32 ,
+	'uint_32' : UINT_32
+
+
 	}
 
 
@@ -284,6 +318,8 @@ virtual_op = {
 	DO : 'do',
 	WHILE:'while',
 	BREAK : 'break'
+	
+	
 	
 	
 	

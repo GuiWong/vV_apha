@@ -4,6 +4,9 @@ import Pre_Compiler_states as State
 import Opcode
 import options as O
 
+import VarUpdate.Code_Namespace as C_NS
+import VarUpdate.vV_Variable as vV_Var
+
 
 
 class Block:
@@ -29,6 +32,17 @@ class Block:
 def check_numeric_format(txt):
 
 	v = 0
+	
+	
+	
+	try:
+		v = int(txt[0],10)
+		
+	except ValueError:
+		
+		if txt[0] not in ["'" , '"' ]:
+			return [False]
+	
 
 	try:
 		v = int(txt,10)
@@ -74,7 +88,7 @@ def check_numeric_format(txt):
 			v += ord(txt[4]) << 24
 			
 			
-		print "\n\n "+ str(v) + "\n\n"
+		#print "\n\n "+ str(v) + "\n\n"
 			
 		return [True,v]
 			
@@ -131,7 +145,7 @@ class Block_Manager:
 			
 		elif actual.b_type == OP.Block_Type.WHILE:
 		
-			assert self.blocks[-1].b_type == OP.Block_Type.DO, "block Mismatch"
+			assert self.blocks[-1].b_type == OP.Block_Type.DO, "block Mismatch" 
 			
 			self.blocks[-1].arg_adress = actual.adress
 			
@@ -364,6 +378,11 @@ class Operation_Decoder:
 		blockinfo = 0
 		opcode = Opcode.Opcode()
 		valu= check_numeric_format(cmd)
+		
+		
+		if cmd == "b=":
+		
+			print valu
 
 #Handle all possible cases in order
 
@@ -404,12 +423,12 @@ class Operation_Decoder:
 				opcode.arg = int(cmd[0])
 	
 	#03.1.2: format prefix
-		elif cmd[0] in OP.format_prefixes.keys():
+		elif cmd[0] in OP.format_prefixes.keys() and cmd[1:] in OP.format_prefixed.values():
 			
-			if cmd[1:] in OP.format_prefixed.values():
+			#if cmd[1:] in OP.format_prefixed.values():
 
-				opcode.value = OP.get_virual_opcode_by_string(cmd[1:])
-				opcode.arg = OP.format_prefixes[cmd[0]]
+			opcode.value = OP.get_virual_opcode_by_string(cmd[1:])	#ERROR WAS HERE(NEED AND FOR COND)
+			opcode.arg = OP.format_prefixes[cmd[0]]
 
 
 	#03.2:suffix
@@ -417,6 +436,14 @@ class Operation_Decoder:
 
 			
 			pass
+			
+			
+		elif cmd[-1] in OP.ref_suffix:
+		
+		
+			opcode.value = OP.ref_suffix[cmd[-1]]
+			
+			opcode.arg = cmd[:-1]
 			
 			'''
 			
@@ -445,7 +472,7 @@ class Operation_Decoder:
 		
 			opcode.value=0
 			
-			print 'unrecognised command : ' +cmd
+			#print 'unrecognised command : ' +cmd
 			
 			#raise WErrors.W_ERROR('acab',str(self.context.build_location()))
 			
@@ -483,12 +510,18 @@ class Pre_Compiler:
 		
 		self.def_context = Context()
 		
+		
+		self.context.labels = {}
+		
+		self.def_context.labels = {}
+		
 		self.stacks = Block_Stack()
 		
 		self.symbol_solver = Symbol_Solver()
 		
 		
 		self.function_registerer = Function_Registerer()
+		self.namespace_manager = C_NS.NameSpace_Manager()
 		
 		
 		
@@ -587,6 +620,17 @@ class Pre_Compiler:
 		def_state = 0	#not def (0:ndef 1:start_def 2:setname 3:def 4:endef
 		
 		
+		
+		
+		current_func_name = ''
+		var_def_state = 0
+		
+		current_var_scope = 0
+		current_var_type = 0
+		current_var_value = 0
+		current_var_init = False
+		
+		
 		while not file_end:
 		
 			in_quotes = 0
@@ -617,7 +661,9 @@ class Pre_Compiler:
 						
 					else:
 					
-						raise WErrors.ParserError('Misplaced Quote', self.context.build_location())
+						buff+=r
+					
+						#raise WErrors.ParserError('Misplaced Quote', self.context.build_location())
 				
 				if r in OP.separator and in_quotes == 0:
 				
@@ -632,6 +678,9 @@ class Pre_Compiler:
 						mode = 0
 						
 						if buff in OP.define.keys():
+						
+						
+							assert var_def_state == 0 , " RAISE UNFINISHED VAR DEFINITION"
 						
 							self.context.state=State.DEFINING
 							
@@ -649,15 +698,88 @@ class Pre_Compiler:
 							#check end of def
 							if def_state == 3 and OP.define[buff] == OP.ENDEF:
 							
+							
+								print "endef found "+ str(self.context.build_location())
+							
 								def_state = 4
 						
 							elif def_state == 0 and OP.define[buff] == OP.DEF:
+							
+								print "def found "+ str(self.context.build_location())
+								print buff
 							
 								def_state = 1
 								
 							else:
 							
-								assert False,"Definition Boundary Mismatch"
+								assert False,"Definition Boundary Mismatch "+ str(self.context.build_location()) +" "+ str(def_state)+ " " +str(OP.define[buff]) + " " + str(var_def_state)
+								
+#----------------------------------Var Update--------------------------------------------------------------------------------------------
+
+
+						elif buff in OP.var_define:
+						
+							#assert var_def_state == 0 , "ILLEGAL LOCATION FOR SCOPE KEYWORD "+ str(self.context.build_location())
+
+							if OP.var_define[buff] == OP.IMPLICIT:
+							
+								if def_state == 0:
+								
+									current_var_scope = OP.GLOBAL
+									
+								elif def_state >=2:
+								
+									current_var_scope = OP.GLOBAL
+									
+								else:
+								
+									assert False , "UNABLE TO define variable scope "+ str(self.context.build_location())
+
+
+
+							else:
+							
+								current_var_scope = OP.var_define[buff]
+								
+								
+							self.context.state=State.VAR_DEFINING
+							
+							
+							print "Begin var init..."
+							
+
+							var_def_state = 1	
+							
+						elif buff in OP.var_type:
+						
+						
+							if var_def_state == 0:			#--> implicit scope
+							
+								
+							
+								if def_state == 0:
+								
+									current_var_scope = OP.GLOBAL
+									
+								elif def_state >=2:
+								
+									current_var_scope = OP.GLOBAL
+						
+							current_var_type = OP.var_type[buff]
+							
+							
+							print "setting var type..."
+							
+							self.context.state = State.VAR_DEFINING
+							
+							var_def_state = 2	#Scoped, Typed
+								
+							
+
+
+
+
+#----------------------------------Var Update--------------------------------------------------------------------------------------------
 						
 						
 						
@@ -694,7 +816,10 @@ class Pre_Compiler:
 				
 					
 							#----------------should get every symbol separated
-				
+			
+			
+			
+			print "\n Isolated: " + buff + " defState: "+str(def_state)
 			
 			if file_end and mode == 1:
 			
@@ -705,23 +830,142 @@ class Pre_Compiler:
 			
 				#self.context.state =State.ISOLATING
 				
+			if self.context.state == State.VAR_DEFINING:		#v0.0.4
+				
+				self.context.state =State.ISOLATING
+				continue
+				
 			self.context.state =State.ISOLATING
 				
 			if def_state == 2:
 			
-				print "Name  "
+				print " Function Name : "+buff+" "+str(self.context.build_location())
+				
+				
 				self.function_registerer.functions[len(self.def_op_array)] = buff
+				
+				if self.namespace_manager.define_function(buff) != 0:	#v0.0.4
+				
+					assert False , "RAISE DEFINITION ERROR"		#v0.0.4
+					
+				current_func_name = buff					#v0.0.4
+				
 				def_state = 3
 				continue
 				
 			if def_state == 1:
 				
 				
-				print "Define : "
+				print " Function Definition: "+buff+" "+str(self.context.build_location())
+				
 				def_state = 2
+				continue
+
+
+#----------------------------------Var Update--------------------------------------------------------------------------------------------				
+				
+			#if var_def_state != 0:
+			
+			
+			
+			
+			if var_def_state == 1:		#scoped, untyped
+			
+			
+				print "value found before type, defining it..."
+			
+				tmpre = check_numeric_format(buff) 
+				
+				print buff,tmpre
+				
+				if tmpre[0]:
+				
+					current_var_type = OP.UINT_32
+					current_var_value = tmpre[1]
+					current_var_init = True
+					
+				else:
+				
+					assert False , "RAISE UNKNOWN VALUE TYPE" +  str(self.context.build_location())
+					
+					
+				var_def_state = 3	#scoped, typed, has value
+					
+					
 				continue
 				
 				
+				
+			if var_def_state >=2:	#Scoped and typed, maybe inited
+			
+			
+				print "defining var name: " +buff
+				var_name = buff
+				varo = vV_Var.vV_Variable(var_name,current_var_scope,current_var_type,current_var_init,current_var_value)
+				
+				
+				#print varo.name
+				#print varo.var_type
+				#print varo.scope
+				#print current_var_scope
+				#print varo.init_value
+				
+				
+				
+				
+				if current_var_scope == OP.GLOBAL:
+				
+					if self.namespace_manager.define_global(varo)== 0:
+				
+						print "\n",varo,"\n"
+					
+					else:
+				
+						assert False , "RAISE VAR NAME ERROR TYPE" +str(self.context.current_line) + str(self.context.build_location())
+						
+				elif current_var_scope == OP.LOCAL:
+				
+					if self.namespace_manager.functions[current_func_name].add_local_var(varo)==0:
+				
+						print varo
+					
+					else:
+				
+						assert False , "RAISE VAR NAME ERROR TYPE" +str(self.context.current_line) + str(self.context.build_location())
+				
+				var_def_state = 0
+				
+				print "Var should be saved"
+
+				continue
+
+				
+			if var_def_state == 2:		#scoped, typed
+			
+			
+				print "value found after ype"
+			
+				tmpre = check_numeric_format(buff) 
+				
+				print buff,tmpre
+				
+				if tmpre[0]:
+				
+					current_var_type = OP.UINT_32
+					current_var_value = tmpre[1]
+					current_var_init = True
+					
+				else:
+				
+					assert False , "RAISE UNKNOWN VALUE TYPE" + str(self.context.build_location())
+					
+					
+				var_def_state = 3	#scoped, typed, has value
+					
+					
+				continue
+
+#----------------------------------Var Update--------------------------------------------------------------------------------------------				
 		
 			
 			
@@ -735,6 +979,14 @@ class Pre_Compiler:
 			
 			op, info = self.operation_decoder.solve(buff)
 			
+			#if op.value == OP.DO:
+			
+			#	print "do :" +str(self.context.build_location())
+			
+			#if op.value == OP.WHILE:
+			
+			#	print "while :" +str(self.context.build_location())
+			
 			
 			if op.value == 0:
 			
@@ -742,27 +994,78 @@ class Pre_Compiler:
 				
 					op.value = OP.CALL
 					op.arg = buff
+	
+#--------------------------Var Update------------------------------------------------------------		
+			
+				elif def_state == 3 and buff in self.namespace_manager.functions[current_func_name].local_vars:		#00.0.4
+				
+				
+					op.value = OP.PUSH_VAR
+					op.arg = buff
+					
+					
+					print "push local var "+op.arg
+					
+				
+				elif buff in self.namespace_manager.global_vars:		#00.0.4
+				
+				
+					op.value = OP.PUSH_VAR
+					op.arg = buff
+					
+					print "push global var "+op.arg
+					
+				else:
+				
+					assert False , "Unrecognised Opcode "+str(op.value) + " " +buff+" " +str(self.context.build_location())
+					
+					
+					
+			if op.value == OP.ASSIGN:
+			
+			
+				print "assign potential var "+op.arg
+				
+				if def_state == 3 and op.arg in self.namespace_manager.functions[current_func_name].local_vars:
+				
+					pass
+					
+				elif op.arg in self.namespace_manager.global_vars:
+				
+					pass
+					
+				else:
+				
+					assert False , "Undefined var for this scope "+str(self.context.build_location())
+			
+			
+#--------------------------------------------------------------------------------------------------------			
 			
 			
 			
 			
+			arrptr = 0
 			
-			
-			arrptr = self.op_array
-			
-			contxptr = self.context	
-			other_ctx = self.def_context
-			
-			
+			contxptr = 0	
+			other_ctx = 0
 			
 			if def_state != 0:
 		
 				arrptr = self.def_op_array
-				contxptr = self.def_context
-				other_ctx = self.context
+				#contxptr = self.def_context
+				#other_ctx = self.context
+				
+			else:
+			
+				arrptr = self.op_array
+			
+				#contxptr = self.context	
+				#other_ctx = self.def_context
 				
 			if def_state == 4:
 			
+			
+				print "Finishing func"
 				def_state = 0
 				
 			
@@ -804,6 +1107,7 @@ class Pre_Compiler:
 					tmp = self.block_manager.manage_block(op.adress,OP.block_type[op.value],self.context.build_location)
 					if len(tmp)>=1:
 					
+						#print tmp
 						superblock_end = tmp[0].arg_adress
 				
 						for b in tmp:
@@ -813,8 +1117,29 @@ class Pre_Compiler:
 							if b.b_type in [ OP.Block_Type.IF , OP.Block_Type.ELSE ]:
 							
 								arrptr[b.adress].arg = b.arg_adress
-								contxptr.add_label(b.arg_adress,b.b_type)
-								other_ctx.label_count +=1
+								if def_state != 0:
+									self.def_context.add_label(b.arg_adress,b.b_type)
+									self.context.label_count +=1
+								else:
+									self.context.add_label(b.arg_adress,b.b_type)
+									self.def_context.label_count +=1
+								
+								for a in b.sub_blocks:
+								
+									arrptr[a].arg = superblock_end
+									
+							elif b.b_type == OP.Block_Type.END:
+							
+							
+								
+							
+								arrptr[b.adress].arg = b.arg_adress
+								if def_state != 0:
+									self.def_context.add_label(b.arg_adress,b.b_type)
+									self.context.label_count +=1
+								else:
+									self.context.add_label(b.arg_adress,b.b_type)
+									self.def_context.label_count +=1
 								
 								for a in b.sub_blocks:
 								
@@ -823,14 +1148,22 @@ class Pre_Compiler:
 							elif b.b_type == OP.Block_Type.DO:
 							
 								arrptr[b.arg_adress].arg = b.adress
-								contxptr.add_label(b.adress,b.b_type)
-								other_ctx.label_count +=1
+								if def_state != 0:
+									self.def_context.add_label(b.adress,b.b_type)
+									self.context.label_count +=1
+								else:
+									self.context.add_label(b.adress,b.b_type)
+									self.def_context.label_count +=1
 								
 								for a in b.sub_blocks:
 								
 									arrptr[a].arg = superblock_end + 1
-									contxptr.add_label(superblock_end + 1,b.b_type)
-									other_ctx.label_count +=1
+									if def_state != 0:
+										self.def_context.add_label(superblock_end+1,b.b_type)
+										self.context.label_count +=1
+									else:
+										self.context.add_label(superblock_end+1,b.b_type)
+										self.def_context.label_count +=1
 									
 								for a in b.sub_blocks_inverted:
 								
@@ -862,12 +1195,30 @@ class Pre_Compiler:
 			if self.flags & O.VERBOSE:	
 				print"current Op adress: " + str(len(arrptr))
 				
-			#print def_state
-				
-				
+			#print self.context.labels
+			#print self.def_context.labels
 		
-	 	print self.def_op_array , self.function_registerer.functions
-		return [self.op_array , self.context.labels] , [self.def_op_array , self.context.labels , self.function_registerer.functions]
+		
+		print "---------------------------------------"		
+			
+		for key in self.namespace_manager.functions:
+			
+			print key , self.namespace_manager.functions[key].name ,  self.namespace_manager.functions[key].local_vars 
+			
+			
+		print "---------------------------------------"
+			
+		print len(self.namespace_manager.global_vars)
+		
+		
+		#print self.namespace_manager.global_vars
+		for key in self.namespace_manager.global_vars:
+		
+			print key
+			print self.namespace_manager.global_vars[key]
+		
+	 	#print self.def_op_array , self.function_registerer.functions
+		return [self.op_array , self.context.labels] , [self.def_op_array , self.def_context.labels , self.function_registerer.functions]
 
 
 
