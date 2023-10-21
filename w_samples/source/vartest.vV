@@ -1,24 +1,85 @@
 
-global int[10] foo
+global int[10][5] foo
 
 global int a
 
-
-5 0 []foo=
-42 1 []foo=
-69 2 []foo=
+global int gulf
 
 
-0 []foo out
-1 []foo out
-2 []foo out
+333 gulf=
+
+5   [0][0]foo=
+42  [1][0]foo=
+69  [2][0]foo=
+43  [3][0]foo=
+67  [4][0]foo=
 
 
-46 0 []foo=
-23 1 []foo=
-'acab' 2 []foo=
+34    [0][0]foo=
+467   [0][1]foo=
+888   [0][2]foo=
 
 
-0 []foo out
-1 []foo out
-2 []foo wout
+
+
+[0][0]foo out
+[0][1]foo out
+[0][2]foo out
+
+
+42  [1][0]foo=
+900 [0][0]foo=
+
+ [1][0]foo out
+ 
+ 
+ global int[8][8] board
+
+
+global 7 c
+
+global 0 colomn
+
+
+global 2 mult
+
+
+0
+
+do
+
+dup
+
+
+mult
+
+swp
+colomn
+
+[][]board=
+
+
+
+mult mult + mult=
+
+
+1 +
+dup c >? !
+
+while
+
+0
+
+
+do
+
+dup
+
+[][0]board
+bout
+
+
+1 +
+dup c >? !
+
+while

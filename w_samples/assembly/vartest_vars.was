@@ -1,8 +1,13 @@
  segment .data 
 
  i_global:
+.c: dq 7
+.mult: dq 2
+.colomn: dq 0
  segment .bss 
 
 	u_global:
 .a: resb 4 
-.foo: resb 40 
+.gulf: resb 4 
+.board: resb 256 
+.foo: resb 256 

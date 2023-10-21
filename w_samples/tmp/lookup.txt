@@ -189,7 +189,7 @@
     84 00000044 4889E5              <1> 	mov rbp, rsp				;Setup Stack Frame
     85                              <1> 	
     86 00000047 49BF-               <1> 	mov r15 , fake_stack_start			;setup fake data stack
-    86 00000049 [8602040000000000]  <1>
+    86 00000049 [B205040000000000]  <1>
     87                              <1> 	
     88 00000051 E8B4FFFFFF          <1> 	call save_regs				;just in case
     89                              <1> 	
@@ -198,7 +198,7 @@
     92                              <1> 	
     93                              <1> 	
     94                              <1> 	
-    95 0000005B E86E0C0000          <1> 	call vV_entry_point			;Start the program 
+    95 0000005B E837070000          <1> 	call vV_entry_point			;Start the program 
     96                              <1> 	
     97                              <1> 	
     98 00000060 E8B1FFFFFF          <1> 	call restore_regs
@@ -1234,13 +1234,19 @@
    439                              <1> 
    440                              <1> 
    441                              <1> 
-     9                                  %include "w_samples/assembly/firstapp_vars.was"	
+     9                                  %include "w_samples/assembly/rule110_vars.was"	
      1                              <1>  segment .data 
      2                              <1> 
      3                              <1>  i_global:
-     4                              <1>  segment .bss 
-     5                              <1> 
-     6                              <1> 	u_global:
+     4 00000118 0000000000000000    <1> .currentIter: dq 0
+     5 00000120 0000000000000000    <1> .boardPad: dq 0
+     6 00000128 C800000000000000    <1> .size: dq 200
+     7                              <1>  segment .bss 
+     8                              <1> 
+     9                              <1> 	u_global:
+    10 00000286 <res 00000004>      <1> .index: resb 4 
+    11 0000028A <res 00000324>      <1> .board: resb 804 
+    12 000005AE <res 00000004>      <1> .saved: resb 4 
     10                                  %include "vVc/assembly/w_runtime/vV_system90.asm"		
      1                              <1> 
      2                              <1> segment .bss
@@ -1250,13 +1256,13 @@
      6                              <1> 	stacks: 
      7                              <1> 
      8                              <1> 
-     9 00000286 <res 00040000>      <1> 	string_stack_start: resb 262144
+     9 000005B2 <res 00040000>      <1> 	string_stack_start: resb 262144
     10                              <1> 
     11                              <1> 
     12                              <1> 	
     13                              <1> 	
     14                              <1> 						
-    15 00040286 <res 00020000>      <1> 	fake_stack_start: resb 131072
+    15 000405B2 <res 00020000>      <1> 	fake_stack_start: resb 131072
     11                                  
     12                                  
     13                                  
@@ -1267,7 +1273,7 @@
     18                                  segment .text 
     19                                  
     20                                  
-    21                                  xprint:		
+    21                                  set_next:		
     22 0000046E 55                      	push rbp	
     23 0000046F 4889E5                  	mov rbp , rsp	
     24                                  
@@ -1277,2253 +1283,1233 @@
     28                                  
     29                                  .tailcall:		;Body Section	
     30                                  
-    31                                  
-    32                                  	wblock_0:		
-    33                                  
-    34                                  ;------------------------------------------------------
-    35                                  
+    31                                   ;OpADR: [0]  ; ADD opcode 					
+    32                                  
+    33 00000472 418B47F8                	mov eax , vV_2nd			
+    34 00000476 410347FC                	add eax , vV_top			
+    35 0000047A 418947F8                	mov vV_2nd , eax			
     36                                  
-    37                                   ;OpADR: [0]  ; SWAP opcode 
+    37                                  	vV_dec_sp 1		
+    37                              <1> 
+    37 0000047E 4983EF04            <1>  sub vV_sp , cell(%1)
+    37                              <1> 
     38                                  
-    39                                  
-    40                                  	vV_swap		
-    40                              <1> 
-    40 00000472 418B57FC            <1>  mov edx , [vV_sp-4]
-    40 00000476 418B47F8            <1>  mov eax , [vV_sp-8]
-    40 0000047A 418957F8            <1>  mov [vV_sp-8] , edx
-    40 0000047E 418947FC            <1>  mov [vV_sp-4] , eax
-    40                              <1> 
-    41                                  
+    39                                   ;OpADR: [1]  ; DUP opcode (1)			
+    40                                  
+    41                                  	vV_dup 1			
+    41                              <1> 
+    41 00000482 B901000000          <1>  mov ecx , %1
+    41 00000487 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+    41 0000048B 4C89FF              <1>  mov rdi , vV_sp
+    41                              <1> 
+    41 0000048E F3A5                <1>  rep movsd
+    41                              <1> 
+    41 00000490 4983C704            <1>  add vV_sp , cell(%1)
+    41                              <1> 
     42                                  
-    43                                   ;OpADR: [1]  ; BUFF_OUT opcode (9)			
-    44                                  
+    43                                  
+    44                                   ;OpADR: [2]  ; PUSH opcode 
     45                                  
-    46 00000482 E851FDFFFF              	call vV_io_out_packed_char_buffer				
-    47                                  						
+    46                                  	vV_push 0 
+    46                              <1> 
+    46 00000494 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+    46 0000049B 4983C704            <1>  add vV_sp , 4
+    46                              <1> 
+    47                                  
     48                                  
-    49                                   ;OpADR: [2]  ; PUSH opcode 
+    49                                   ;OpADR: [3]  ; EQUAL opcode					
     50                                  
-    51                                  	vV_push 1 
-    51                              <1> 
-    51 00000487 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-    51 0000048E 4983C704            <1>  add vV_sp , 4
-    51                              <1> 
-    52                                  
+    51 0000049F 418B47FC                	mov eax , vV_top			
+    52 000004A3 413947F8                	cmp DWORD vV_2nd , eax			
     53                                  
-    54                                   ;OpADR: [3]  ; SUB opcode 					
+    54 000004A7 75(0B)                  	jnz short 0xb				
     55                                  
-    56 00000492 418B47F8                	mov eax , vV_2nd			
-    57 00000496 412B47FC                	sub eax , vV_top			
-    58 0000049A 418947F8                	mov vV_2nd, eax			
+    56 000004A9 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+    57                                  
+    58 000004B1 EB(09)                  	jmp short 0x9				
     59                                  
-    60                                  	vV_dec_sp 1		
-    60                              <1> 
-    60 0000049E 4983EF04            <1>  sub vV_sp , cell(%1)
-    60                              <1> 
+    60 000004B3 41C747F800000000        			mov DWORD vV_2nd , 0	
     61                                  
-    62                                   ;OpADR: [4]  ; DUP opcode (1)			
+    62                                  	vV_dec_sp 1				
+    62                              <1> 
+    62 000004BB 4983EF04            <1>  sub vV_sp , cell(%1)
+    62                              <1> 
     63                                  
-    64                                  	vV_dup 1			
-    64                              <1> 
-    64 000004A2 B901000000          <1>  mov ecx , %1
-    64 000004A7 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-    64 000004AB 4C89FF              <1>  mov rdi , vV_sp
-    64                              <1> 
-    64 000004AE F3A5                <1>  rep movsd
-    64                              <1> 
-    64 000004B0 4983C704            <1>  add vV_sp , cell(%1)
-    64                              <1> 
+    64                                   ;OpADR: [4]  ; IF opcode					
     65                                  
-    66                                  
-    67                                   ;OpADR: [5]  ; PUSH opcode 
-    68                                  
-    69                                  	vV_push 0 
-    69                              <1> 
-    69 000004B4 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-    69 000004BB 4983C704            <1>  add vV_sp , 4
-    69                              <1> 
-    70                                  
+    66                                  	vV_dec_sp 1			
+    66                              <1> 
+    66 000004BF 4983EF04            <1>  sub vV_sp , cell(%1)
+    66                              <1> 
+    67 000004C3 41830F00                	or DWORD[vV_sp] , 0			
+    68 000004C7 7418                    	je wblock_5	
+    69                                  
+    70                                   ;OpADR: [5]  ; DROP opcode 
     71                                  
-    72                                   ;OpADR: [6]  ; MORE opcode					
+    72 000004C9 4983EF04                	sub vV_sp , 4	
     73                                  
-    74 000004BF 418B47FC                	mov eax , vV_top			
-    75 000004C3 413947F8                	cmp DWORD vV_2nd , eax			
-    76                                  
-    77 000004C7 76(0B)                  	jbe short 0xb				
-    78                                  
-    79 000004C9 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-    80                                  
-    81 000004D1 EB(09)                  	jmp short 0x9				
+    74                                   ;OpADR: [6]  ; DROP opcode 
+    75                                  
+    76 000004CD 4983EF04                	sub vV_sp , 4	
+    77                                  
+    78                                   ;OpADR: [7]  ; PUSH opcode 
+    79                                  
+    80                                  	vV_push 0 
+    80                              <1> 
+    80 000004D1 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+    80 000004D8 4983C704            <1>  add vV_sp , 4
+    80                              <1> 
+    81                                  
     82                                  
-    83 000004D3 41C747F800000000        			mov DWORD vV_2nd , 0	
+    83                                   ;OpADR: [8]  ; ELIF opcode					
     84                                  
-    85                                  	vV_dec_sp 1				
-    85                              <1> 
-    85 000004DB 4983EF04            <1>  sub vV_sp , cell(%1)
-    85                              <1> 
+    85 000004DC E9AD000000              	jmp wblock_4	
     86                                  
-    87                                   ;OpADR: [7]  ; WHILE opcode					
-    88                                  
-    89                                  	vV_dec_sp 1				
-    89                              <1> 
-    89 000004DF 4983EF04            <1>  sub vV_sp , cell(%1)
-    89                              <1> 
-    90 000004E3 41830F00                	or DWORD[vV_sp] , 0			
-    91 000004E7 7589                    	jne wblock_0		
+    87                                  
+    88                                  	wblock_5:		
+    89                                  
+    90                                  ;------------------------------------------------------
+    91                                  
     92                                  
-    93                                   ;OpADR: [8]  ; FLUSH opcode					
+    93                                   ;OpADR: [9]  ; DUP opcode (1)			
     94                                  
-    95 000004E9 E81EFCFFFF              		call vV_io_flush	
+    95                                  	vV_dup 1			
+    95                              <1> 
+    95 000004E1 B901000000          <1>  mov ecx , %1
+    95 000004E6 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+    95 000004EA 4C89FF              <1>  mov rdi , vV_sp
+    95                              <1> 
+    95 000004ED F3A5                <1>  rep movsd
+    95                              <1> 
+    95 000004EF 4983C704            <1>  add vV_sp , cell(%1)
+    95                              <1> 
     96                                  
-    97                                   ;OpADR: [9]  ; DROP opcode 
-    98                                  
-    99 000004EE 4983EF04                	sub vV_sp , 4	
-   100                                  
-   101                                   ;OpADR: [10]  ; End of func opcode					
+    97                                  
+    98                                   ;OpADR: [10]  ; PUSH opcode 
+    99                                  
+   100                                  	vV_push 2 
+   100                              <1> 
+   100 000004F3 41C70702000000      <1>  mov DWORD[vV_sp] , %1
+   100 000004FA 4983C704            <1>  add vV_sp , 4
+   100                              <1> 
+   101                                  
    102                                  
-   103                                  
-   104                                  ;------Cleanup Phase
-   105                                  
-   106                                  ;------frame restore Phase
-   107 000004F2 4889EC                  	mov rsp , rbp	
-   108 000004F5 5D                      	pop rbp	
-   109 000004F6 C3                      	ret	
-   110                                  quit_cmd:		
-   111 000004F7 55                      	push rbp	
-   112 000004F8 4889E5                  	mov rbp , rsp	
+   103                                   ;OpADR: [11]  ; EQUAL opcode					
+   104                                  
+   105 000004FE 418B47FC                	mov eax , vV_top			
+   106 00000502 413947F8                	cmp DWORD vV_2nd , eax			
+   107                                  
+   108 00000506 75(0B)                  	jnz short 0xb				
+   109                                  
+   110 00000508 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+   111                                  
+   112 00000510 EB(09)                  	jmp short 0x9				
    113                                  
-   114                                  ;------Setup Phase
+   114 00000512 41C747F800000000        			mov DWORD vV_2nd , 0	
    115                                  
-   116                                  ;------Init Phase
+   116                                  	vV_dec_sp 1				
+   116                              <1> 
+   116 0000051A 4983EF04            <1>  sub vV_sp , cell(%1)
+   116                              <1> 
    117                                  
-   118                                  .tailcall:		;Body Section	
+   118                                   ;OpADR: [12]  ; IF opcode					
    119                                  
-   120                                   ;OpADR: [11]  ; PUSH opcode 
-   121                                  
-   122                                  	vV_push 1953068401 
-   122                              <1> 
-   122 000004FB 41C70771756974      <1>  mov DWORD[vV_sp] , %1
-   122 00000502 4983C704            <1>  add vV_sp , 4
-   122                              <1> 
+   120                                  	vV_dec_sp 1			
+   120                              <1> 
+   120 0000051E 4983EF04            <1>  sub vV_sp , cell(%1)
+   120                              <1> 
+   121 00000522 41830F00                	or DWORD[vV_sp] , 0			
+   122 00000526 7453                    	je wblock_3	
    123                                  
-   124                                  
-   125                                   ;OpADR: [12]  ; End of func opcode					
-   126                                  
+   124                                   ;OpADR: [13]  ; DROP opcode 
+   125                                  
+   126 00000528 4983EF04                	sub vV_sp , 4	
    127                                  
-   128                                  ;------Cleanup Phase
+   128                                   ;OpADR: [14]  ; PUSH opcode 
    129                                  
-   130                                  ;------frame restore Phase
-   131 00000506 4889EC                  	mov rsp , rbp	
-   132 00000509 5D                      	pop rbp	
-   133 0000050A C3                      	ret	
-   134                                  help_cmd:		
-   135 0000050B 55                      	push rbp	
-   136 0000050C 4889E5                  	mov rbp , rsp	
+   130                                  	vV_push 0 
+   130                              <1> 
+   130 0000052C 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   130 00000533 4983C704            <1>  add vV_sp , 4
+   130                              <1> 
+   131                                  
+   132                                  
+   133                                   ;OpADR: [15]  ; EQUAL opcode					
+   134                                  
+   135 00000537 418B47FC                	mov eax , vV_top			
+   136 0000053B 413947F8                	cmp DWORD vV_2nd , eax			
    137                                  
-   138                                  ;------Setup Phase
+   138 0000053F 75(0B)                  	jnz short 0xb				
    139                                  
-   140                                  ;------Init Phase
+   140 00000541 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
    141                                  
-   142                                  .tailcall:		;Body Section	
+   142 00000549 EB(09)                  	jmp short 0x9				
    143                                  
-   144                                   ;OpADR: [13]  ; PUSH opcode 
+   144 0000054B 41C747F800000000        			mov DWORD vV_2nd , 0	
    145                                  
-   146                                  	vV_push 1886152040 
+   146                                  	vV_dec_sp 1				
    146                              <1> 
-   146 0000050F 41C70768656C70      <1>  mov DWORD[vV_sp] , %1
-   146 00000516 4983C704            <1>  add vV_sp , 4
+   146 00000553 4983EF04            <1>  sub vV_sp , cell(%1)
    146                              <1> 
    147                                  
-   148                                  
-   149                                   ;OpADR: [14]  ; End of func opcode					
-   150                                  
-   151                                  
-   152                                  ;------Cleanup Phase
+   148                                   ;OpADR: [16]  ; IF opcode					
+   149                                  
+   150                                  	vV_dec_sp 1			
+   150                              <1> 
+   150 00000557 4983EF04            <1>  sub vV_sp , cell(%1)
+   150                              <1> 
+   151 0000055B 41830F00                	or DWORD[vV_sp] , 0			
+   152 0000055F 740D                    	je wblock_1	
    153                                  
-   154                                  ;------frame restore Phase
-   155 0000051A 4889EC                  	mov rsp , rbp	
-   156 0000051D 5D                      	pop rbp	
-   157 0000051E C3                      	ret	
-   158                                  calc_cmd:		
-   159 0000051F 55                      	push rbp	
-   160 00000520 4889E5                  	mov rbp , rsp	
-   161                                  
-   162                                  ;------Setup Phase
+   154                                   ;OpADR: [17]  ; PUSH opcode 
+   155                                  
+   156                                  	vV_push 1 
+   156                              <1> 
+   156 00000561 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   156 00000568 4983C704            <1>  add vV_sp , 4
+   156                              <1> 
+   157                                  
+   158                                  
+   159                                   ;OpADR: [18]  ; ELIF opcode					
+   160                                  
+   161 0000056C EB0B                    	jmp wblock_0	
+   162                                  
    163                                  
-   164                                  ;------Init Phase
+   164                                  	wblock_1:		
    165                                  
-   166                                  .tailcall:		;Body Section	
+   166                                  ;------------------------------------------------------
    167                                  
-   168                                   ;OpADR: [15]  ; PUSH opcode 
-   169                                  
-   170                                  	vV_push 1668047203 
-   170                              <1> 
-   170 00000523 41C70763616C63      <1>  mov DWORD[vV_sp] , %1
-   170 0000052A 4983C704            <1>  add vV_sp , 4
-   170                              <1> 
-   171                                  
+   168                                  
+   169                                   ;OpADR: [19]  ; PUSH opcode 
+   170                                  
+   171                                  	vV_push 0 
+   171                              <1> 
+   171 0000056E 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   171 00000575 4983C704            <1>  add vV_sp , 4
+   171                              <1> 
    172                                  
-   173                                   ;OpADR: [16]  ; End of func opcode					
+   173                                  
    174                                  
-   175                                  
-   176                                  ;------Cleanup Phase
-   177                                  
-   178                                  ;------frame restore Phase
-   179 0000052E 4889EC                  	mov rsp , rbp	
-   180 00000531 5D                      	pop rbp	
-   181 00000532 C3                      	ret	
-   182                                  frmt_cmd:		
-   183 00000533 55                      	push rbp	
-   184 00000534 4889E5                  	mov rbp , rsp	
-   185                                  
-   186                                  ;------Setup Phase
-   187                                  
-   188                                  ;------Init Phase
+   175                                  	wblock_0:		
+   176                                  
+   177                                  ;------------------------------------------------------
+   178                                  
+   179                                  
+   180                                   ;OpADR: [20]  ; ELIF opcode					
+   181                                  
+   182 00000579 EB13                    	jmp wblock_4	
+   183                                  
+   184                                  
+   185                                  	wblock_3:		
+   186                                  
+   187                                  ;------------------------------------------------------
+   188                                  
    189                                  
-   190                                  .tailcall:		;Body Section	
+   190                                   ;OpADR: [21]  ; DROP opcode 
    191                                  
-   192                                   ;OpADR: [17]  ; PUSH opcode 
+   192 0000057B 4983EF04                	sub vV_sp , 4	
    193                                  
-   194                                  	vV_push 1953329766 
-   194                              <1> 
-   194 00000537 41C70766726D74      <1>  mov DWORD[vV_sp] , %1
-   194 0000053E 4983C704            <1>  add vV_sp , 4
-   194                              <1> 
+   194                                   ;OpADR: [22]  ; DROP opcode 
    195                                  
-   196                                  
-   197                                   ;OpADR: [18]  ; End of func opcode					
-   198                                  
+   196 0000057F 4983EF04                	sub vV_sp , 4	
+   197                                  
+   198                                   ;OpADR: [23]  ; PUSH opcode 
    199                                  
-   200                                  ;------Cleanup Phase
+   200                                  	vV_push 1 
+   200                              <1> 
+   200 00000583 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   200 0000058A 4983C704            <1>  add vV_sp , 4
+   200                              <1> 
    201                                  
-   202                                  ;------frame restore Phase
-   203 00000542 4889EC                  	mov rsp , rbp	
-   204 00000545 5D                      	pop rbp	
-   205 00000546 C3                      	ret	
-   206                                  help:		
-   207 00000547 55                      	push rbp	
-   208 00000548 4889E5                  	mov rbp , rsp	
-   209                                  
-   210                                  ;------Setup Phase
+   202                                  
+   203                                  
+   204                                  	wblock_4:		
+   205                                  
+   206                                  ;------------------------------------------------------
+   207                                  
+   208                                  
+   209                                   ;OpADR: [24]  ; End of func opcode					
+   210                                  
    211                                  
-   212                                  ;------Init Phase
+   212                                  ;------Cleanup Phase
    213                                  
-   214                                  .tailcall:		;Body Section	
-   215                                  
-   216                                   ;OpADR: [19]  ; Function Call					
-   217                                  
-   218 0000054B E8A7FFFFFF              		call quit_cmd			
-   219                                  
-   220                                   ;OpADR: [20]  ; Function Call					
+   214                                  ;------frame restore Phase
+   215 0000058E 4889EC                  	mov rsp , rbp	
+   216 00000591 5D                      	pop rbp	
+   217 00000592 C3                      	ret	
+   218                                  print:		
+   219 00000593 55                      	push rbp	
+   220 00000594 4889E5                  	mov rbp , rsp	
    221                                  
-   222 00000550 E8B6FFFFFF              		call help_cmd			
+   222                                  ;------Setup Phase
    223                                  
-   224                                   ;OpADR: [21]  ; Function Call					
+   224                                  ;------Init Phase
    225                                  
-   226 00000555 E8C5FFFFFF              		call calc_cmd			
+   226                                  .tailcall:		;Body Section	
    227                                  
-   228                                   ;OpADR: [22]  ; Function Call					
+   228                                   ;OpADR: [25]  ; PUSH opcode 
    229                                  
-   230 0000055A E8D4FFFFFF              		call frmt_cmd			
+   230                                  	vV_push 0 
+   230                              <1> 
+   230 00000597 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   230 0000059E 4983C704            <1>  add vV_sp , 4
+   230                              <1> 
    231                                  
-   232                                   ;OpADR: [23]  ; BUFF_OUT opcode (9)			
-   233                                  
+   232                                  
+   233                                   ;OpADR: [26]  ; EQUAL opcode					
    234                                  
-   235 0000055F E874FCFFFF              	call vV_io_out_packed_char_buffer				
-   236                                  						
+   235 000005A2 418B47FC                	mov eax , vV_top			
+   236 000005A6 413947F8                	cmp DWORD vV_2nd , eax			
    237                                  
-   238                                   ;OpADR: [24]  ; PUSH opcode 
+   238 000005AA 75(0B)                  	jnz short 0xb				
    239                                  
-   240                                  	vV_push 1346983712 
-   240                              <1> 
-   240 00000564 41C70720574950      <1>  mov DWORD[vV_sp] , %1
-   240 0000056B 4983C704            <1>  add vV_sp , 4
-   240                              <1> 
+   240 000005AC 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
    241                                  
-   242                                  
-   243                                   ;OpADR: [25]  ; BUFF_OUT opcode (9)			
-   244                                  
+   242 000005B4 EB(09)                  	jmp short 0x9				
+   243                                  
+   244 000005B6 41C747F800000000        			mov DWORD vV_2nd , 0	
    245                                  
-   246 0000056F E864FCFFFF              	call vV_io_out_packed_char_buffer				
-   247                                  						
-   248                                  
-   249                                   ;OpADR: [26]  ; FLUSH opcode					
-   250                                  
-   251 00000574 E893FBFFFF              		call vV_io_flush	
-   252                                  
-   253                                   ;OpADR: [27]  ; BUFF_OUT opcode (9)			
-   254                                  
+   246                                  	vV_dec_sp 1				
+   246                              <1> 
+   246 000005BE 4983EF04            <1>  sub vV_sp , cell(%1)
+   246                              <1> 
+   247                                  
+   248                                   ;OpADR: [27]  ; IF opcode					
+   249                                  
+   250                                  	vV_dec_sp 1			
+   250                              <1> 
+   250 000005C2 4983EF04            <1>  sub vV_sp , cell(%1)
+   250                              <1> 
+   251 000005C6 41830F00                	or DWORD[vV_sp] , 0			
+   252 000005CA 7412                    	je wblock_7	
+   253                                  
+   254                                   ;OpADR: [28]  ; PUSH opcode 
    255                                  
-   256 00000579 E85AFCFFFF              	call vV_io_out_packed_char_buffer				
-   257                                  						
+   256                                  	vV_push 32 
+   256                              <1> 
+   256 000005CC 41C70720000000      <1>  mov DWORD[vV_sp] , %1
+   256 000005D3 4983C704            <1>  add vV_sp , 4
+   256                              <1> 
+   257                                  
    258                                  
-   259                                   ;OpADR: [28]  ; PUSH opcode 
+   259                                   ;OpADR: [29]  ; BUFF_OUT opcode (8)			
    260                                  
-   261                                  	vV_push 541806368 
-   261                              <1> 
-   261 0000057E 41C707204F4B20      <1>  mov DWORD[vV_sp] , %1
-   261 00000585 4983C704            <1>  add vV_sp , 4
-   261                              <1> 
-   262                                  
-   263                                  
-   264                                   ;OpADR: [29]  ; BUFF_OUT opcode (9)			
-   265                                  
+   261                                  
+   262 000005D7 E8F1FBFFFF              	call vV_io_out_char_buffer			
+   263                                  						
+   264                                  
+   265                                   ;OpADR: [30]  ; ELIF opcode					
    266                                  
-   267 00000589 E84AFCFFFF              	call vV_io_out_packed_char_buffer				
-   268                                  						
+   267 000005DC EB10                    	jmp wblock_6	
+   268                                  
    269                                  
-   270                                   ;OpADR: [30]  ; FLUSH opcode					
+   270                                  	wblock_7:		
    271                                  
-   272 0000058E E879FBFFFF              		call vV_io_flush	
+   272                                  ;------------------------------------------------------
    273                                  
-   274                                   ;OpADR: [31]  ; BUFF_OUT opcode (9)			
-   275                                  
+   274                                  
+   275                                   ;OpADR: [31]  ; PUSH opcode 
    276                                  
-   277 00000593 E840FCFFFF              	call vV_io_out_packed_char_buffer				
-   278                                  						
+   277                                  	vV_push 42 
+   277                              <1> 
+   277 000005DE 41C7072A000000      <1>  mov DWORD[vV_sp] , %1
+   277 000005E5 4983C704            <1>  add vV_sp , 4
+   277                              <1> 
+   278                                  
    279                                  
-   280                                   ;OpADR: [32]  ; PUSH opcode 
+   280                                   ;OpADR: [32]  ; BUFF_OUT opcode (8)			
    281                                  
-   282                                  	vV_push 541806368 
-   282                              <1> 
-   282 00000598 41C707204F4B20      <1>  mov DWORD[vV_sp] , %1
-   282 0000059F 4983C704            <1>  add vV_sp , 4
-   282                              <1> 
-   283                                  
-   284                                  
-   285                                   ;OpADR: [33]  ; BUFF_OUT opcode (9)			
+   282                                  
+   283 000005E9 E8DFFBFFFF              	call vV_io_out_char_buffer			
+   284                                  						
+   285                                  
    286                                  
-   287                                  
-   288 000005A3 E830FCFFFF              	call vV_io_out_packed_char_buffer				
-   289                                  						
+   287                                  	wblock_6:		
+   288                                  
+   289                                  ;------------------------------------------------------
    290                                  
-   291                                   ;OpADR: [34]  ; FLUSH opcode					
-   292                                  
-   293 000005A8 E85FFBFFFF              		call vV_io_flush	
+   291                                  
+   292                                   ;OpADR: [33]  ; End of func opcode					
+   293                                  
    294                                  
-   295                                   ;OpADR: [35]  ; BUFF_OUT opcode (9)			
+   295                                  ;------Cleanup Phase
    296                                  
-   297                                  
-   298 000005AD E826FCFFFF              	call vV_io_out_packed_char_buffer				
-   299                                  						
-   300                                  
-   301                                   ;OpADR: [36]  ; PUSH opcode 
-   302                                  
-   303                                  	vV_push 541806368 
-   303                              <1> 
-   303 000005B2 41C707204F4B20      <1>  mov DWORD[vV_sp] , %1
-   303 000005B9 4983C704            <1>  add vV_sp , 4
-   303                              <1> 
+   297                                  ;------frame restore Phase
+   298 000005EE 4889EC                  	mov rsp , rbp	
+   299 000005F1 5D                      	pop rbp	
+   300 000005F2 C3                      	ret	
+   301                                  set_seed:		
+   302 000005F3 55                      	push rbp	
+   303 000005F4 4889E5                  	mov rbp , rsp	
    304                                  
-   305                                  
-   306                                   ;OpADR: [37]  ; BUFF_OUT opcode (9)			
+   305                                  ;------Setup Phase
+   306 000005F7 4883EC10                	sub rsp , 16	;Space for local vars	
    307                                  
-   308                                  
-   309 000005BD E816FCFFFF              	call vV_io_out_packed_char_buffer				
-   310                                  						
-   311                                  
-   312                                   ;OpADR: [38]  ; FLUSH opcode					
-   313                                  
-   314 000005C2 E845FBFFFF              		call vV_io_flush	
-   315                                  
-   316                                   ;OpADR: [39]  ; End of func opcode					
+   308                                  ;------Init Phase
+   309 000005FB C745F800000000          mov DWORD[rbp  - 8 ] , 0		; space for lvar 0 (c)	
+   310                                  
+   311                                  .tailcall:		;Body Section	
+   312                                  
+   313                                   ;OpADR: [34]  ; PUSH opcode 
+   314                                  
+   315                                  	vV_push 1 
+   315                              <1> 
+   315 00000602 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   315 00000609 4983C704            <1>  add vV_sp , 4
+   315                              <1> 
+   316                                  
    317                                  
    318                                  
-   319                                  ;------Cleanup Phase
+   319                                  	wblock_10:		
    320                                  
-   321                                  ;------frame restore Phase
-   322 000005C7 4889EC                  	mov rsp , rbp	
-   323 000005CA 5D                      	pop rbp	
-   324 000005CB C3                      	ret	
-   325                                  welcome_msg:		
-   326 000005CC 55                      	push rbp	
-   327 000005CD 4889E5                  	mov rbp , rsp	
+   321                                  ;------------------------------------------------------
+   322                                  
+   323                                  
+   324                                   ;OpADR: [35]  ; DUP opcode (2)			
+   325                                  
+   326                                  	vV_dup 2			
+   326                              <1> 
+   326 0000060D B902000000          <1>  mov ecx , %1
+   326 00000612 498D77F8            <1>  lea rsi , [vV_sp-cell(%1)]
+   326 00000616 4C89FF              <1>  mov rdi , vV_sp
+   326                              <1> 
+   326 00000619 F3A5                <1>  rep movsd
+   326                              <1> 
+   326 0000061B 4983C708            <1>  add vV_sp , cell(%1)
+   326                              <1> 
+   327                                  
    328                                  
-   329                                  ;------Setup Phase
+   329                                   ;OpADR: [36]  ; OR opcode					
    330                                  
-   331                                  ;------Init Phase
-   332                                  
-   333                                  .tailcall:		;Body Section	
-   334                                  
-   335                                   ;OpADR: [40]  ; PUSH opcode 
-   336                                  
-   337                                  	vV_push 1684890400 
-   337                              <1> 
-   337 000005D0 41C70720636D64      <1>  mov DWORD[vV_sp] , %1
-   337 000005D7 4983C704            <1>  add vV_sp , 4
-   337                              <1> 
-   338                                  
-   339                                  
-   340                                   ;OpADR: [41]  ; PUSH opcode 
+   331 0000061F 418B47FC                	mov eax , vV_top			
+   332 00000623 412147F8                	and DWORD vV_2nd , eax			
+   333                                  
+   334                                  	vV_dec_sp 1				
+   334                              <1> 
+   334 00000627 4983EF04            <1>  sub vV_sp , cell(%1)
+   334                              <1> 
+   335                                  
+   336                                   ;OpADR: [37]  ; IF opcode					
+   337                                  
+   338                                  	vV_dec_sp 1			
+   338                              <1> 
+   338 0000062B 4983EF04            <1>  sub vV_sp , cell(%1)
+   338                              <1> 
+   339 0000062F 41830F00                	or DWORD[vV_sp] , 0			
+   340 00000633 740D                    	je wblock_9	
    341                                  
-   342                                  	vV_push 1718558836 
-   342                              <1> 
-   342 000005DB 41C70774206F66      <1>  mov DWORD[vV_sp] , %1
-   342 000005E2 4983C704            <1>  add vV_sp , 4
-   342                              <1> 
+   342                                   ;OpADR: [38]  ; PUSH opcode 
    343                                  
-   344                                  
-   345                                   ;OpADR: [42]  ; PUSH opcode 
+   344                                  	vV_push 1 
+   344                              <1> 
+   344 00000635 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   344 0000063C 4983C704            <1>  add vV_sp , 4
+   344                              <1> 
+   345                                  
    346                                  
-   347                                  	vV_push 1936288800 
-   347                              <1> 
-   347 000005E6 41C707206C6973      <1>  mov DWORD[vV_sp] , %1
-   347 000005ED 4983C704            <1>  add vV_sp , 4
-   347                              <1> 
+   347                                   ;OpADR: [39]  ; ELIF opcode					
    348                                  
-   349                                  
-   350                                   ;OpADR: [43]  ; PUSH opcode 
+   349 00000640 EB0B                    	jmp wblock_8	
+   350                                  
    351                                  
-   352                                  	vV_push 1629516399 
-   352                              <1> 
-   352 000005F1 41C7076F722061      <1>  mov DWORD[vV_sp] , %1
-   352 000005F8 4983C704            <1>  add vV_sp , 4
-   352                              <1> 
+   352                                  	wblock_9:		
    353                                  
-   354                                  
-   355                                   ;OpADR: [44]  ; PUSH opcode 
+   354                                  ;------------------------------------------------------
+   355                                  
    356                                  
-   357                                  	vV_push 1713381488 
-   357                              <1> 
-   357 000005FC 41C70770202066      <1>  mov DWORD[vV_sp] , %1
-   357 00000603 4983C704            <1>  add vV_sp , 4
-   357                              <1> 
+   357                                   ;OpADR: [40]  ; PUSH opcode 
    358                                  
-   359                                  
-   360                                   ;OpADR: [45]  ; PUSH opcode 
+   359                                  	vV_push 0 
+   359                              <1> 
+   359 00000642 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   359 00000649 4983C704            <1>  add vV_sp , 4
+   359                              <1> 
+   360                                  
    361                                  
-   362                                  	vV_push 1818585120 
-   362                              <1> 
-   362 00000607 41C7072068656C      <1>  mov DWORD[vV_sp] , %1
-   362 0000060E 4983C704            <1>  add vV_sp , 4
-   362                              <1> 
-   363                                  
+   362                                  
+   363                                  	wblock_8:		
    364                                  
-   365                                   ;OpADR: [46]  ; PUSH opcode 
+   365                                  ;------------------------------------------------------
    366                                  
-   367                                  	vV_push 1701869908 
-   367                              <1> 
-   367 00000612 41C70754797065      <1>  mov DWORD[vV_sp] , %1
-   367 00000619 4983C704            <1>  add vV_sp , 4
-   367                              <1> 
-   368                                  
+   367                                  
+   368                                   ;OpADR: [41]  ; Var invocation					
    369                                  
-   370                                   ;OpADR: [47]  ; PUSH opcode 
-   371                                  
-   372                                  	vV_push 7 
-   372                              <1> 
-   372 0000061D 41C70707000000      <1>  mov DWORD[vV_sp] , %1
-   372 00000624 4983C704            <1>  add vV_sp , 4
-   372                              <1> 
-   373                                  
+   370 0000064D 488B0425[28010000]      mov rax , [i_global.size]
+   371                                  vV_push eax
+   371                              <1> 
+   371 00000655 418907              <1>  mov DWORD[vV_sp] , %1
+   371 00000658 4983C704            <1>  add vV_sp , 4
+   371                              <1> 
+   372                                  
+   373                                   ;OpADR: [42]  ; Var invocation					
    374                                  
-   375                                   ;OpADR: [48]  ; End of func opcode					
-   376                                  
+   375 0000065C 488B45F8                mov rax , [rbp - 8]
+   376                                  vV_push eax
+   376                              <1> 
+   376 00000660 418907              <1>  mov DWORD[vV_sp] , %1
+   376 00000663 4983C704            <1>  add vV_sp , 4
+   376                              <1> 
    377                                  
-   378                                  ;------Cleanup Phase
+   378                                   ;OpADR: [43]  ; SUB opcode 					
    379                                  
-   380                                  ;------frame restore Phase
-   381 00000628 4889EC                  	mov rsp , rbp	
-   382 0000062B 5D                      	pop rbp	
-   383 0000062C C3                      	ret	
-   384                                  goodbye_msg:		
-   385 0000062D 55                      	push rbp	
-   386 0000062E 4889E5                  	mov rbp , rsp	
+   380 00000667 418B47F8                	mov eax , vV_2nd			
+   381 0000066B 412B47FC                	sub eax , vV_top			
+   382 0000066F 418947F8                	mov vV_2nd, eax			
+   383                                  
+   384                                  	vV_dec_sp 1		
+   384                              <1> 
+   384 00000673 4983EF04            <1>  sub vV_sp , cell(%1)
+   384                              <1> 
+   385                                  
+   386                                   ;OpADR: [44]  ; Var assignement					
    387                                  
-   388                                  ;------Setup Phase
-   389                                  
-   390                                  ;------Init Phase
-   391                                  
-   392                                  .tailcall:		;Body Section	
-   393                                  
-   394                                   ;OpADR: [49]  ; PUSH opcode 
-   395                                  
-   396                                  	vV_push 539572768 
-   396                              <1> 
-   396 00000631 41C707203A2920      <1>  mov DWORD[vV_sp] , %1
-   396 00000638 4983C704            <1>  add vV_sp , 4
-   396                              <1> 
-   397                                  
+   388 00000677 31C0                    	xor eax , eax	
+   389                                  	vV_pop edi		
+   389                              <1> 
+   389 00000679 4983EF04            <1>  sub vV_sp , 4
+   389 0000067D 418B3F              <1>  mov %1 , [vV_sp]
+   389                              <1> 
+   390 00000680 01F8                    	add eax , edi			
+   391 00000682 C1E002                  	shl eax , 2	
+   392 00000685 89C6                    	mov esi , eax		
+   393 00000687 BF[8A020000]            	mov edi , u_global.board
+   394                                  vV_pop eax
+   394                              <1> 
+   394 0000068C 4983EF04            <1>  sub vV_sp , 4
+   394 00000690 418B07              <1>  mov %1 , [vV_sp]
+   394                              <1> 
+   395 00000693 67890437                mov [edi + esi] , eax
+   396                                  
+   397                                   ;OpADR: [45]  ; LSH opcode 					
    398                                  
-   399                                   ;OpADR: [50]  ; PUSH opcode 
+   399 00000697 41D167FC                	shl DWORD vV_top , 1			
    400                                  
-   401                                  	vV_push 543521122 
-   401                              <1> 
-   401 0000063C 41C70762796520      <1>  mov DWORD[vV_sp] , %1
-   401 00000643 4983C704            <1>  add vV_sp , 4
-   401                              <1> 
+   401                                   ;OpADR: [46]  ; Var invocation					
    402                                  
-   403                                  
-   404                                   ;OpADR: [51]  ; PUSH opcode 
+   403 0000069B 488B45F8                mov rax , [rbp - 8]
+   404                                  vV_push eax
+   404                              <1> 
+   404 0000069F 418907              <1>  mov DWORD[vV_sp] , %1
+   404 000006A2 4983C704            <1>  add vV_sp , 4
+   404                              <1> 
    405                                  
-   406                                  	vV_push 1685024583 
-   406                              <1> 
-   406 00000647 41C707476F6F64      <1>  mov DWORD[vV_sp] , %1
-   406 0000064E 4983C704            <1>  add vV_sp , 4
-   406                              <1> 
+   406                                   ;OpADR: [47]  ; PUSH opcode 
    407                                  
-   408                                  
-   409                                   ;OpADR: [52]  ; PUSH opcode 
+   408                                  	vV_push 1 
+   408                              <1> 
+   408 000006A6 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   408 000006AD 4983C704            <1>  add vV_sp , 4
+   408                              <1> 
+   409                                  
    410                                  
-   411                                  	vV_push 3 
-   411                              <1> 
-   411 00000652 41C70703000000      <1>  mov DWORD[vV_sp] , %1
-   411 00000659 4983C704            <1>  add vV_sp , 4
-   411                              <1> 
+   411                                   ;OpADR: [48]  ; ADD opcode 					
    412                                  
-   413                                  
-   414                                   ;OpADR: [53]  ; End of func opcode					
-   415                                  
+   413 000006B1 418B47F8                	mov eax , vV_2nd			
+   414 000006B5 410347FC                	add eax , vV_top			
+   415 000006B9 418947F8                	mov vV_2nd , eax			
    416                                  
-   417                                  ;------Cleanup Phase
+   417                                  	vV_dec_sp 1		
+   417                              <1> 
+   417 000006BD 4983EF04            <1>  sub vV_sp , cell(%1)
+   417                              <1> 
    418                                  
-   419                                  ;------frame restore Phase
-   420 0000065D 4889EC                  	mov rsp , rbp	
-   421 00000660 5D                      	pop rbp	
-   422 00000661 C3                      	ret	
-   423                                  calc_msg01:		
-   424 00000662 55                      	push rbp	
-   425 00000663 4889E5                  	mov rbp , rsp	
-   426                                  
-   427                                  ;------Setup Phase
+   419                                   ;OpADR: [49]  ; Var assignement					
+   420                                  
+   421                                  vV_pop eax
+   421                              <1> 
+   421 000006C1 4983EF04            <1>  sub vV_sp , 4
+   421 000006C5 418B07              <1>  mov %1 , [vV_sp]
+   421                              <1> 
+   422 000006C8 8945F8                  mov [rbp - 8] , eax
+   423                                  
+   424                                   ;OpADR: [50]  ; Var invocation					
+   425                                  
+   426 000006CB 488B45F8                mov rax , [rbp - 8]
+   427                                  vV_push eax
+   427                              <1> 
+   427 000006CF 418907              <1>  mov DWORD[vV_sp] , %1
+   427 000006D2 4983C704            <1>  add vV_sp , 4
+   427                              <1> 
    428                                  
-   429                                  ;------Init Phase
+   429                                   ;OpADR: [51]  ; PUSH opcode 
    430                                  
-   431                                  .tailcall:		;Body Section	
+   431                                  	vV_push 33 
+   431                              <1> 
+   431 000006D6 41C70721000000      <1>  mov DWORD[vV_sp] , %1
+   431 000006DD 4983C704            <1>  add vV_sp , 4
+   431                              <1> 
    432                                  
-   433                                   ;OpADR: [54]  ; PUSH opcode 
-   434                                  
-   435                                  	vV_push 540701285 
-   435                              <1> 
-   435 00000666 41C70765723A20      <1>  mov DWORD[vV_sp] , %1
-   435 0000066D 4983C704            <1>  add vV_sp , 4
-   435                              <1> 
-   436                                  
-   437                                  
-   438                                   ;OpADR: [55]  ; PUSH opcode 
-   439                                  
-   440                                  	vV_push 1651340654 
-   440                              <1> 
-   440 00000671 41C7076E756D62      <1>  mov DWORD[vV_sp] , %1
-   440 00000678 4983C704            <1>  add vV_sp , 4
-   440                              <1> 
-   441                                  
+   433                                  
+   434                                   ;OpADR: [52]  ; LESS opcode					
+   435                                  
+   436 000006E1 418B47FC                	mov eax , vV_top			
+   437 000006E5 413947F8                	cmp DWORD vV_2nd , eax			
+   438                                  
+   439 000006E9 73(0B)                  	jae short 0xb				
+   440                                  
+   441 000006EB 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
    442                                  
-   443                                   ;OpADR: [56]  ; PUSH opcode 
+   443 000006F3 EB(09)                  	jmp short 0x9				
    444                                  
-   445                                  	vV_push 543236210 
-   445                              <1> 
-   445 0000067C 41C70772206120      <1>  mov DWORD[vV_sp] , %1
-   445 00000683 4983C704            <1>  add vV_sp , 4
-   445                              <1> 
+   445 000006F5 41C747F800000000        			mov DWORD vV_2nd , 0	
    446                                  
-   447                                  
-   448                                   ;OpADR: [57]  ; PUSH opcode 
-   449                                  
-   450                                  	vV_push 1702129221 
-   450                              <1> 
-   450 00000687 41C707456E7465      <1>  mov DWORD[vV_sp] , %1
-   450 0000068E 4983C704            <1>  add vV_sp , 4
-   450                              <1> 
-   451                                  
-   452                                  
-   453                                   ;OpADR: [58]  ; PUSH opcode 
+   447                                  	vV_dec_sp 1				
+   447                              <1> 
+   447 000006FD 4983EF04            <1>  sub vV_sp , cell(%1)
+   447                              <1> 
+   448                                  
+   449                                   ;OpADR: [53]  ; WHILE opcode					
+   450                                  
+   451                                  	vV_dec_sp 1				
+   451                              <1> 
+   451 00000701 4983EF04            <1>  sub vV_sp , cell(%1)
+   451                              <1> 
+   452 00000705 41830F00                	or DWORD[vV_sp] , 0			
+   453 00000709 0F85FEFEFFFF            	jne wblock_10		
    454                                  
-   455                                  	vV_push 4 
-   455                              <1> 
-   455 00000692 41C70704000000      <1>  mov DWORD[vV_sp] , %1
-   455 00000699 4983C704            <1>  add vV_sp , 4
-   455                              <1> 
+   455                                   ;OpADR: [54]  ; End of func opcode					
    456                                  
    457                                  
-   458                                   ;OpADR: [59]  ; End of func opcode					
+   458                                  ;------Cleanup Phase
    459                                  
-   460                                  
-   461                                  ;------Cleanup Phase
-   462                                  
-   463                                  ;------frame restore Phase
-   464 0000069D 4889EC                  	mov rsp , rbp	
-   465 000006A0 5D                      	pop rbp	
-   466 000006A1 C3                      	ret	
-   467                                  calc_msg02:		
-   468 000006A2 55                      	push rbp	
-   469 000006A3 4889E5                  	mov rbp , rsp	
-   470                                  
-   471                                  ;------Setup Phase
-   472                                  
-   473                                  ;------Init Phase
-   474                                  
-   475                                  .tailcall:		;Body Section	
-   476                                  
-   477                                   ;OpADR: [60]  ; PUSH opcode 
+   460                                  ;------frame restore Phase
+   461 0000070F 4889EC                  	mov rsp , rbp	
+   462 00000712 5D                      	pop rbp	
+   463 00000713 C3                      	ret	
+   464                                  popup:		
+   465 00000714 55                      	push rbp	
+   466 00000715 4889E5                  	mov rbp , rsp	
+   467                                  
+   468                                  ;------Setup Phase
+   469                                  
+   470                                  ;------Init Phase
+   471                                  
+   472                                  .tailcall:		;Body Section	
+   473                                  
+   474                                   ;OpADR: [55]  ; PUSH opcode 
+   475                                  
+   476                                  	vV_push 540680240 
+   476                              <1> 
+   476 00000718 41C70730203A20      <1>  mov DWORD[vV_sp] , %1
+   476 0000071F 4983C704            <1>  add vV_sp , 4
+   476                              <1> 
+   477                                  
    478                                  
-   479                                  	vV_push 695495029 
-   479                              <1> 
-   479 000006A6 41C70775697429      <1>  mov DWORD[vV_sp] , %1
-   479 000006AD 4983C704            <1>  add vV_sp , 4
-   479                              <1> 
+   479                                   ;OpADR: [56]  ; PUSH opcode 
    480                                  
-   481                                  
-   482                                   ;OpADR: [61]  ; PUSH opcode 
+   481                                  	vV_push 825303141 
+   481                              <1> 
+   481 00000723 41C70765203131      <1>  mov DWORD[vV_sp] , %1
+   481 0000072A 4983C704            <1>  add vV_sp , 4
+   481                              <1> 
+   482                                  
    483                                  
-   484                                  	vV_push 1897951092 
-   484                              <1> 
-   484 000006B1 41C707746F2071      <1>  mov DWORD[vV_sp] , %1
-   484 000006B8 4983C704            <1>  add vV_sp , 4
-   484                              <1> 
+   484                                   ;OpADR: [57]  ; PUSH opcode 
    485                                  
-   486                                  
-   487                                   ;OpADR: [62]  ; PUSH opcode 
+   486                                  	vV_push 1819636256 
+   486                              <1> 
+   486 0000072E 41C7072072756C      <1>  mov DWORD[vV_sp] , %1
+   486 00000735 4983C704            <1>  add vV_sp , 4
+   486                              <1> 
+   487                                  
    488                                  
-   489                                  	vV_push 544286752 
-   489                              <1> 
-   489 000006BC 41C70720287120      <1>  mov DWORD[vV_sp] , %1
-   489 000006C3 4983C704            <1>  add vV_sp , 4
-   489                              <1> 
+   489                                   ;OpADR: [58]  ; PUSH opcode 
    490                                  
-   491                                  
-   492                                   ;OpADR: [63]  ; PUSH opcode 
+   491                                  	vV_push 1919903264 
+   491                              <1> 
+   491 00000739 41C70720666F72      <1>  mov DWORD[vV_sp] , %1
+   491 00000740 4983C704            <1>  add vV_sp , 4
+   491                              <1> 
+   492                                  
    493                                  
-   494                                  	vV_push 979660385 
-   494                              <1> 
-   494 000006C7 41C707616E643A      <1>  mov DWORD[vV_sp] , %1
-   494 000006CE 4983C704            <1>  add vV_sp , 4
-   494                              <1> 
+   494                                   ;OpADR: [59]  ; PUSH opcode 
    495                                  
-   496                                  
-   497                                   ;OpADR: [64]  ; PUSH opcode 
+   496                                  	vV_push 1684366707 
+   496                              <1> 
+   496 00000744 41C70773656564      <1>  mov DWORD[vV_sp] , %1
+   496 0000074B 4983C704            <1>  add vV_sp , 4
+   496                              <1> 
+   497                                  
    498                                  
-   499                                  	vV_push 1919250543 
-   499                              <1> 
-   499 000006D2 41C7076F706572      <1>  mov DWORD[vV_sp] , %1
-   499 000006D9 4983C704            <1>  add vV_sp , 4
-   499                              <1> 
+   499                                   ;OpADR: [60]  ; PUSH opcode 
    500                                  
-   501                                  
-   502                                   ;OpADR: [65]  ; PUSH opcode 
+   501                                  	vV_push 543236210 
+   501                              <1> 
+   501 0000074F 41C70772206120      <1>  mov DWORD[vV_sp] , %1
+   501 00000756 4983C704            <1>  add vV_sp , 4
+   501                              <1> 
+   502                                  
    503                                  
-   504                                  	vV_push 543236210 
-   504                              <1> 
-   504 000006DD 41C70772206120      <1>  mov DWORD[vV_sp] , %1
-   504 000006E4 4983C704            <1>  add vV_sp , 4
-   504                              <1> 
+   504                                   ;OpADR: [61]  ; PUSH opcode 
    505                                  
-   506                                  
-   507                                   ;OpADR: [66]  ; PUSH opcode 
+   506                                  	vV_push 1702129221 
+   506                              <1> 
+   506 0000075A 41C707456E7465      <1>  mov DWORD[vV_sp] , %1
+   506 00000761 4983C704            <1>  add vV_sp , 4
+   506                              <1> 
+   507                                  
    508                                  
-   509                                  	vV_push 1702129221 
-   509                              <1> 
-   509 000006E8 41C707456E7465      <1>  mov DWORD[vV_sp] , %1
-   509 000006EF 4983C704            <1>  add vV_sp , 4
-   509                              <1> 
+   509                                   ;OpADR: [62]  ; BUFF_OUT opcode (9)			
    510                                  
    511                                  
-   512                                   ;OpADR: [67]  ; PUSH opcode 
-   513                                  
-   514                                  	vV_push 7 
-   514                              <1> 
-   514 000006F3 41C70707000000      <1>  mov DWORD[vV_sp] , %1
-   514 000006FA 4983C704            <1>  add vV_sp , 4
-   514                              <1> 
-   515                                  
+   512 00000765 E86EFAFFFF              	call vV_io_out_packed_char_buffer				
+   513                                  						
+   514                                  
+   515                                   ;OpADR: [63]  ; BUFF_OUT opcode (9)			
    516                                  
-   517                                   ;OpADR: [68]  ; End of func opcode					
-   518                                  
-   519                                  
-   520                                  ;------Cleanup Phase
-   521                                  
-   522                                  ;------frame restore Phase
-   523 000006FE 4889EC                  	mov rsp , rbp	
-   524 00000701 5D                      	pop rbp	
-   525 00000702 C3                      	ret	
-   526                                  calc_msg03:		
-   527 00000703 55                      	push rbp	
-   528 00000704 4889E5                  	mov rbp , rsp	
+   517                                  
+   518 0000076A E869FAFFFF              	call vV_io_out_packed_char_buffer				
+   519                                  						
+   520                                  
+   521                                   ;OpADR: [64]  ; BUFF_OUT opcode (9)			
+   522                                  
+   523                                  
+   524 0000076F E864FAFFFF              	call vV_io_out_packed_char_buffer				
+   525                                  						
+   526                                  
+   527                                   ;OpADR: [65]  ; BUFF_OUT opcode (9)			
+   528                                  
    529                                  
-   530                                  ;------Setup Phase
-   531                                  
-   532                                  ;------Init Phase
-   533                                  
-   534                                  .tailcall:		;Body Section	
+   530 00000774 E85FFAFFFF              	call vV_io_out_packed_char_buffer				
+   531                                  						
+   532                                  
+   533                                   ;OpADR: [66]  ; BUFF_OUT opcode (9)			
+   534                                  
    535                                  
-   536                                   ;OpADR: [69]  ; PUSH opcode 
-   537                                  
-   538                                  	vV_push 6581857 
-   538                              <1> 
-   538 00000707 41C707616E6400      <1>  mov DWORD[vV_sp] , %1
-   538 0000070E 4983C704            <1>  add vV_sp , 4
-   538                              <1> 
-   539                                  
+   536 00000779 E85AFAFFFF              	call vV_io_out_packed_char_buffer				
+   537                                  						
+   538                                  
+   539                                   ;OpADR: [67]  ; BUFF_OUT opcode (9)			
    540                                  
-   541                                   ;OpADR: [70]  ; PUSH opcode 
-   542                                  
-   543                                  	vV_push 1919250543 
-   543                              <1> 
-   543 00000712 41C7076F706572      <1>  mov DWORD[vV_sp] , %1
-   543 00000719 4983C704            <1>  add vV_sp , 4
-   543                              <1> 
+   541                                  
+   542 0000077E E855FAFFFF              	call vV_io_out_packed_char_buffer				
+   543                                  						
    544                                  
-   545                                  
-   546                                   ;OpADR: [71]  ; PUSH opcode 
+   545                                   ;OpADR: [68]  ; BUFF_OUT opcode (9)			
+   546                                  
    547                                  
-   548                                  	vV_push 543451500 
-   548                              <1> 
-   548 0000071D 41C7076C696420      <1>  mov DWORD[vV_sp] , %1
-   548 00000724 4983C704            <1>  add vV_sp , 4
-   548                              <1> 
-   549                                  
+   548 00000783 E850FAFFFF              	call vV_io_out_packed_char_buffer				
+   549                                  						
    550                                  
-   551                                   ;OpADR: [72]  ; PUSH opcode 
+   551                                   ;OpADR: [69]  ; FLUSH opcode					
    552                                  
-   553                                  	vV_push 1635151433 
-   553                              <1> 
-   553 00000728 41C707496E7661      <1>  mov DWORD[vV_sp] , %1
-   553 0000072F 4983C704            <1>  add vV_sp , 4
-   553                              <1> 
+   553 00000788 E87FF9FFFF              		call vV_io_flush	
    554                                  
-   555                                  
-   556                                   ;OpADR: [73]  ; PUSH opcode 
-   557                                  
-   558                                  	vV_push 4 
-   558                              <1> 
-   558 00000733 41C70704000000      <1>  mov DWORD[vV_sp] , %1
-   558 0000073A 4983C704            <1>  add vV_sp , 4
-   558                              <1> 
+   555                                   ;OpADR: [70]  ; GET opcode (0)			
+   556                                  
+   557 0000078D E8DFFAFFFF              	call vV_io_get_default			
+   558                                  						
    559                                  
-   560                                  
-   561                                   ;OpADR: [74]  ; End of func opcode					
+   560                                   ;OpADR: [71]  ; End of func opcode					
+   561                                  
    562                                  
-   563                                  
-   564                                  ;------Cleanup Phase
-   565                                  
-   566                                  ;------frame restore Phase
-   567 0000073E 4889EC                  	mov rsp , rbp	
-   568 00000741 5D                      	pop rbp	
-   569 00000742 C3                      	ret	
-   570                                  say_welcome:		
-   571 00000743 55                      	push rbp	
-   572 00000744 4889E5                  	mov rbp , rsp	
+   563                                  ;------Cleanup Phase
+   564                                  
+   565                                  ;------frame restore Phase
+   566 00000792 4889EC                  	mov rsp , rbp	
+   567 00000795 5D                      	pop rbp	
+   568 00000796 C3                      	ret	
+   569                                  
+   570                                  		
+   571                                  
+   572                                  
    573                                  
-   574                                  ;------Setup Phase
+   574                                  vV_entry_point:
    575                                  
-   576                                  ;------Init Phase
-   577                                  
-   578                                  .tailcall:		;Body Section	
-   579                                  
-   580                                   ;OpADR: [75]  ; Function Call					
+   576                                  
+   577 00000797 4889E5                  	mov rbp, rsp			;Setup Stack Frame
+   578                                  	
+   579                                  	
+   580                                   ;OpADR: [0]  ; PUSH opcode 
    581                                  
-   582 00000747 E880FEFFFF              		call welcome_msg			
+   582                                  	vV_push 1 
+   582                              <1> 
+   582 0000079A 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   582 000007A1 4983C704            <1>  add vV_sp , 4
+   582                              <1> 
    583                                  
-   584                                   ;OpADR: [76]  ; Function Call					
-   585                                  
-   586 0000074C E81DFDFFFF              		call xprint			
-   587                                  
-   588                                   ;OpADR: [77]  ; End of func opcode					
+   584                                  
+   585                                   ;OpADR: [1]  ; Var invocation					
+   586                                  
+   587 000007A5 488B0425[28010000]      mov rax , [i_global.size]
+   588                                  vV_push eax
+   588                              <1> 
+   588 000007AD 418907              <1>  mov DWORD[vV_sp] , %1
+   588 000007B0 4983C704            <1>  add vV_sp , 4
+   588                              <1> 
    589                                  
-   590                                  
-   591                                  ;------Cleanup Phase
-   592                                  
-   593                                  ;------frame restore Phase
-   594 00000751 4889EC                  	mov rsp , rbp	
-   595 00000754 5D                      	pop rbp	
-   596 00000755 C3                      	ret	
-   597                                  cmd_prompt:		
-   598 00000756 55                      	push rbp	
-   599 00000757 4889E5                  	mov rbp , rsp	
+   590                                   ;OpADR: [2]  ; PUSH opcode 
+   591                                  
+   592                                  	vV_push 1 
+   592                              <1> 
+   592 000007B4 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   592 000007BB 4983C704            <1>  add vV_sp , 4
+   592                              <1> 
+   593                                  
+   594                                  
+   595                                   ;OpADR: [3]  ; SUB opcode 					
+   596                                  
+   597 000007BF 418B47F8                	mov eax , vV_2nd			
+   598 000007C3 412B47FC                	sub eax , vV_top			
+   599 000007C7 418947F8                	mov vV_2nd, eax			
    600                                  
-   601                                  ;------Setup Phase
+   601                                  	vV_dec_sp 1		
+   601                              <1> 
+   601 000007CB 4983EF04            <1>  sub vV_sp , cell(%1)
+   601                              <1> 
    602                                  
-   603                                  ;------Init Phase
+   603                                   ;OpADR: [4]  ; Var assignement					
    604                                  
-   605                                  .tailcall:		;Body Section	
-   606                                  
-   607                                   ;OpADR: [78]  ; PUSH opcode 
-   608                                  
-   609                                  	vV_push 979660131 
-   609                              <1> 
-   609 0000075A 41C707636D643A      <1>  mov DWORD[vV_sp] , %1
-   609 00000761 4983C704            <1>  add vV_sp , 4
-   609                              <1> 
-   610                                  
-   611                                  
-   612                                   ;OpADR: [79]  ; OUT opcode (9)			
+   605 000007CF 31C0                    	xor eax , eax	
+   606                                  	vV_pop edi		
+   606                              <1> 
+   606 000007D1 4983EF04            <1>  sub vV_sp , 4
+   606 000007D5 418B3F              <1>  mov %1 , [vV_sp]
+   606                              <1> 
+   607 000007D8 01F8                    	add eax , edi			
+   608 000007DA C1E002                  	shl eax , 2	
+   609 000007DD 89C6                    	mov esi , eax		
+   610 000007DF BF[8A020000]            	mov edi , u_global.board
+   611                                  vV_pop eax
+   611                              <1> 
+   611 000007E4 4983EF04            <1>  sub vV_sp , 4
+   611 000007E8 418B07              <1>  mov %1 , [vV_sp]
+   611                              <1> 
+   612 000007EB 67890437                mov [edi + esi] , eax
    613                                  
-   614                                  								
-   615 00000765 E858FAFFFF              	call vV_io_out_packed_char				
-   616                                  						
+   614                                   ;OpADR: [5]  ; Function Call					
+   615                                  
+   616 000007EF E820FFFFFF              		call popup			
    617                                  
-   618                                   ;OpADR: [80]  ; End of func opcode					
+   618                                   ;OpADR: [6]  ; Function Call					
    619                                  
-   620                                  
-   621                                  ;------Cleanup Phase
+   620 000007F4 E8FAFDFFFF              		call set_seed			
+   621                                  
    622                                  
-   623                                  ;------frame restore Phase
-   624 0000076A 4889EC                  	mov rsp , rbp	
-   625 0000076D 5D                      	pop rbp	
-   626 0000076E C3                      	ret	
-   627                                  input_cmd:		
-   628 0000076F 55                      	push rbp	
-   629 00000770 4889E5                  	mov rbp , rsp	
-   630                                  
-   631                                  ;------Setup Phase
+   623                                  	wblock_12:		
+   624                                  
+   625                                  ;------------------------------------------------------
+   626                                  
+   627                                  
+   628                                   ;OpADR: [7]  ; PUSH opcode 
+   629                                  
+   630                                  	vV_push 0 
+   630                              <1> 
+   630 000007F9 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   630 00000800 4983C704            <1>  add vV_sp , 4
+   630                              <1> 
+   631                                  
    632                                  
-   633                                  ;------Init Phase
+   633                                   ;OpADR: [8]  ; Var assignement					
    634                                  
-   635                                  .tailcall:		;Body Section	
-   636                                  
-   637                                   ;OpADR: [81]  ; GET opcode (9)			
-   638                                  
-   639                                  								
-   640 00000773 E836FBFFFF              	call vV_io_get_packed_char				
-   641                                  						
+   635                                  vV_pop eax
+   635                              <1> 
+   635 00000804 4983EF04            <1>  sub vV_sp , 4
+   635 00000808 418B07              <1>  mov %1 , [vV_sp]
+   635                              <1> 
+   636 0000080B 890425[AE050000]        mov [u_global.saved] , eax
+   637                                  
+   638                                   ;OpADR: [9]  ; PUSH opcode 
+   639                                  
+   640                                  	vV_push 0 
+   640                              <1> 
+   640 00000812 41C70700000000      <1>  mov DWORD[vV_sp] , %1
+   640 00000819 4983C704            <1>  add vV_sp , 4
+   640                              <1> 
+   641                                  
    642                                  
-   643                                   ;OpADR: [82]  ; End of func opcode					
+   643                                   ;OpADR: [10]  ; Var assignement					
    644                                  
-   645                                  
-   646                                  ;------Cleanup Phase
+   645                                  vV_pop eax
+   645                              <1> 
+   645 0000081D 4983EF04            <1>  sub vV_sp , 4
+   645 00000821 418B07              <1>  mov %1 , [vV_sp]
+   645                              <1> 
+   646 00000824 890425[86020000]        mov [u_global.index] , eax
    647                                  
-   648                                  ;------frame restore Phase
-   649 00000778 4889EC                  	mov rsp , rbp	
-   650 0000077B 5D                      	pop rbp	
-   651 0000077C C3                      	ret	
-   652                                  check_operand:		
-   653 0000077D 55                      	push rbp	
-   654 0000077E 4889E5                  	mov rbp , rsp	
-   655                                  
-   656                                  ;------Setup Phase
+   648                                   ;OpADR: [11]  ; PUSH opcode 
+   649                                  
+   650                                  	vV_push 56 
+   650                              <1> 
+   650 0000082B 41C70738000000      <1>  mov DWORD[vV_sp] , %1
+   650 00000832 4983C704            <1>  add vV_sp , 4
+   650                              <1> 
+   651                                  
+   652                                  
+   653                                   ;OpADR: [12]  ; PUSH opcode 
+   654                                  
+   655                                  	vV_push 67 
+   655                              <1> 
+   655 00000836 41C70743000000      <1>  mov DWORD[vV_sp] , %1
+   655 0000083D 4983C704            <1>  add vV_sp , 4
+   655                              <1> 
+   656                                  
    657                                  
-   658                                  ;------Init Phase
-   659                                  
-   660                                  .tailcall:		;Body Section	
-   661                                  
-   662                                   ;OpADR: [83]  ; DUP opcode (1)			
+   658                                  
+   659                                  	wblock_11:		
+   660                                  
+   661                                  ;------------------------------------------------------
+   662                                  
    663                                  
-   664                                  	vV_dup 1			
-   664                              <1> 
-   664 00000781 B901000000          <1>  mov ecx , %1
-   664 00000786 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   664 0000078A 4C89FF              <1>  mov rdi , vV_sp
-   664                              <1> 
-   664 0000078D F3A5                <1>  rep movsd
-   664                              <1> 
-   664 0000078F 4983C704            <1>  add vV_sp , cell(%1)
-   664                              <1> 
+   664                                   ;OpADR: [13]  ; Var invocation					
    665                                  
-   666                                  
-   667                                   ;OpADR: [84]  ; PUSH opcode 
+   666 00000841 488B0425[AE050000]      mov rax , [u_global.saved]
+   667                                  vV_push eax
+   667                              <1> 
+   667 00000849 418907              <1>  mov DWORD[vV_sp] , %1
+   667 0000084C 4983C704            <1>  add vV_sp , 4
+   667                              <1> 
    668                                  
-   669                                  	vV_push 43 
-   669                              <1> 
-   669 00000793 41C7072B000000      <1>  mov DWORD[vV_sp] , %1
-   669 0000079A 4983C704            <1>  add vV_sp , 4
-   669                              <1> 
+   669                                   ;OpADR: [14]  ; Var invocation					
    670                                  
-   671                                  
-   672                                   ;OpADR: [85]  ; EQUAL opcode					
+   671 00000850 488B0425[86020000]      mov rax , [u_global.index]
+   672                                  vV_push eax
+   672                              <1> 
+   672 00000858 418907              <1>  mov DWORD[vV_sp] , %1
+   672 0000085B 4983C704            <1>  add vV_sp , 4
+   672                              <1> 
    673                                  
-   674 0000079E 418B47FC                	mov eax , vV_top			
-   675 000007A2 413947F8                	cmp DWORD vV_2nd , eax			
-   676                                  
-   677 000007A6 75(0B)                  	jnz short 0xb				
-   678                                  
-   679 000007A8 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   680                                  
-   681 000007B0 EB(09)                  	jmp short 0x9				
-   682                                  
-   683 000007B2 41C747F800000000        			mov DWORD vV_2nd , 0	
+   674                                   ;OpADR: [15]  ; Var invocation					
+   675                                  
+   676 0000085F 31C0                    	xor eax , eax	
+   677                                  	vV_pop edi		
+   677                              <1> 
+   677 00000861 4983EF04            <1>  sub vV_sp , 4
+   677 00000865 418B3F              <1>  mov %1 , [vV_sp]
+   677                              <1> 
+   678 00000868 01F8                    	add eax , edi			
+   679 0000086A C1E002                  	shl eax , 2	
+   680 0000086D 89C6                    	mov esi , eax		
+   681 0000086F BF[8A020000]            	mov edi , u_global.board
+   682 00000874 67488B0437              mov rax , [edi + esi]
+   683                                  vV_push eax
+   683                              <1> 
+   683 00000879 418907              <1>  mov DWORD[vV_sp] , %1
+   683 0000087C 4983C704            <1>  add vV_sp , 4
+   683                              <1> 
    684                                  
-   685                                  	vV_dec_sp 1				
-   685                              <1> 
-   685 000007BA 4983EF04            <1>  sub vV_sp , cell(%1)
-   685                              <1> 
+   685                                   ;OpADR: [16]  ; Var invocation					
    686                                  
-   687                                   ;OpADR: [86]  ; IF opcode					
-   688                                  
-   689                                  	vV_dec_sp 1			
-   689                              <1> 
-   689 000007BE 4983EF04            <1>  sub vV_sp , cell(%1)
-   689                              <1> 
-   690 000007C2 41830F00                	or DWORD[vV_sp] , 0			
-   691 000007C6 7410                    	je wblock_12	
-   692                                  
-   693                                   ;OpADR: [87]  ; PUSH opcode 
+   687 00000880 488B0425[86020000]      mov rax , [u_global.index]
+   688                                  vV_push eax
+   688                              <1> 
+   688 00000888 418907              <1>  mov DWORD[vV_sp] , %1
+   688 0000088B 4983C704            <1>  add vV_sp , 4
+   688                              <1> 
+   689                                  
+   690                                   ;OpADR: [17]  ; PUSH opcode 
+   691                                  
+   692                                  	vV_push 1 
+   692                              <1> 
+   692 0000088F 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   692 00000896 4983C704            <1>  add vV_sp , 4
+   692                              <1> 
+   693                                  
    694                                  
-   695                                  	vV_push 1 
-   695                              <1> 
-   695 000007C8 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   695 000007CF 4983C704            <1>  add vV_sp , 4
-   695                              <1> 
+   695                                   ;OpADR: [18]  ; ADD opcode 					
    696                                  
-   697                                  
-   698                                   ;OpADR: [88]  ; ELIF opcode					
-   699                                  
-   700 000007D3 E9B8010000              	jmp wblock_11	
-   701                                  
+   697 0000089A 418B47F8                	mov eax , vV_2nd			
+   698 0000089E 410347FC                	add eax , vV_top			
+   699 000008A2 418947F8                	mov vV_2nd , eax			
+   700                                  
+   701                                  	vV_dec_sp 1		
+   701                              <1> 
+   701 000008A6 4983EF04            <1>  sub vV_sp , cell(%1)
+   701                              <1> 
    702                                  
-   703                                  	wblock_12:		
+   703                                   ;OpADR: [19]  ; Var invocation					
    704                                  
-   705                                  ;------------------------------------------------------
-   706                                  
-   707                                  
-   708                                   ;OpADR: [89]  ; DUP opcode (1)			
-   709                                  
-   710                                  	vV_dup 1			
-   710                              <1> 
-   710 000007D8 B901000000          <1>  mov ecx , %1
-   710 000007DD 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   710 000007E1 4C89FF              <1>  mov rdi , vV_sp
-   710                              <1> 
-   710 000007E4 F3A5                <1>  rep movsd
-   710                              <1> 
-   710 000007E6 4983C704            <1>  add vV_sp , cell(%1)
-   710                              <1> 
-   711                                  
-   712                                  
-   713                                   ;OpADR: [90]  ; PUSH opcode 
-   714                                  
-   715                                  	vV_push 45 
-   715                              <1> 
-   715 000007EA 41C7072D000000      <1>  mov DWORD[vV_sp] , %1
-   715 000007F1 4983C704            <1>  add vV_sp , 4
-   715                              <1> 
-   716                                  
+   705 000008AA 31C0                    	xor eax , eax	
+   706                                  	vV_pop edi		
+   706                              <1> 
+   706 000008AC 4983EF04            <1>  sub vV_sp , 4
+   706 000008B0 418B3F              <1>  mov %1 , [vV_sp]
+   706                              <1> 
+   707 000008B3 01F8                    	add eax , edi			
+   708 000008B5 C1E002                  	shl eax , 2	
+   709 000008B8 89C6                    	mov esi , eax		
+   710 000008BA BF[8A020000]            	mov edi , u_global.board
+   711 000008BF 67488B0437              mov rax , [edi + esi]
+   712                                  vV_push eax
+   712                              <1> 
+   712 000008C4 418907              <1>  mov DWORD[vV_sp] , %1
+   712 000008C7 4983C704            <1>  add vV_sp , 4
+   712                              <1> 
+   713                                  
+   714                                   ;OpADR: [20]  ; Function Call					
+   715                                  
+   716 000008CB E89EFBFFFF              		call set_next			
    717                                  
-   718                                   ;OpADR: [91]  ; EQUAL opcode					
+   718                                   ;OpADR: [21]  ; DUP opcode (1)			
    719                                  
-   720 000007F5 418B47FC                	mov eax , vV_top			
-   721 000007F9 413947F8                	cmp DWORD vV_2nd , eax			
+   720                                  	vV_dup 1			
+   720                              <1> 
+   720 000008D0 B901000000          <1>  mov ecx , %1
+   720 000008D5 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
+   720 000008D9 4C89FF              <1>  mov rdi , vV_sp
+   720                              <1> 
+   720 000008DC F3A5                <1>  rep movsd
+   720                              <1> 
+   720 000008DE 4983C704            <1>  add vV_sp , cell(%1)
+   720                              <1> 
+   721                                  
    722                                  
-   723 000007FD 75(0B)                  	jnz short 0xb				
+   723                                   ;OpADR: [22]  ; Var invocation					
    724                                  
-   725 000007FF 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   726                                  
-   727 00000807 EB(09)                  	jmp short 0x9				
-   728                                  
-   729 00000809 41C747F800000000        			mov DWORD vV_2nd , 0	
-   730                                  
-   731                                  	vV_dec_sp 1				
+   725 000008E2 488B0425[86020000]      mov rax , [u_global.index]
+   726                                  vV_push eax
+   726                              <1> 
+   726 000008EA 418907              <1>  mov DWORD[vV_sp] , %1
+   726 000008ED 4983C704            <1>  add vV_sp , 4
+   726                              <1> 
+   727                                  
+   728                                   ;OpADR: [23]  ; Var invocation					
+   729                                  
+   730 000008F1 31C0                    	xor eax , eax	
+   731                                  	vV_pop edi		
    731                              <1> 
-   731 00000811 4983EF04            <1>  sub vV_sp , cell(%1)
+   731 000008F3 4983EF04            <1>  sub vV_sp , 4
+   731 000008F7 418B3F              <1>  mov %1 , [vV_sp]
    731                              <1> 
-   732                                  
-   733                                   ;OpADR: [92]  ; IF opcode					
-   734                                  
-   735                                  	vV_dec_sp 1			
-   735                              <1> 
-   735 00000815 4983EF04            <1>  sub vV_sp , cell(%1)
-   735                              <1> 
-   736 00000819 41830F00                	or DWORD[vV_sp] , 0			
-   737 0000081D 7410                    	je wblock_10	
+   732 000008FA 01F8                    	add eax , edi			
+   733 000008FC C1E002                  	shl eax , 2	
+   734 000008FF 89C6                    	mov esi , eax		
+   735 00000901 BF[8A020000]            	mov edi , u_global.board
+   736 00000906 67488B0437              mov rax , [edi + esi]
+   737                                  vV_push eax
+   737                              <1> 
+   737 0000090B 418907              <1>  mov DWORD[vV_sp] , %1
+   737 0000090E 4983C704            <1>  add vV_sp , 4
+   737                              <1> 
    738                                  
-   739                                   ;OpADR: [93]  ; PUSH opcode 
+   739                                   ;OpADR: [24]  ; Var assignement					
    740                                  
-   741                                  	vV_push 1 
+   741                                  vV_pop eax
    741                              <1> 
-   741 0000081F 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   741 00000826 4983C704            <1>  add vV_sp , 4
+   741 00000912 4983EF04            <1>  sub vV_sp , 4
+   741 00000916 418B07              <1>  mov %1 , [vV_sp]
    741                              <1> 
-   742                                  
+   742 00000919 890425[AE050000]        mov [u_global.saved] , eax
    743                                  
-   744                                   ;OpADR: [94]  ; ELIF opcode					
+   744                                   ;OpADR: [25]  ; Var invocation					
    745                                  
-   746 0000082A E961010000              	jmp wblock_11	
-   747                                  
+   746 00000920 488B0425[86020000]      mov rax , [u_global.index]
+   747                                  vV_push eax
+   747                              <1> 
+   747 00000928 418907              <1>  mov DWORD[vV_sp] , %1
+   747 0000092B 4983C704            <1>  add vV_sp , 4
+   747                              <1> 
    748                                  
-   749                                  	wblock_10:		
+   749                                   ;OpADR: [26]  ; Var assignement					
    750                                  
-   751                                  ;------------------------------------------------------
-   752                                  
-   753                                  
-   754                                   ;OpADR: [95]  ; DUP opcode (1)			
-   755                                  
-   756                                  	vV_dup 1			
-   756                              <1> 
-   756 0000082F B901000000          <1>  mov ecx , %1
-   756 00000834 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   756 00000838 4C89FF              <1>  mov rdi , vV_sp
-   756                              <1> 
-   756 0000083B F3A5                <1>  rep movsd
-   756                              <1> 
-   756 0000083D 4983C704            <1>  add vV_sp , cell(%1)
-   756                              <1> 
-   757                                  
-   758                                  
-   759                                   ;OpADR: [96]  ; PUSH opcode 
-   760                                  
-   761                                  	vV_push 42 
-   761                              <1> 
-   761 00000841 41C7072A000000      <1>  mov DWORD[vV_sp] , %1
-   761 00000848 4983C704            <1>  add vV_sp , 4
-   761                              <1> 
-   762                                  
+   751 0000092F 31C0                    	xor eax , eax	
+   752                                  	vV_pop edi		
+   752                              <1> 
+   752 00000931 4983EF04            <1>  sub vV_sp , 4
+   752 00000935 418B3F              <1>  mov %1 , [vV_sp]
+   752                              <1> 
+   753 00000938 01F8                    	add eax , edi			
+   754 0000093A C1E002                  	shl eax , 2	
+   755 0000093D 89C6                    	mov esi , eax		
+   756 0000093F BF[8A020000]            	mov edi , u_global.board
+   757                                  vV_pop eax
+   757                              <1> 
+   757 00000944 4983EF04            <1>  sub vV_sp , 4
+   757 00000948 418B07              <1>  mov %1 , [vV_sp]
+   757                              <1> 
+   758 0000094B 67890437                mov [edi + esi] , eax
+   759                                  
+   760                                   ;OpADR: [27]  ; Function Call					
+   761                                  
+   762 0000094F E83FFCFFFF              		call print			
    763                                  
-   764                                   ;OpADR: [97]  ; EQUAL opcode					
+   764                                   ;OpADR: [28]  ; Var invocation					
    765                                  
-   766 0000084C 418B47FC                	mov eax , vV_top			
-   767 00000850 413947F8                	cmp DWORD vV_2nd , eax			
+   766 00000954 488B0425[86020000]      mov rax , [u_global.index]
+   767                                  vV_push eax
+   767                              <1> 
+   767 0000095C 418907              <1>  mov DWORD[vV_sp] , %1
+   767 0000095F 4983C704            <1>  add vV_sp , 4
+   767                              <1> 
    768                                  
-   769 00000854 75(0B)                  	jnz short 0xb				
+   769                                   ;OpADR: [29]  ; PUSH opcode 
    770                                  
-   771 00000856 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+   771                                  	vV_push 1 
+   771                              <1> 
+   771 00000963 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   771 0000096A 4983C704            <1>  add vV_sp , 4
+   771                              <1> 
    772                                  
-   773 0000085E EB(09)                  	jmp short 0x9				
-   774                                  
-   775 00000860 41C747F800000000        			mov DWORD vV_2nd , 0	
-   776                                  
-   777                                  	vV_dec_sp 1				
-   777                              <1> 
-   777 00000868 4983EF04            <1>  sub vV_sp , cell(%1)
-   777                              <1> 
-   778                                  
-   779                                   ;OpADR: [98]  ; IF opcode					
-   780                                  
-   781                                  	vV_dec_sp 1			
-   781                              <1> 
-   781 0000086C 4983EF04            <1>  sub vV_sp , cell(%1)
-   781                              <1> 
-   782 00000870 41830F00                	or DWORD[vV_sp] , 0			
-   783 00000874 7410                    	je wblock_8	
-   784                                  
-   785                                   ;OpADR: [99]  ; PUSH opcode 
+   773                                  
+   774                                   ;OpADR: [30]  ; ADD opcode 					
+   775                                  
+   776 0000096E 418B47F8                	mov eax , vV_2nd			
+   777 00000972 410347FC                	add eax , vV_top			
+   778 00000976 418947F8                	mov vV_2nd , eax			
+   779                                  
+   780                                  	vV_dec_sp 1		
+   780                              <1> 
+   780 0000097A 4983EF04            <1>  sub vV_sp , cell(%1)
+   780                              <1> 
+   781                                  
+   782                                   ;OpADR: [31]  ; Var assignement					
+   783                                  
+   784                                  vV_pop eax
+   784                              <1> 
+   784 0000097E 4983EF04            <1>  sub vV_sp , 4
+   784 00000982 418B07              <1>  mov %1 , [vV_sp]
+   784                              <1> 
+   785 00000985 890425[86020000]        mov [u_global.index] , eax
    786                                  
-   787                                  	vV_push 1 
-   787                              <1> 
-   787 00000876 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   787 0000087D 4983C704            <1>  add vV_sp , 4
-   787                              <1> 
+   787                                   ;OpADR: [32]  ; Var invocation					
    788                                  
-   789                                  
-   790                                   ;OpADR: [100]  ; ELIF opcode					
+   789 0000098C 488B0425[86020000]      mov rax , [u_global.index]
+   790                                  vV_push eax
+   790                              <1> 
+   790 00000994 418907              <1>  mov DWORD[vV_sp] , %1
+   790 00000997 4983C704            <1>  add vV_sp , 4
+   790                              <1> 
    791                                  
-   792 00000881 E90A010000              	jmp wblock_11	
+   792                                   ;OpADR: [33]  ; Var invocation					
    793                                  
-   794                                  
-   795                                  	wblock_8:		
+   794 0000099B 488B0425[28010000]      mov rax , [i_global.size]
+   795                                  vV_push eax
+   795                              <1> 
+   795 000009A3 418907              <1>  mov DWORD[vV_sp] , %1
+   795 000009A6 4983C704            <1>  add vV_sp , 4
+   795                              <1> 
    796                                  
-   797                                  ;------------------------------------------------------
+   797                                   ;OpADR: [34]  ; LESS opcode					
    798                                  
-   799                                  
-   800                                   ;OpADR: [101]  ; DUP opcode (1)			
+   799 000009AA 418B47FC                	mov eax , vV_top			
+   800 000009AE 413947F8                	cmp DWORD vV_2nd , eax			
    801                                  
-   802                                  	vV_dup 1			
-   802                              <1> 
-   802 00000886 B901000000          <1>  mov ecx , %1
-   802 0000088B 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   802 0000088F 4C89FF              <1>  mov rdi , vV_sp
-   802                              <1> 
-   802 00000892 F3A5                <1>  rep movsd
-   802                              <1> 
-   802 00000894 4983C704            <1>  add vV_sp , cell(%1)
-   802                              <1> 
+   802 000009B2 73(0B)                  	jae short 0xb				
    803                                  
-   804                                  
-   805                                   ;OpADR: [102]  ; PUSH opcode 
-   806                                  
-   807                                  	vV_push 47 
-   807                              <1> 
-   807 00000898 41C7072F000000      <1>  mov DWORD[vV_sp] , %1
-   807 0000089F 4983C704            <1>  add vV_sp , 4
-   807                              <1> 
-   808                                  
+   804 000009B4 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+   805                                  
+   806 000009BC EB(09)                  	jmp short 0x9				
+   807                                  
+   808 000009BE 41C747F800000000        			mov DWORD vV_2nd , 0	
    809                                  
-   810                                   ;OpADR: [103]  ; EQUAL opcode					
+   810                                  	vV_dec_sp 1				
+   810                              <1> 
+   810 000009C6 4983EF04            <1>  sub vV_sp , cell(%1)
+   810                              <1> 
    811                                  
-   812 000008A3 418B47FC                	mov eax , vV_top			
-   813 000008A7 413947F8                	cmp DWORD vV_2nd , eax			
-   814                                  
-   815 000008AB 75(0B)                  	jnz short 0xb				
-   816                                  
-   817 000008AD 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   818                                  
-   819 000008B5 EB(09)                  	jmp short 0x9				
-   820                                  
-   821 000008B7 41C747F800000000        			mov DWORD vV_2nd , 0	
-   822                                  
-   823                                  	vV_dec_sp 1				
-   823                              <1> 
-   823 000008BF 4983EF04            <1>  sub vV_sp , cell(%1)
-   823                              <1> 
-   824                                  
-   825                                   ;OpADR: [104]  ; IF opcode					
+   812                                   ;OpADR: [35]  ; WHILE opcode					
+   813                                  
+   814                                  	vV_dec_sp 1				
+   814                              <1> 
+   814 000009CA 4983EF04            <1>  sub vV_sp , cell(%1)
+   814                              <1> 
+   815 000009CE 41830F00                	or DWORD[vV_sp] , 0			
+   816 000009D2 0F8569FEFFFF            	jne wblock_11		
+   817                                  
+   818                                   ;OpADR: [36]  ; FLUSH opcode					
+   819                                  
+   820 000009D8 E82FF7FFFF              		call vV_io_flush	
+   821                                  
+   822                                   ;OpADR: [37]  ; Var invocation					
+   823                                  
+   824 000009DD 488B0425[18010000]      mov rax , [i_global.currentIter]
+   825                                  vV_push eax
+   825                              <1> 
+   825 000009E5 418907              <1>  mov DWORD[vV_sp] , %1
+   825 000009E8 4983C704            <1>  add vV_sp , 4
+   825                              <1> 
    826                                  
-   827                                  	vV_dec_sp 1			
-   827                              <1> 
-   827 000008C3 4983EF04            <1>  sub vV_sp , cell(%1)
-   827                              <1> 
-   828 000008C7 41830F00                	or DWORD[vV_sp] , 0			
-   829 000008CB 7410                    	je wblock_6	
+   827                                   ;OpADR: [38]  ; PUSH opcode 
+   828                                  
+   829                                  	vV_push 1 
+   829                              <1> 
+   829 000009EC 41C70701000000      <1>  mov DWORD[vV_sp] , %1
+   829 000009F3 4983C704            <1>  add vV_sp , 4
+   829                              <1> 
    830                                  
-   831                                   ;OpADR: [105]  ; PUSH opcode 
-   832                                  
-   833                                  	vV_push 1 
-   833                              <1> 
-   833 000008CD 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   833 000008D4 4983C704            <1>  add vV_sp , 4
-   833                              <1> 
-   834                                  
-   835                                  
-   836                                   ;OpADR: [106]  ; ELIF opcode					
+   831                                  
+   832                                   ;OpADR: [39]  ; ADD opcode 					
+   833                                  
+   834 000009F7 418B47F8                	mov eax , vV_2nd			
+   835 000009FB 410347FC                	add eax , vV_top			
+   836 000009FF 418947F8                	mov vV_2nd , eax			
    837                                  
-   838 000008D8 E9B3000000              	jmp wblock_11	
+   838                                  	vV_dec_sp 1		
+   838                              <1> 
+   838 00000A03 4983EF04            <1>  sub vV_sp , cell(%1)
+   838                              <1> 
    839                                  
-   840                                  
-   841                                  	wblock_6:		
-   842                                  
-   843                                  ;------------------------------------------------------
+   840                                   ;OpADR: [40]  ; Var assignement					
+   841                                  
+   842                                  vV_pop eax
+   842                              <1> 
+   842 00000A07 4983EF04            <1>  sub vV_sp , 4
+   842 00000A0B 418B07              <1>  mov %1 , [vV_sp]
+   842                              <1> 
+   843 00000A0E 890425[18010000]        mov [i_global.currentIter] , eax
    844                                  
-   845                                  
-   846                                   ;OpADR: [107]  ; DUP opcode (1)			
-   847                                  
-   848                                  	vV_dup 1			
+   845                                   ;OpADR: [41]  ; Var invocation					
+   846                                  
+   847 00000A15 488B0425[18010000]      mov rax , [i_global.currentIter]
+   848                                  vV_push eax
    848                              <1> 
-   848 000008DD B901000000          <1>  mov ecx , %1
-   848 000008E2 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   848 000008E6 4C89FF              <1>  mov rdi , vV_sp
-   848                              <1> 
-   848 000008E9 F3A5                <1>  rep movsd
-   848                              <1> 
-   848 000008EB 4983C704            <1>  add vV_sp , cell(%1)
+   848 00000A1D 418907              <1>  mov DWORD[vV_sp] , %1
+   848 00000A20 4983C704            <1>  add vV_sp , 4
    848                              <1> 
    849                                  
-   850                                  
-   851                                   ;OpADR: [108]  ; PUSH opcode 
-   852                                  
-   853                                  	vV_push 37 
+   850                                   ;OpADR: [42]  ; Var invocation					
+   851                                  
+   852 00000A24 488B0425[28010000]      mov rax , [i_global.size]
+   853                                  vV_push eax
    853                              <1> 
-   853 000008EF 41C70725000000      <1>  mov DWORD[vV_sp] , %1
-   853 000008F6 4983C704            <1>  add vV_sp , 4
+   853 00000A2C 418907              <1>  mov DWORD[vV_sp] , %1
+   853 00000A2F 4983C704            <1>  add vV_sp , 4
    853                              <1> 
    854                                  
-   855                                  
-   856                                   ;OpADR: [109]  ; EQUAL opcode					
-   857                                  
-   858 000008FA 418B47FC                	mov eax , vV_top			
-   859 000008FE 413947F8                	cmp DWORD vV_2nd , eax			
-   860                                  
-   861 00000902 75(0B)                  	jnz short 0xb				
-   862                                  
-   863 00000904 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   864                                  
-   865 0000090C EB(09)                  	jmp short 0x9				
-   866                                  
-   867 0000090E 41C747F800000000        			mov DWORD vV_2nd , 0	
-   868                                  
-   869                                  	vV_dec_sp 1				
-   869                              <1> 
-   869 00000916 4983EF04            <1>  sub vV_sp , cell(%1)
-   869                              <1> 
-   870                                  
-   871                                   ;OpADR: [110]  ; IF opcode					
-   872                                  
-   873                                  	vV_dec_sp 1			
-   873                              <1> 
-   873 0000091A 4983EF04            <1>  sub vV_sp , cell(%1)
-   873                              <1> 
-   874 0000091E 41830F00                	or DWORD[vV_sp] , 0			
-   875 00000922 740D                    	je wblock_4	
-   876                                  
-   877                                   ;OpADR: [111]  ; PUSH opcode 
-   878                                  
-   879                                  	vV_push 1 
-   879                              <1> 
-   879 00000924 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   879 0000092B 4983C704            <1>  add vV_sp , 4
-   879                              <1> 
+   855                                   ;OpADR: [43]  ; LESS opcode					
+   856                                  
+   857 00000A33 418B47FC                	mov eax , vV_top			
+   858 00000A37 413947F8                	cmp DWORD vV_2nd , eax			
+   859                                  
+   860 00000A3B 73(0B)                  	jae short 0xb				
+   861                                  
+   862 00000A3D 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
+   863                                  
+   864 00000A45 EB(09)                  	jmp short 0x9				
+   865                                  
+   866 00000A47 41C747F800000000        			mov DWORD vV_2nd , 0	
+   867                                  
+   868                                  	vV_dec_sp 1				
+   868                              <1> 
+   868 00000A4F 4983EF04            <1>  sub vV_sp , cell(%1)
+   868                              <1> 
+   869                                  
+   870                                   ;OpADR: [44]  ; WHILE opcode					
+   871                                  
+   872                                  	vV_dec_sp 1				
+   872                              <1> 
+   872 00000A53 4983EF04            <1>  sub vV_sp , cell(%1)
+   872                              <1> 
+   873 00000A57 41830F00                	or DWORD[vV_sp] , 0			
+   874 00000A5B 0F8598FDFFFF            	jne wblock_12		
+   875                                  
+   876                                   ;OpADR: [45]  ; PUSH opcode 
+   877                                  
+   878                                  	vV_push 543521122 
+   878                              <1> 
+   878 00000A61 41C70762796520      <1>  mov DWORD[vV_sp] , %1
+   878 00000A68 4983C704            <1>  add vV_sp , 4
+   878                              <1> 
+   879                                  
    880                                  
-   881                                  
-   882                                   ;OpADR: [112]  ; ELIF opcode					
-   883                                  
-   884 0000092F EB5F                    	jmp wblock_11	
-   885                                  
-   886                                  
-   887                                  	wblock_4:		
+   881                                   ;OpADR: [46]  ; OUT opcode (9)			
+   882                                  
+   883                                  								
+   884 00000A6C E851F7FFFF              	call vV_io_out_packed_char				
+   885                                  						
+   886                                  		
+   887 00000A71 C3                      		ret
    888                                  
-   889                                  ;------------------------------------------------------
-   890                                  
-   891                                  
-   892                                   ;OpADR: [113]  ; DUP opcode (1)			
-   893                                  
-   894                                  	vV_dup 1			
-   894                              <1> 
-   894 00000931 B901000000          <1>  mov ecx , %1
-   894 00000936 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   894 0000093A 4C89FF              <1>  mov rdi , vV_sp
-   894                              <1> 
-   894 0000093D F3A5                <1>  rep movsd
-   894                              <1> 
-   894 0000093F 4983C704            <1>  add vV_sp , cell(%1)
-   894                              <1> 
-   895                                  
-   896                                  
-   897                                   ;OpADR: [114]  ; PUSH opcode 
-   898                                  
-   899                                  	vV_push 113 
-   899                              <1> 
-   899 00000943 41C70771000000      <1>  mov DWORD[vV_sp] , %1
-   899 0000094A 4983C704            <1>  add vV_sp , 4
-   899                              <1> 
-   900                                  
-   901                                  
-   902                                   ;OpADR: [115]  ; EQUAL opcode					
-   903                                  
-   904 0000094E 418B47FC                	mov eax , vV_top			
-   905 00000952 413947F8                	cmp DWORD vV_2nd , eax			
-   906                                  
-   907 00000956 75(0B)                  	jnz short 0xb				
-   908                                  
-   909 00000958 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   910                                  
-   911 00000960 EB(09)                  	jmp short 0x9				
-   912                                  
-   913 00000962 41C747F800000000        			mov DWORD vV_2nd , 0	
-   914                                  
-   915                                  	vV_dec_sp 1				
-   915                              <1> 
-   915 0000096A 4983EF04            <1>  sub vV_sp , cell(%1)
-   915                              <1> 
-   916                                  
-   917                                   ;OpADR: [116]  ; IF opcode					
-   918                                  
-   919                                  	vV_dec_sp 1			
-   919                              <1> 
-   919 0000096E 4983EF04            <1>  sub vV_sp , cell(%1)
-   919                              <1> 
-   920 00000972 41830F00                	or DWORD[vV_sp] , 0			
-   921 00000976 740D                    	je wblock_2	
-   922                                  
-   923                                   ;OpADR: [117]  ; PUSH opcode 
-   924                                  
-   925                                  	vV_push 1 
-   925                              <1> 
-   925 00000978 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-   925 0000097F 4983C704            <1>  add vV_sp , 4
-   925                              <1> 
-   926                                  
-   927                                  
-   928                                   ;OpADR: [118]  ; ELIF opcode					
-   929                                  
-   930 00000983 EB0B                    	jmp wblock_11	
-   931                                  
-   932                                  
-   933                                  	wblock_2:		
-   934                                  
-   935                                  ;------------------------------------------------------
-   936                                  
-   937                                  
-   938                                   ;OpADR: [119]  ; PUSH opcode 
-   939                                  
-   940                                  	vV_push 0 
-   940                              <1> 
-   940 00000985 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-   940 0000098C 4983C704            <1>  add vV_sp , 4
-   940                              <1> 
-   941                                  
-   942                                  
-   943                                  
-   944                                  	wblock_11:		
-   945                                  
-   946                                  ;------------------------------------------------------
-   947                                  
-   948                                  
-   949                                   ;OpADR: [120]  ; End of func opcode					
-   950                                  
-   951                                  
-   952                                  ;------Cleanup Phase
-   953                                  
-   954                                  ;------frame restore Phase
-   955 00000990 4889EC                  	mov rsp , rbp	
-   956 00000993 5D                      	pop rbp	
-   957 00000994 C3                      	ret	
-   958                                  solve_operand:		
-   959 00000995 55                      	push rbp	
-   960 00000996 4889E5                  	mov rbp , rsp	
-   961                                  
-   962                                  ;------Setup Phase
-   963                                  
-   964                                  ;------Init Phase
-   965                                  
-   966                                  .tailcall:		;Body Section	
-   967                                  
-   968                                   ;OpADR: [121]  ; DUP opcode (1)			
-   969                                  
-   970                                  	vV_dup 1			
-   970                              <1> 
-   970 00000999 B901000000          <1>  mov ecx , %1
-   970 0000099E 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-   970 000009A2 4C89FF              <1>  mov rdi , vV_sp
-   970                              <1> 
-   970 000009A5 F3A5                <1>  rep movsd
-   970                              <1> 
-   970 000009A7 4983C704            <1>  add vV_sp , cell(%1)
-   970                              <1> 
-   971                                  
-   972                                  
-   973                                   ;OpADR: [122]  ; PUSH opcode 
-   974                                  
-   975                                  	vV_push 43 
-   975                              <1> 
-   975 000009AB 41C7072B000000      <1>  mov DWORD[vV_sp] , %1
-   975 000009B2 4983C704            <1>  add vV_sp , 4
-   975                              <1> 
-   976                                  
-   977                                  
-   978                                   ;OpADR: [123]  ; EQUAL opcode					
-   979                                  
-   980 000009B6 418B47FC                	mov eax , vV_top			
-   981 000009BA 413947F8                	cmp DWORD vV_2nd , eax			
-   982                                  
-   983 000009BE 75(0B)                  	jnz short 0xb				
-   984                                  
-   985 000009C0 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-   986                                  
-   987 000009C8 EB(09)                  	jmp short 0x9				
-   988                                  
-   989 000009CA 41C747F800000000        			mov DWORD vV_2nd , 0	
-   990                                  
-   991                                  	vV_dec_sp 1				
-   991                              <1> 
-   991 000009D2 4983EF04            <1>  sub vV_sp , cell(%1)
-   991                              <1> 
-   992                                  
-   993                                   ;OpADR: [124]  ; IF opcode					
-   994                                  
-   995                                  	vV_dec_sp 1			
-   995                              <1> 
-   995 000009D6 4983EF04            <1>  sub vV_sp , cell(%1)
-   995                              <1> 
-   996 000009DA 41830F00                	or DWORD[vV_sp] , 0			
-   997 000009DE 7419                    	je wblock_21	
-   998                                  
-   999                                   ;OpADR: [125]  ; DROP opcode 
-  1000                                  
-  1001 000009E0 4983EF04                	sub vV_sp , 4	
-  1002                                  
-  1003                                   ;OpADR: [126]  ; ADD opcode 					
-  1004                                  
-  1005 000009E4 418B47F8                	mov eax , vV_2nd			
-  1006 000009E8 410347FC                	add eax , vV_top			
-  1007 000009EC 418947F8                	mov vV_2nd , eax			
-  1008                                  
-  1009                                  	vV_dec_sp 1		
-  1009                              <1> 
-  1009 000009F0 4983EF04            <1>  sub vV_sp , cell(%1)
-  1009                              <1> 
-  1010                                  
-  1011                                   ;OpADR: [127]  ; ELIF opcode					
-  1012                                  
-  1013 000009F4 E97C010000              	jmp wblock_20	
-  1014                                  
-  1015                                  
-  1016                                  	wblock_21:		
-  1017                                  
-  1018                                  ;------------------------------------------------------
-  1019                                  
-  1020                                  
-  1021                                   ;OpADR: [128]  ; DUP opcode (1)			
-  1022                                  
-  1023                                  	vV_dup 1			
-  1023                              <1> 
-  1023 000009F9 B901000000          <1>  mov ecx , %1
-  1023 000009FE 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1023 00000A02 4C89FF              <1>  mov rdi , vV_sp
-  1023                              <1> 
-  1023 00000A05 F3A5                <1>  rep movsd
-  1023                              <1> 
-  1023 00000A07 4983C704            <1>  add vV_sp , cell(%1)
-  1023                              <1> 
-  1024                                  
-  1025                                  
-  1026                                   ;OpADR: [129]  ; PUSH opcode 
-  1027                                  
-  1028                                  	vV_push 45 
-  1028                              <1> 
-  1028 00000A0B 41C7072D000000      <1>  mov DWORD[vV_sp] , %1
-  1028 00000A12 4983C704            <1>  add vV_sp , 4
-  1028                              <1> 
-  1029                                  
-  1030                                  
-  1031                                   ;OpADR: [130]  ; EQUAL opcode					
-  1032                                  
-  1033 00000A16 418B47FC                	mov eax , vV_top			
-  1034 00000A1A 413947F8                	cmp DWORD vV_2nd , eax			
-  1035                                  
-  1036 00000A1E 75(0B)                  	jnz short 0xb				
-  1037                                  
-  1038 00000A20 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1039                                  
-  1040 00000A28 EB(09)                  	jmp short 0x9				
-  1041                                  
-  1042 00000A2A 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1043                                  
-  1044                                  	vV_dec_sp 1				
-  1044                              <1> 
-  1044 00000A32 4983EF04            <1>  sub vV_sp , cell(%1)
-  1044                              <1> 
-  1045                                  
-  1046                                   ;OpADR: [131]  ; IF opcode					
-  1047                                  
-  1048                                  	vV_dec_sp 1			
-  1048                              <1> 
-  1048 00000A36 4983EF04            <1>  sub vV_sp , cell(%1)
-  1048                              <1> 
-  1049 00000A3A 41830F00                	or DWORD[vV_sp] , 0			
-  1050 00000A3E 7419                    	je wblock_19	
-  1051                                  
-  1052                                   ;OpADR: [132]  ; DROP opcode 
-  1053                                  
-  1054 00000A40 4983EF04                	sub vV_sp , 4	
-  1055                                  
-  1056                                   ;OpADR: [133]  ; SUB opcode 					
-  1057                                  
-  1058 00000A44 418B47F8                	mov eax , vV_2nd			
-  1059 00000A48 412B47FC                	sub eax , vV_top			
-  1060 00000A4C 418947F8                	mov vV_2nd, eax			
-  1061                                  
-  1062                                  	vV_dec_sp 1		
-  1062                              <1> 
-  1062 00000A50 4983EF04            <1>  sub vV_sp , cell(%1)
-  1062                              <1> 
-  1063                                  
-  1064                                   ;OpADR: [134]  ; ELIF opcode					
-  1065                                  
-  1066 00000A54 E91C010000              	jmp wblock_20	
-  1067                                  
-  1068                                  
-  1069                                  	wblock_19:		
-  1070                                  
-  1071                                  ;------------------------------------------------------
-  1072                                  
-  1073                                  
-  1074                                   ;OpADR: [135]  ; DUP opcode (1)			
-  1075                                  
-  1076                                  	vV_dup 1			
-  1076                              <1> 
-  1076 00000A59 B901000000          <1>  mov ecx , %1
-  1076 00000A5E 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1076 00000A62 4C89FF              <1>  mov rdi , vV_sp
-  1076                              <1> 
-  1076 00000A65 F3A5                <1>  rep movsd
-  1076                              <1> 
-  1076 00000A67 4983C704            <1>  add vV_sp , cell(%1)
-  1076                              <1> 
-  1077                                  
-  1078                                  
-  1079                                   ;OpADR: [136]  ; PUSH opcode 
-  1080                                  
-  1081                                  	vV_push 42 
-  1081                              <1> 
-  1081 00000A6B 41C7072A000000      <1>  mov DWORD[vV_sp] , %1
-  1081 00000A72 4983C704            <1>  add vV_sp , 4
-  1081                              <1> 
-  1082                                  
-  1083                                  
-  1084                                   ;OpADR: [137]  ; EQUAL opcode					
-  1085                                  
-  1086 00000A76 418B47FC                	mov eax , vV_top			
-  1087 00000A7A 413947F8                	cmp DWORD vV_2nd , eax			
-  1088                                  
-  1089 00000A7E 75(0B)                  	jnz short 0xb				
-  1090                                  
-  1091 00000A80 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1092                                  
-  1093 00000A88 EB(09)                  	jmp short 0x9				
-  1094                                  
-  1095 00000A8A 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1096                                  
-  1097                                  	vV_dec_sp 1				
-  1097                              <1> 
-  1097 00000A92 4983EF04            <1>  sub vV_sp , cell(%1)
-  1097                              <1> 
-  1098                                  
-  1099                                   ;OpADR: [138]  ; IF opcode					
-  1100                                  
-  1101                                  	vV_dec_sp 1			
-  1101                              <1> 
-  1101 00000A96 4983EF04            <1>  sub vV_sp , cell(%1)
-  1101                              <1> 
-  1102 00000A9A 41830F00                	or DWORD[vV_sp] , 0			
-  1103 00000A9E 7419                    	je wblock_17	
-  1104                                  
-  1105                                   ;OpADR: [139]  ; DROP opcode 
-  1106                                  
-  1107 00000AA0 4983EF04                	sub vV_sp , 4	
-  1108                                  
-  1109                                   ;OpADR: [140]  ; MUL opcode 					
-  1110                                  
-  1111                                  
-  1112 00000AA4 418B47F8                	mov eax , vV_2nd			
-  1113 00000AA8 41F767FC                	mul DWORD vV_top			
-  1114 00000AAC 418947F8                	mov vV_2nd , eax			
-  1115                                  
-  1116                                  	vV_dec_sp 1				
-  1116                              <1> 
-  1116 00000AB0 4983EF04            <1>  sub vV_sp , cell(%1)
-  1116                              <1> 
-  1117                                  						
-  1118                                  
-  1119                                   ;OpADR: [141]  ; ELIF opcode					
-  1120                                  
-  1121 00000AB4 E9BC000000              	jmp wblock_20	
-  1122                                  
-  1123                                  
-  1124                                  	wblock_17:		
-  1125                                  
-  1126                                  ;------------------------------------------------------
-  1127                                  
-  1128                                  
-  1129                                   ;OpADR: [142]  ; DUP opcode (1)			
-  1130                                  
-  1131                                  	vV_dup 1			
-  1131                              <1> 
-  1131 00000AB9 B901000000          <1>  mov ecx , %1
-  1131 00000ABE 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1131 00000AC2 4C89FF              <1>  mov rdi , vV_sp
-  1131                              <1> 
-  1131 00000AC5 F3A5                <1>  rep movsd
-  1131                              <1> 
-  1131 00000AC7 4983C704            <1>  add vV_sp , cell(%1)
-  1131                              <1> 
-  1132                                  
-  1133                                  
-  1134                                   ;OpADR: [143]  ; PUSH opcode 
-  1135                                  
-  1136                                  	vV_push 47 
-  1136                              <1> 
-  1136 00000ACB 41C7072F000000      <1>  mov DWORD[vV_sp] , %1
-  1136 00000AD2 4983C704            <1>  add vV_sp , 4
-  1136                              <1> 
-  1137                                  
-  1138                                  
-  1139                                   ;OpADR: [144]  ; EQUAL opcode					
-  1140                                  
-  1141 00000AD6 418B47FC                	mov eax , vV_top			
-  1142 00000ADA 413947F8                	cmp DWORD vV_2nd , eax			
-  1143                                  
-  1144 00000ADE 75(0B)                  	jnz short 0xb				
-  1145                                  
-  1146 00000AE0 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1147                                  
-  1148 00000AE8 EB(09)                  	jmp short 0x9				
-  1149                                  
-  1150 00000AEA 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1151                                  
-  1152                                  	vV_dec_sp 1				
-  1152                              <1> 
-  1152 00000AF2 4983EF04            <1>  sub vV_sp , cell(%1)
-  1152                              <1> 
-  1153                                  
-  1154                                   ;OpADR: [145]  ; IF opcode					
-  1155                                  
-  1156                                  	vV_dec_sp 1			
-  1156                              <1> 
-  1156 00000AF6 4983EF04            <1>  sub vV_sp , cell(%1)
-  1156                              <1> 
-  1157 00000AFA 41830F00                	or DWORD[vV_sp] , 0			
-  1158 00000AFE 7418                    	je wblock_15	
-  1159                                  
-  1160                                   ;OpADR: [146]  ; DROP opcode 
-  1161                                  
-  1162 00000B00 4983EF04                	sub vV_sp , 4	
-  1163                                  
-  1164                                   ;OpADR: [147]  ; DIV opcode 					
-  1165                                  
-  1166 00000B04 31D2                    	xor edx , edx				
-  1167 00000B06 418B47F8                	mov eax , vV_2nd			
-  1168 00000B0A 41F777FC                	div DWORD vV_top			
-  1169 00000B0E 418947F8                	mov vV_2nd , eax			
-  1170                                  
-  1171                                  	vV_dec_sp 1				
-  1171                              <1> 
-  1171 00000B12 4983EF04            <1>  sub vV_sp , cell(%1)
-  1171                              <1> 
-  1172                                  
-  1173                                   ;OpADR: [148]  ; ELIF opcode					
-  1174                                  
-  1175 00000B16 EB5D                    	jmp wblock_20	
-  1176                                  
-  1177                                  
-  1178                                  	wblock_15:		
-  1179                                  
-  1180                                  ;------------------------------------------------------
-  1181                                  
-  1182                                  
-  1183                                   ;OpADR: [149]  ; DUP opcode (1)			
-  1184                                  
-  1185                                  	vV_dup 1			
-  1185                              <1> 
-  1185 00000B18 B901000000          <1>  mov ecx , %1
-  1185 00000B1D 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1185 00000B21 4C89FF              <1>  mov rdi , vV_sp
-  1185                              <1> 
-  1185 00000B24 F3A5                <1>  rep movsd
-  1185                              <1> 
-  1185 00000B26 4983C704            <1>  add vV_sp , cell(%1)
-  1185                              <1> 
-  1186                                  
-  1187                                  
-  1188                                   ;OpADR: [150]  ; PUSH opcode 
-  1189                                  
-  1190                                  	vV_push 37 
-  1190                              <1> 
-  1190 00000B2A 41C70725000000      <1>  mov DWORD[vV_sp] , %1
-  1190 00000B31 4983C704            <1>  add vV_sp , 4
-  1190                              <1> 
-  1191                                  
-  1192                                  
-  1193                                   ;OpADR: [151]  ; EQUAL opcode					
-  1194                                  
-  1195 00000B35 418B47FC                	mov eax , vV_top			
-  1196 00000B39 413947F8                	cmp DWORD vV_2nd , eax			
-  1197                                  
-  1198 00000B3D 75(0B)                  	jnz short 0xb				
-  1199                                  
-  1200 00000B3F 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1201                                  
-  1202 00000B47 EB(09)                  	jmp short 0x9				
-  1203                                  
-  1204 00000B49 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1205                                  
-  1206                                  	vV_dec_sp 1				
-  1206                              <1> 
-  1206 00000B51 4983EF04            <1>  sub vV_sp , cell(%1)
-  1206                              <1> 
-  1207                                  
-  1208                                   ;OpADR: [152]  ; IF opcode					
-  1209                                  
-  1210                                  	vV_dec_sp 1			
-  1210                              <1> 
-  1210 00000B55 4983EF04            <1>  sub vV_sp , cell(%1)
-  1210                              <1> 
-  1211 00000B59 41830F00                	or DWORD[vV_sp] , 0			
-  1212 00000B5D 7416                    	je wblock_20	
-  1213                                  
-  1214                                   ;OpADR: [153]  ; DROP opcode 
-  1215                                  
-  1216 00000B5F 4983EF04                	sub vV_sp , 4	
-  1217                                  
-  1218                                   ;OpADR: [154]  ; MOD opcode 					
-  1219                                  
-  1220 00000B63 31D2                    	xor edx , edx				
-  1221 00000B65 418B47F8                	mov eax , vV_2nd			
-  1222 00000B69 41F777FC                	div DWORD vV_top			
-  1223 00000B6D 418957F8                	mov vV_2nd , edx			
-  1224                                  
-  1225 00000B71 4983EF04                	sub r15 , 4				
-  1226                                  
-  1227                                  
-  1228                                  	wblock_20:		
-  1229                                  
-  1230                                  ;------------------------------------------------------
-  1231                                  
-  1232                                  
-  1233                                   ;OpADR: [155]  ; End of func opcode					
-  1234                                  
-  1235                                  
-  1236                                  ;------Cleanup Phase
-  1237                                  
-  1238                                  ;------frame restore Phase
-  1239 00000B75 4889EC                  	mov rsp , rbp	
-  1240 00000B78 5D                      	pop rbp	
-  1241 00000B79 C3                      	ret	
-  1242                                  check_cmd:		
-  1243 00000B7A 55                      	push rbp	
-  1244 00000B7B 4889E5                  	mov rbp , rsp	
-  1245                                  
-  1246                                  ;------Setup Phase
-  1247                                  
-  1248                                  ;------Init Phase
-  1249                                  
-  1250                                  .tailcall:		;Body Section	
-  1251                                  
-  1252                                   ;OpADR: [156]  ; DUP opcode (1)			
-  1253                                  
-  1254                                  	vV_dup 1			
-  1254                              <1> 
-  1254 00000B7E B901000000          <1>  mov ecx , %1
-  1254 00000B83 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1254 00000B87 4C89FF              <1>  mov rdi , vV_sp
-  1254                              <1> 
-  1254 00000B8A F3A5                <1>  rep movsd
-  1254                              <1> 
-  1254 00000B8C 4983C704            <1>  add vV_sp , cell(%1)
-  1254                              <1> 
-  1255                                  
-  1256                                  
-  1257                                   ;OpADR: [157]  ; Function Call					
-  1258                                  
-  1259 00000B90 E862F9FFFF              		call quit_cmd			
-  1260                                  
-  1261                                   ;OpADR: [158]  ; EQUAL opcode					
-  1262                                  
-  1263 00000B95 418B47FC                	mov eax , vV_top			
-  1264 00000B99 413947F8                	cmp DWORD vV_2nd , eax			
-  1265                                  
-  1266 00000B9D 75(0B)                  	jnz short 0xb				
-  1267                                  
-  1268 00000B9F 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1269                                  
-  1270 00000BA7 EB(09)                  	jmp short 0x9				
-  1271                                  
-  1272 00000BA9 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1273                                  
-  1274                                  	vV_dec_sp 1				
-  1274                              <1> 
-  1274 00000BB1 4983EF04            <1>  sub vV_sp , cell(%1)
-  1274                              <1> 
-  1275                                  
-  1276                                   ;OpADR: [159]  ; IF opcode					
-  1277                                  
-  1278                                  	vV_dec_sp 1			
-  1278                              <1> 
-  1278 00000BB5 4983EF04            <1>  sub vV_sp , cell(%1)
-  1278                              <1> 
-  1279 00000BB9 41830F00                	or DWORD[vV_sp] , 0			
-  1280 00000BBD 7416                    	je wblock_22	
-  1281                                  
-  1282                                   ;OpADR: [160]  ; PUSH opcode 
-  1283                                  
-  1284                                  	vV_push 1 
-  1284                              <1> 
-  1284 00000BBF 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-  1284 00000BC6 4983C704            <1>  add vV_sp , 4
-  1284                              <1> 
-  1285                                  
-  1286                                  
-  1287                                   ;OpADR: [161]  ; PUSH opcode 
-  1288                                  
-  1289                                  	vV_push 0 
-  1289                              <1> 
-  1289 00000BCA 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-  1289 00000BD1 4983C704            <1>  add vV_sp , 4
-  1289                              <1> 
-  1290                                  
-  1291                                  
-  1292                                  
-  1293                                  	wblock_22:		
-  1294                                  
-  1295                                  ;------------------------------------------------------
-  1296                                  
-  1297                                  
-  1298                                   ;OpADR: [162]  ; DUP opcode (1)			
-  1299                                  
-  1300                                  	vV_dup 1			
-  1300                              <1> 
-  1300 00000BD5 B901000000          <1>  mov ecx , %1
-  1300 00000BDA 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1300 00000BDE 4C89FF              <1>  mov rdi , vV_sp
-  1300                              <1> 
-  1300 00000BE1 F3A5                <1>  rep movsd
-  1300                              <1> 
-  1300 00000BE3 4983C704            <1>  add vV_sp , cell(%1)
-  1300                              <1> 
-  1301                                  
-  1302                                  
-  1303                                   ;OpADR: [163]  ; Function Call					
-  1304                                  
-  1305 00000BE7 E81FF9FFFF              		call help_cmd			
-  1306                                  
-  1307                                   ;OpADR: [164]  ; EQUAL opcode					
-  1308                                  
-  1309 00000BEC 418B47FC                	mov eax , vV_top			
-  1310 00000BF0 413947F8                	cmp DWORD vV_2nd , eax			
-  1311                                  
-  1312 00000BF4 75(0B)                  	jnz short 0xb				
-  1313                                  
-  1314 00000BF6 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1315                                  
-  1316 00000BFE EB(09)                  	jmp short 0x9				
-  1317                                  
-  1318 00000C00 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1319                                  
-  1320                                  	vV_dec_sp 1				
-  1320                              <1> 
-  1320 00000C08 4983EF04            <1>  sub vV_sp , cell(%1)
-  1320                              <1> 
-  1321                                  
-  1322                                   ;OpADR: [165]  ; IF opcode					
-  1323                                  
-  1324                                  	vV_dec_sp 1			
-  1324                              <1> 
-  1324 00000C0C 4983EF04            <1>  sub vV_sp , cell(%1)
-  1324                              <1> 
-  1325 00000C10 41830F00                	or DWORD[vV_sp] , 0			
-  1326 00000C14 7410                    	je wblock_23	
-  1327                                  
-  1328                                   ;OpADR: [166]  ; Function Call					
-  1329                                  
-  1330 00000C16 E82CF9FFFF              		call help			
-  1331                                  
-  1332                                   ;OpADR: [167]  ; PUSH opcode 
-  1333                                  
-  1334                                  	vV_push 1 
-  1334                              <1> 
-  1334 00000C1B 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-  1334 00000C22 4983C704            <1>  add vV_sp , 4
-  1334                              <1> 
-  1335                                  
-  1336                                  
-  1337                                  
-  1338                                  	wblock_23:		
-  1339                                  
-  1340                                  ;------------------------------------------------------
-  1341                                  
-  1342                                  
-  1343                                   ;OpADR: [168]  ; DUP opcode (1)			
-  1344                                  
-  1345                                  	vV_dup 1			
-  1345                              <1> 
-  1345 00000C26 B901000000          <1>  mov ecx , %1
-  1345 00000C2B 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1345 00000C2F 4C89FF              <1>  mov rdi , vV_sp
-  1345                              <1> 
-  1345 00000C32 F3A5                <1>  rep movsd
-  1345                              <1> 
-  1345 00000C34 4983C704            <1>  add vV_sp , cell(%1)
-  1345                              <1> 
-  1346                                  
-  1347                                  
-  1348                                   ;OpADR: [169]  ; Function Call					
-  1349                                  
-  1350 00000C38 E8E2F8FFFF              		call calc_cmd			
-  1351                                  
-  1352                                   ;OpADR: [170]  ; EQUAL opcode					
-  1353                                  
-  1354 00000C3D 418B47FC                	mov eax , vV_top			
-  1355 00000C41 413947F8                	cmp DWORD vV_2nd , eax			
-  1356                                  
-  1357 00000C45 75(0B)                  	jnz short 0xb				
-  1358                                  
-  1359 00000C47 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1360                                  
-  1361 00000C4F EB(09)                  	jmp short 0x9				
-  1362                                  
-  1363 00000C51 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1364                                  
-  1365                                  	vV_dec_sp 1				
-  1365                              <1> 
-  1365 00000C59 4983EF04            <1>  sub vV_sp , cell(%1)
-  1365                              <1> 
-  1366                                  
-  1367                                   ;OpADR: [171]  ; IF opcode					
-  1368                                  
-  1369                                  	vV_dec_sp 1			
-  1369                              <1> 
-  1369 00000C5D 4983EF04            <1>  sub vV_sp , cell(%1)
-  1369                              <1> 
-  1370 00000C61 41830F00                	or DWORD[vV_sp] , 0			
-  1371 00000C65 7416                    	je wblock_24	
-  1372                                  
-  1373                                   ;OpADR: [172]  ; PUSH opcode 
-  1374                                  
-  1375                                  	vV_push 0 
-  1375                              <1> 
-  1375 00000C67 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-  1375 00000C6E 4983C704            <1>  add vV_sp , 4
-  1375                              <1> 
-  1376                                  
-  1377                                  
-  1378                                   ;OpADR: [173]  ; PUSH opcode 
-  1379                                  
-  1380                                  	vV_push 0 
-  1380                              <1> 
-  1380 00000C72 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-  1380 00000C79 4983C704            <1>  add vV_sp , 4
-  1380                              <1> 
-  1381                                  
-  1382                                  
-  1383                                  
-  1384                                  	wblock_24:		
-  1385                                  
-  1386                                  ;------------------------------------------------------
-  1387                                  
-  1388                                  
-  1389                                   ;OpADR: [174]  ; DUP opcode (1)			
-  1390                                  
-  1391                                  	vV_dup 1			
-  1391                              <1> 
-  1391 00000C7D B901000000          <1>  mov ecx , %1
-  1391 00000C82 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1391 00000C86 4C89FF              <1>  mov rdi , vV_sp
-  1391                              <1> 
-  1391 00000C89 F3A5                <1>  rep movsd
-  1391                              <1> 
-  1391 00000C8B 4983C704            <1>  add vV_sp , cell(%1)
-  1391                              <1> 
-  1392                                  
-  1393                                  
-  1394                                   ;OpADR: [175]  ; Function Call					
-  1395                                  
-  1396 00000C8F E89FF8FFFF              		call frmt_cmd			
-  1397                                  
-  1398                                   ;OpADR: [176]  ; EQUAL opcode					
-  1399                                  
-  1400 00000C94 418B47FC                	mov eax , vV_top			
-  1401 00000C98 413947F8                	cmp DWORD vV_2nd , eax			
-  1402                                  
-  1403 00000C9C 75(0B)                  	jnz short 0xb				
-  1404                                  
-  1405 00000C9E 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1406                                  
-  1407 00000CA6 EB(09)                  	jmp short 0x9				
-  1408                                  
-  1409 00000CA8 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1410                                  
-  1411                                  	vV_dec_sp 1				
-  1411                              <1> 
-  1411 00000CB0 4983EF04            <1>  sub vV_sp , cell(%1)
-  1411                              <1> 
-  1412                                  
-  1413                                   ;OpADR: [177]  ; IF opcode					
-  1414                                  
-  1415                                  	vV_dec_sp 1			
-  1415                              <1> 
-  1415 00000CB4 4983EF04            <1>  sub vV_sp , cell(%1)
-  1415                              <1> 
-  1416 00000CB8 41830F00                	or DWORD[vV_sp] , 0			
-  1417 00000CBC 740B                    	je wblock_25	
-  1418                                  
-  1419                                   ;OpADR: [178]  ; PUSH opcode 
-  1420                                  
-  1421                                  	vV_push 1 
-  1421                              <1> 
-  1421 00000CBE 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-  1421 00000CC5 4983C704            <1>  add vV_sp , 4
-  1421                              <1> 
-  1422                                  
-  1423                                  
-  1424                                  
-  1425                                  	wblock_25:		
-  1426                                  
-  1427                                  ;------------------------------------------------------
-  1428                                  
-  1429                                  
-  1430                                   ;OpADR: [179]  ; End of func opcode					
-  1431                                  
-  1432                                  
-  1433                                  ;------Cleanup Phase
-  1434                                  
-  1435                                  ;------frame restore Phase
-  1436 00000CC9 4889EC                  	mov rsp , rbp	
-  1437 00000CCC 5D                      	pop rbp	
-  1438 00000CCD C3                      	ret	
-  1439                                  
-  1440                                  		
-  1441                                  
-  1442                                  
-  1443                                  
-  1444                                  vV_entry_point:
-  1445                                  
-  1446                                  
-  1447 00000CCE 4889E5                  	mov rbp, rsp			;Setup Stack Frame
-  1448                                  	
-  1449                                  	
-  1450                                  
-  1451                                  	wblock_34:		
-  1452                                  
-  1453                                  ;------------------------------------------------------
-  1454                                  
-  1455                                  
-  1456                                   ;OpADR: [0]  ; Function Call					
-  1457                                  
-  1458 00000CD1 E86DFAFFFF              		call say_welcome			
-  1459                                  
-  1460                                   ;OpADR: [1]  ; Function Call					
-  1461                                  
-  1462 00000CD6 E894FAFFFF              		call input_cmd			
-  1463                                  
-  1464                                   ;OpADR: [2]  ; Function Call					
-  1465                                  
-  1466 00000CDB E89AFEFFFF              		call check_cmd			
-  1467                                  
-  1468                                   ;OpADR: [3]  ; WHILE opcode					
-  1469                                  
-  1470                                  	vV_dec_sp 1				
-  1470                              <1> 
-  1470 00000CE0 4983EF04            <1>  sub vV_sp , cell(%1)
-  1470                              <1> 
-  1471 00000CE4 41830F00                	or DWORD[vV_sp] , 0			
-  1472 00000CE8 75E7                    	jne wblock_34		
-  1473                                  
-  1474                                   ;OpADR: [4]  ; IF opcode					
-  1475                                  
-  1476                                  	vV_dec_sp 1			
-  1476                              <1> 
-  1476 00000CEA 4983EF04            <1>  sub vV_sp , cell(%1)
-  1476                              <1> 
-  1477 00000CEE 41830F00                	or DWORD[vV_sp] , 0			
-  1478 00000CF2 7405                    	je wblock_32	
-  1479                                  
-  1480                                   ;OpADR: [5]  ; Break opcode					
-  1481                                  
-  1482 00000CF4 E909010000              	jmp wblock_35		
-  1483                                  
-  1484                                  
-  1485                                  	wblock_32:		
-  1486                                  
-  1487                                  ;------------------------------------------------------
-  1488                                  
-  1489                                  
-  1490                                   ;OpADR: [6]  ; Function Call					
-  1491                                  
-  1492 00000CF9 E864F9FFFF              		call calc_msg01			
-  1493                                  
-  1494                                   ;OpADR: [7]  ; Function Call					
-  1495                                  
-  1496 00000CFE E86BF7FFFF              		call xprint			
-  1497                                  
-  1498                                   ;OpADR: [8]  ; GET opcode (0)			
-  1499                                  
-  1500 00000D03 E869F5FFFF              	call vV_io_get_default			
-  1501                                  						
-  1502                                  
-  1503                                  
-  1504                                  	wblock_30:		
-  1505                                  
-  1506                                  ;------------------------------------------------------
-  1507                                  
-  1508                                  
-  1509                                   ;OpADR: [9]  ; Function Call					
-  1510                                  
-  1511 00000D08 E895F9FFFF              		call calc_msg02			
-  1512                                  
-  1513                                   ;OpADR: [10]  ; Function Call					
-  1514                                  
-  1515 00000D0D E85CF7FFFF              		call xprint			
-  1516                                  
-  1517                                   ;OpADR: [11]  ; GET opcode (8)			
-  1518                                  
-  1519                                  		
-  1520 00000D12 E881F5FFFF              	call vV_io_get_char				
-  1521                                  						
-  1522                                  
-  1523                                   ;OpADR: [12]  ; Function Call					
-  1524                                  
-  1525 00000D17 E861FAFFFF              		call check_operand			
-  1526                                  
-  1527                                   ;OpADR: [13]  ; IF opcode					
-  1528                                  
-  1529                                  	vV_dec_sp 1			
-  1529                              <1> 
-  1529 00000D1C 4983EF04            <1>  sub vV_sp , cell(%1)
-  1529                              <1> 
-  1530 00000D20 41830F00                	or DWORD[vV_sp] , 0			
-  1531 00000D24 740D                    	je wblock_29	
-  1532                                  
-  1533                                   ;OpADR: [14]  ; PUSH opcode 
-  1534                                  
-  1535                                  	vV_push 0 
-  1535                              <1> 
-  1535 00000D26 41C70700000000      <1>  mov DWORD[vV_sp] , %1
-  1535 00000D2D 4983C704            <1>  add vV_sp , 4
-  1535                              <1> 
-  1536                                  
-  1537                                  
-  1538                                   ;OpADR: [15]  ; ELIF opcode					
-  1539                                  
-  1540 00000D31 EB19                    	jmp wblock_28	
-  1541                                  
-  1542                                  
-  1543                                  	wblock_29:		
-  1544                                  
-  1545                                  ;------------------------------------------------------
-  1546                                  
-  1547                                  
-  1548                                   ;OpADR: [16]  ; DROP opcode 
-  1549                                  
-  1550 00000D33 4983EF04                	sub vV_sp , 4	
-  1551                                  
-  1552                                   ;OpADR: [17]  ; Function Call					
-  1553                                  
-  1554 00000D37 E8C7F9FFFF              		call calc_msg03			
-  1555                                  
-  1556                                   ;OpADR: [18]  ; Function Call					
-  1557                                  
-  1558 00000D3C E82DF7FFFF              		call xprint			
-  1559                                  
-  1560                                   ;OpADR: [19]  ; PUSH opcode 
-  1561                                  
-  1562                                  	vV_push 1 
-  1562                              <1> 
-  1562 00000D41 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-  1562 00000D48 4983C704            <1>  add vV_sp , 4
-  1562                              <1> 
-  1563                                  
-  1564                                  
-  1565                                  
-  1566                                  	wblock_28:		
-  1567                                  
-  1568                                  ;------------------------------------------------------
-  1569                                  
-  1570                                  
-  1571                                   ;OpADR: [20]  ; WHILE opcode					
-  1572                                  
-  1573                                  	vV_dec_sp 1				
-  1573                              <1> 
-  1573 00000D4C 4983EF04            <1>  sub vV_sp , cell(%1)
-  1573                              <1> 
-  1574 00000D50 41830F00                	or DWORD[vV_sp] , 0			
-  1575 00000D54 75B2                    	jne wblock_30		
-  1576                                  
-  1577                                   ;OpADR: [21]  ; DUP opcode (1)			
-  1578                                  
-  1579                                  	vV_dup 1			
-  1579                              <1> 
-  1579 00000D56 B901000000          <1>  mov ecx , %1
-  1579 00000D5B 498D77FC            <1>  lea rsi , [vV_sp-cell(%1)]
-  1579 00000D5F 4C89FF              <1>  mov rdi , vV_sp
-  1579                              <1> 
-  1579 00000D62 F3A5                <1>  rep movsd
-  1579                              <1> 
-  1579 00000D64 4983C704            <1>  add vV_sp , cell(%1)
-  1579                              <1> 
-  1580                                  
-  1581                                  
-  1582                                   ;OpADR: [22]  ; PUSH opcode 
-  1583                                  
-  1584                                  	vV_push 113 
-  1584                              <1> 
-  1584 00000D68 41C70771000000      <1>  mov DWORD[vV_sp] , %1
-  1584 00000D6F 4983C704            <1>  add vV_sp , 4
-  1584                              <1> 
-  1585                                  
-  1586                                  
-  1587                                   ;OpADR: [23]  ; EQUAL opcode					
-  1588                                  
-  1589 00000D73 418B47FC                	mov eax , vV_top			
-  1590 00000D77 413947F8                	cmp DWORD vV_2nd , eax			
-  1591                                  
-  1592 00000D7B 75(0B)                  	jnz short 0xb				
-  1593                                  
-  1594 00000D7D 41C747F8FFFFFFFF        			mov DWORD vV_2nd , -1	
-  1595                                  
-  1596 00000D85 EB(09)                  	jmp short 0x9				
-  1597                                  
-  1598 00000D87 41C747F800000000        			mov DWORD vV_2nd , 0	
-  1599                                  
-  1600                                  	vV_dec_sp 1				
-  1600                              <1> 
-  1600 00000D8F 4983EF04            <1>  sub vV_sp , cell(%1)
-  1600                              <1> 
-  1601                                  
-  1602                                   ;OpADR: [24]  ; IF opcode					
-  1603                                  
-  1604                                  	vV_dec_sp 1			
-  1604                              <1> 
-  1604 00000D93 4983EF04            <1>  sub vV_sp , cell(%1)
-  1604                              <1> 
-  1605 00000D97 41830F00                	or DWORD[vV_sp] , 0			
-  1606 00000D9B 740A                    	je wblock_31	
-  1607                                  
-  1608                                   ;OpADR: [25]  ; DROP opcode 
-  1609                                  
-  1610 00000D9D 4983EF04                	sub vV_sp , 4	
-  1611                                  
-  1612                                   ;OpADR: [26]  ; DROP opcode 
-  1613                                  
-  1614 00000DA1 4983EF04                	sub vV_sp , 4	
-  1615                                  
-  1616                                   ;OpADR: [27]  ; Break opcode					
-  1617                                  
-  1618 00000DA5 EB42                    	jmp wblock_33		
-  1619                                  
-  1620                                  
-  1621                                  	wblock_31:		
-  1622                                  
-  1623                                  ;------------------------------------------------------
-  1624                                  
-  1625                                  
-  1626                                   ;OpADR: [28]  ; Function Call					
-  1627                                  
-  1628 00000DA7 E8B6F8FFFF              		call calc_msg01			
-  1629                                  
-  1630                                   ;OpADR: [29]  ; Function Call					
-  1631                                  
-  1632 00000DAC E8BDF6FFFF              		call xprint			
-  1633                                  
-  1634                                   ;OpADR: [30]  ; GET opcode (0)			
-  1635                                  
-  1636 00000DB1 E8BBF4FFFF              	call vV_io_get_default			
-  1637                                  						
-  1638                                  
-  1639                                   ;OpADR: [31]  ; SWAP opcode 
-  1640                                  
-  1641                                  
-  1642                                  	vV_swap		
-  1642                              <1> 
-  1642 00000DB6 418B57FC            <1>  mov edx , [vV_sp-4]
-  1642 00000DBA 418B47F8            <1>  mov eax , [vV_sp-8]
-  1642 00000DBE 418957F8            <1>  mov [vV_sp-8] , edx
-  1642 00000DC2 418947FC            <1>  mov [vV_sp-4] , eax
-  1642                              <1> 
-  1643                                  
-  1644                                  
-  1645                                   ;OpADR: [32]  ; Function Call					
-  1646                                  
-  1647 00000DC6 E8CAFBFFFF              		call solve_operand			
-  1648                                  
-  1649                                   ;OpADR: [33]  ; OUT opcode (0)			
-  1650                                  
-  1651 00000DCB E87DF3FFFF              	call vV_io_out_default			
-  1652                                  						
-  1653                                  
-  1654                                   ;OpADR: [34]  ; PUSH opcode 
-  1655                                  
-  1656                                  	vV_push 1 
-  1656                              <1> 
-  1656 00000DD0 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-  1656 00000DD7 4983C704            <1>  add vV_sp , 4
-  1656                              <1> 
-  1657                                  
-  1658                                  
-  1659                                   ;OpADR: [35]  ; WHILE opcode					
-  1660                                  
-  1661                                  	vV_dec_sp 1				
-  1661                              <1> 
-  1661 00000DDB 4983EF04            <1>  sub vV_sp , cell(%1)
-  1661                              <1> 
-  1662 00000DDF 41830F00                	or DWORD[vV_sp] , 0			
-  1663 00000DE3 0F8510FFFFFF            	jne wblock_32		
-  1664                                  
-  1665                                  
-  1666                                  	wblock_33:		
-  1667                                  
-  1668                                  ;------------------------------------------------------
-  1669                                  
-  1670                                  
-  1671                                   ;OpADR: [36]  ; PUSH opcode 
-  1672                                  
-  1673                                  	vV_push 1 
-  1673                              <1> 
-  1673 00000DE9 41C70701000000      <1>  mov DWORD[vV_sp] , %1
-  1673 00000DF0 4983C704            <1>  add vV_sp , 4
-  1673                              <1> 
-  1674                                  
-  1675                                  
-  1676                                   ;OpADR: [37]  ; WHILE opcode					
-  1677                                  
-  1678                                  	vV_dec_sp 1				
-  1678                              <1> 
-  1678 00000DF4 4983EF04            <1>  sub vV_sp , cell(%1)
-  1678                              <1> 
-  1679 00000DF8 41830F00                	or DWORD[vV_sp] , 0			
-  1680 00000DFC 0F85CFFEFFFF            	jne wblock_34		
-  1681                                  
-  1682                                  
-  1683                                  	wblock_35:		
-  1684                                  
-  1685                                  ;------------------------------------------------------
-  1686                                  
-  1687                                  
-  1688                                   ;OpADR: [38]  ; Function Call					
-  1689                                  
-  1690 00000E02 E826F8FFFF              		call goodbye_msg			
-  1691                                  
-  1692                                   ;OpADR: [39]  ; Function Call					
-  1693                                  
-  1694 00000E07 E862F6FFFF              		call xprint			
-  1695                                  		
-  1696 00000E0C C3                      		ret
-  1697                                  
-  1698                                  ;Transpiled from vV with vVc version 0.0.4
-  1699                                  		
-  1700                                  		
+   889                                  ;Transpiled from vV with vVc version 0.0.4
+   890                                  		
+   891                                  		

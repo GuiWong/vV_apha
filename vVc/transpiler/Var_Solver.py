@@ -90,6 +90,7 @@ class Var_Solver:
 			if isinstance(tmp[3].content,vV_Var.vV_Int_Type):
 			
 				
+				pow2 = [1,2,4,8,16,32,64,128,256,512,1024,2048,4096]
 				argu = []
 				d = len(var_name)
 				offset = 0
@@ -132,8 +133,14 @@ class Var_Solver:
 							
 						else:
 							setup += "	add eax , "+str(d)+"			\n"
-						setup += "	mov ecx , "+str(siz)+"\n"
-						setup += "	mul ecx		\n"
+							
+							
+						if siz in pow2:
+							
+							setup += "	shl eax , "+str(pow2.index(siz)) +"	\n"
+						else:
+							setup += "	mov ecx , "+str(siz)+"\n"
+							setup += "	mul ecx		\n"
 						#setup += " 	add edi , eax				\n"
 						#offset += d
 						i+=1
@@ -217,7 +224,7 @@ class Var_Solver:
 		
 		
 		txt += 'vV_pop eax\n' 
-		txt += 'mov '+adr[0]+' , rax\n' 
+		txt += 'mov '+adr[0]+' , eax\n' 
 		
 		return txt
 

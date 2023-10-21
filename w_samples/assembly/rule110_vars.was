@@ -1,0 +1,12 @@
+ segment .data 
+
+ i_global:
+.currentIter: dq 0
+.boardPad: dq 0
+.size: dq 200
+ segment .bss 
+
+	u_global:
+.index: resb 4 
+.board: resb 804 
+.saved: resb 4 

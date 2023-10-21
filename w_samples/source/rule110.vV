@@ -1,0 +1,123 @@
+
+global 200 size
+global int[201] board
+global 0 boardPad
+
+
+global 0 currentIter
+global int saved
+global int index
+
+
+
+1 size 1 - []board=
+
+
+def set_next + dup 0 =? if
+
+			drp drp
+			0
+
+			el
+				dup 2 =? if
+						drp 0 =? if
+						
+								1
+							el
+								0
+							,
+					el
+					
+						drp drp 1
+					,
+			,
+endef
+
+def print 0 =? if ' ' cout_ el '*' cout_ , endef
+
+
+def set_seed ;32bit value on stack as seed
+
+	local 0 c
+	
+	1 
+	do
+	
+	
+	2dup		; 1_seed_1_seed
+	&		; 1stbit_1_seed
+	if		; 1_seed
+	1		; 1 1 seed
+	el
+	0		; 0 1 seed
+	,
+	size c -	; size-1 value 1 seed
+	[]board=	; 1_seed			value stored in board
+	<		; 1leftshifted seed
+	
+	c 1 + c=
+	c 33 <? 
+
+	while
+	
+endef
+	
+def popup
+
+	'0 : ' 'e 11' ' rul' ' for' 'seed' 'r a ' 'Ente'
+	wout_ wout_ wout_ wout_ wout_ wout_ wout_ flush
+	get
+	
+endef
+
+;420
+;69
+;0 0 0 set_next out
+;0 0 1 set_next out
+;0 1 0 set_next out
+;0 1 1 set_next out
+;1 0 0 set_next out
+;1 0 1 set_next out
+;1 1 0 set_next out
+;1 1 1 set_next out
+
+
+	
+	
+popup
+set_seed			
+
+
+do
+
+	0 saved=
+	0 index=
+
+	56
+	67
+	do
+
+		saved index []board index 1 + []board
+		set_next dup
+		index []board saved=
+		index []board=
+		print
+		
+		
+
+		index 1 + index=
+
+
+	index size <?
+
+	while
+
+	flush
+	currentIter 1 + currentIter=
+
+
+currentIter size <?
+
+ while
+
+'bye ' wout
