@@ -129,6 +129,9 @@ ASSIGN = 209
 
 UINT_32 = 217
 
+
+SQRBRACKETL = 248
+SQRBRACKETR = 249
 SQUOTES = 250
 DQUOTES = 251
 
@@ -159,6 +162,11 @@ class Opcode_descriptor:
 	
 '''
 
+
+forbiden_chars = ["[","]","(",")","$","#","@","?","!","&","|","^","/","+","-","%","*",",",";",".",":"]
+
+grouping_chars = ["[","]","(",")"]
+
 ref_suffix= {
 
 	'=' : ASSIGN
@@ -170,6 +178,13 @@ define = {
 	'def' : DEF,
 	'endef' : ENDEF
 	
+	}
+	
+index_op = {
+	
+	SQRBRACKETL:'[',
+	SQRBRACKETR:']'
+
 	}
 	
 var_define = {

@@ -6,6 +6,7 @@ import options as O
 
 import VarUpdate.Code_Namespace as C_NS
 import VarUpdate.vV_Variable as vV_Var
+import VarUpdate.Type_Checker as Type_Checker
 
 
 
@@ -358,6 +359,56 @@ class Symbol_Solver:
 		pass
 		
 		
+	def decode(self,token):
+	
+		s_arg = []	#square brackets arguments
+		r_arg = []	#round brackets arguments
+		cmd = ''
+		valid = True
+		
+		if token[0] == OP.index_op[OP.SQRBRACKETL] and token[-1] not in OP.grouping_chars:		#Case of starting brackets
+		
+		
+			tmp = token.split(OP.index_op[OP.SQRBRACKETR])
+			
+			cmd = tmp[-1]
+			
+			for a in tmp[:-1]:
+			
+				if a[0] != OP.index_op[OP.SQRBRACKETL]:
+				
+					valid = False
+					
+				else:
+				
+					s_arg.append(a[1:])
+			
+			
+		elif token[-1] == OP.index_op[OP.SQRBRACKETR] and token[0] not in OP.grouping_chars:	#Case of closing brackets
+		
+		
+			tmp = token.split(OP.index_op[OP.SQRBRACKETL])
+			
+			cmd = tmp[0]
+			
+			for a in tmp[1:]:
+			
+				if a[-1] != OP.index_op[OP.SQRBRACKETR]:
+				
+					valid = False
+					
+				else:
+				
+					s_arg.append(a[:-1])
+			
+		else:
+		
+			return [False]
+			
+			
+		return [valid , cmd , s_arg , r_arg]
+		
+		
 class Function_Registerer:
 
 	functions = {}
@@ -526,6 +577,7 @@ class Pre_Compiler:
 		
 		self.function_registerer = Function_Registerer()
 		self.namespace_manager = C_NS.NameSpace_Manager()
+		self.type_checker = Type_Checker.Type_Checker()
 		
 		
 		
@@ -631,6 +683,9 @@ class Pre_Compiler:
 		
 		current_var_scope = 0
 		current_var_type = 0
+		
+		
+		
 		current_var_value = 0
 		current_var_init = False
 		
@@ -796,7 +851,15 @@ class Pre_Compiler:
 								
 									current_var_scope = OP.GLOBAL
 						
-							current_var_type = OP.var_type[buff]
+							#current_var_type = OP.var_type[buff]
+							
+							
+							
+							try:
+								current_var_type = vV_Var.build_type(OP.var_type[buff])
+							except WErrors.InvalidType:
+							
+								assert False, "Unimplemented Type : "+self.context.build_location()
 							
 							
 							print "setting var type..."
@@ -871,6 +934,10 @@ class Pre_Compiler:
 			if def_state == 2:
 			
 		#		print " Function Name : "+buff+" "+str(self.context.build_location())
+		
+				for c in buff:
+				
+					assert c not in OP.forbiden_chars , "FORBIDEN CHAR IN FUNC NAME"
 				
 				
 				self.function_registerer.functions[len(self.def_op_array)] = buff
@@ -911,13 +978,91 @@ class Pre_Compiler:
 				
 				if tmpre[0]:
 				
-					current_var_type = OP.UINT_32
+					current_var_type = vV_Var.vV_Int_Type()
 					current_var_value = tmpre[1]
 					current_var_init = True
 					
 				else:
 				
-					assert False , "RAISE UNKNOWN VALUE TYPE" +  str(self.context.build_location())
+					if buff[-1] == OP.index_op[OP.SQRBRACKETR]:
+					
+					
+						decoded = self.symbol_solver.decode(buff)
+						
+						
+						tmp_type = 0
+						tmp_val = []
+						tmp_size = []
+						tmp_dim = 0
+						tmp_is_def = False
+						tmp_is_init = False
+						
+						
+						print decoded
+						assert decoded[0] , "Error While Trying to decode Type: " + buff +" at: "+ str(self.context.build_location())
+						
+						
+						if decoded[1] in OP.var_type:
+						
+						
+						
+						
+							
+							tmp_type = vV_Var.build_type(OP.var_type[decoded[1]])
+							
+							
+							for dim in decoded[2]:
+							
+								assert dim.isdigit() , "NOT a numeric value in indexing operation ("+decoded[2][0]+") : " +str(self.context.build_location())
+								
+								tmp_size.append(int(dim))
+								tmp_dim += 1
+							
+							tmp_is_def = True
+							tmp_is_init = False
+						
+							
+						elif decoded[1] == "None":	#TODO: define a return value for only brackets
+						
+						
+						
+							assert False , "inimplemented array initialisation  : " +str(self.context.build_location())
+						
+						
+							
+						else:
+						
+						
+							assert False , "Unrecognised type ("+decoded[1]+") : " +str(self.context.build_location())
+						
+						
+						
+						
+						print current_var_type
+						print tmp_dim
+						print tmp_size
+						
+						current_var_type = vV_Var.vV_Array_Type(tmp_type,tmp_dim,tmp_size )
+						current_var_value =tmp_val
+						current_var_init = tmp_is_init
+							
+							
+					#	else:
+						
+					#		assert False , "NOT IMPLEMENTED (probably trying a multi dimentionnal array at "+str(self.context.build_location())+")"
+							
+						
+						print current_var_type
+						
+						print current_var_type.calc_size()
+						
+					
+						#assert False , "NEED TO IMPLEMENT BRACKET DECODING"
+						
+					
+					else:
+					
+						assert False , "RAISE UNKNOWN VALUE TYPE : " +  str(self.context.build_location())
 					
 					
 				var_def_state = 3	#scoped, typed, has value
@@ -948,7 +1093,13 @@ class Pre_Compiler:
 				else:
 			
 			
+			
 					print "defining var name: " +buff
+					
+					for c in buff:
+				
+						assert c not in OP.forbiden_chars , "FORBIDEN CHAR IN FUNC NAME"		#May need to allow brackets, or pre-process str to extract info
+					
 					var_name = buff
 					varo = vV_Var.vV_Variable(var_name,current_var_scope,current_var_type,current_var_init,current_var_value)
 				
@@ -1056,7 +1207,7 @@ class Pre_Compiler:
 				if buff in self.function_registerer.functions.values():
 				
 					op.value = OP.CALL
-					op.arg = buff
+					op.arg = [buff]
 	
 #--------------------------Var Update------------------------------------------------------------		
 			
@@ -1064,19 +1215,90 @@ class Pre_Compiler:
 				
 				
 					op.value = OP.PUSH_VAR
-					op.arg = buff
+					op.arg = [buff]
+					
+					print self.type_checker.result_type(None,self.namespace_manager.functions[current_func_name].local_vars[buff].var_type,[OP.PUSH_VAR,[]])
 					
 					
-					print "push local var "+op.arg
+					print "push local var "+op.arg[0]
 					
 				
 				elif buff in self.namespace_manager.global_vars:		#00.0.4
 				
 				
 					op.value = OP.PUSH_VAR
-					op.arg = buff
+					op.arg = [buff]
 					
-					print "push global var "+op.arg
+					print self.type_checker.result_type(None,self.namespace_manager.global_vars[buff].var_type,[OP.PUSH_VAR,[]])
+					
+					print "push global var "+op.arg[0]
+					
+					
+				elif buff[0] == OP.index_op[OP.SQRBRACKETL]:
+				
+				
+				
+				
+				
+					decoded = self.symbol_solver.decode(buff)
+					
+					print decoded
+					assert decoded[0] , "Error While Trying to decode Type: " + buff +" at: "+ str(self.context.build_location())
+						
+					valu = []
+					
+					for c in decoded[2]:
+					
+					
+						if len(c) == 0:
+							
+							print "empty bracket"
+							valu.append("pop")
+							
+							
+						else:
+							assert c.isdigit() , "Error, non numeric index ("+c+") at: "+ str(self.context.build_location())
+						
+							valu.append(int(c))
+						
+					valu.reverse()
+					
+					
+					
+						
+						
+					if def_state == 3 and decoded[1] in self.namespace_manager.functions[current_func_name].local_vars:
+					
+					
+						op.value = OP.PUSH_VAR
+						op.arg = [decoded[1],valu]
+						
+						
+						#print self.type_checker.result_type(None,vV_Var.vV_Array_Type(0,1,[10]),[OP.PUSH_VAR,valu])
+						
+						print self.type_checker.result_type(None,self.namespace_manager.functions[current_func_name].local_vars[decoded[1]].var_type,[OP.PUSH_VAR,valu])
+						
+						
+					elif decoded[1] in self.namespace_manager.global_vars:
+					
+					
+						op.value = OP.PUSH_VAR
+						op.arg = [decoded[1],valu]
+						
+						#print self.type_checker.result_type(None,vV_Var.vV_Array_Type(vV_Var.vV_Int_Type(),1,[10]),[OP.PUSH_VAR,valu])
+						
+						print self.type_checker.result_type(None,self.namespace_manager.global_vars[decoded[1]].var_type,[OP.PUSH_VAR,valu])
+				
+					print "array reading with args:"
+					print op.arg
+						
+					#assert False , "NEED TO IMPLEMENT BRAQUET DECODING"
+					
+					
+					
+					
+					
+					
 					
 				else:
 				
@@ -1088,10 +1310,11 @@ class Pre_Compiler:
 			
 			
 				print "assign potential var "+op.arg
+				#op.arg = [op.arg]
 				
 				if def_state == 3 and op.arg in self.namespace_manager.functions[current_func_name].local_vars:
 				
-					pass
+					op.arg = [op.arg]
 					#op.arg = 
 					
 					#print "\n-----------------------\n\n"								
@@ -1100,7 +1323,53 @@ class Pre_Compiler:
 					
 				elif op.arg in self.namespace_manager.global_vars:
 				
-					pass
+					op.arg = [op.arg]
+					
+					
+				elif op.arg[0] == OP.index_op[OP.SQRBRACKETL]:
+				
+
+					decoded = self.symbol_solver.decode(buff)
+					
+					print decoded
+					assert decoded[0] , "Error While Trying to decode Var Assignement" + buff +" at: "+ str(self.context.build_location())
+						
+					valu = []
+					
+					varname = decoded[1][:-1]
+					
+					for c in decoded[2]:
+					
+					
+						if len(c) == 0:
+							
+							print "empty bracket"
+							valu.append("pop")
+							
+							
+						else:
+							assert c.isdigit() , "Error, non numeric index ("+c+") at: "+ str(self.context.build_location())
+						
+							valu.append(int(c))
+						
+					#valu.append(varname)
+					valu.reverse()
+					
+					
+					if ( def_state == 3 and varname in self.namespace_manager.functions[current_func_name].local_vars ) or varname in self.namespace_manager.global_vars:
+				
+						op.arg = [varname,valu]
+					#op.arg = 
+					
+					#print "\n-----------------------\n\n"								
+					#print self.namespace_manager.functions[current_func_name].solve_var(op.arg)
+					#print "\n-----------------------\n\n"
+					
+					else:
+				
+						assert False , "Undefined var for this scope "+str(self.context.build_location())
+					
+						
 					
 				else:
 				
@@ -1295,12 +1564,13 @@ class Pre_Compiler:
 		
 		
 		#print self.namespace_manager.global_vars
+		'''
 		for key in self.namespace_manager.global_vars:
 		
 			print key
-			print self.namespace_manager.global_vars[key]
+			print self.namespace_manager.global_vars[key].var_type
 			
-		'''	
+		#'''	
 			
 
 		

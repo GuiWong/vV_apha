@@ -1,12 +1,109 @@
 
 import vV.VM_Opcode as OP
+import WErrors as ERR
 
 
-class vV_Type:
+
+def build_type(type_id):
+
+
+	if type_id == OP.UINT_32:
+	
+		return vV_Int_Type()
+		
+	else:
+	
+		raise ERR.InvalidType('To Implement',False,False)
+
+
+class vV_Primary_Type:
+
+	size = 0
+	
+	def __str__(self):
+	
+		return "Unimplemented Type"
+		
+	def calc_size(self):
+	
+		return self.size
+		
+class vV_Structure_Type:
+
+	content = vV_Primary_Type()
+	
+	def calc_size(self):
+	
+		return content.calc_size()
+
+		
+class vV_Int_Type(vV_Primary_Type):
+
+
+	size = 32
+	
+	def __init__(self):
+	
+		pass
+	
+	def __str__(self):
+	
+		return "<int>"
+		
+class vV_Array_Type(vV_Structure_Type):
+
+	content = vV_Primary_Type()
+	dim = 1
+	size = []
+	
+	def __init__(self,content,dims,size):
+
+		self.content = content
+		self.dim = dims
+		for s in size:
+		
+			self.size.append(s)
+			
+		#print self.size
+		self.size.reverse()
+		#print self.size
+		
+		
+	def calc_size(self):
+	
+	
+		e = 1
+		for d in range(self.dim):
+		
+			e = e * self.size[d]
+			
+		e = e * self.content.calc_size()
+		
+		return e
+			
+			
+	def __str__(self):
+	
+		buff = []
+		for d in range(self.dim):
+		
+			buff.append('[' + str(self.size[d])+']')
+			
+		buff.reverse()
+		#print buff
+		buff = ''.join(buff)
+
+	
+		return str(self.content) +"["+str(self.dim)+"]  ---  "+str(self.content) + buff
+		
+		
+		
+class vV_Type:		#Need to refactor
 
 	UNFOUND = 0
 	VALUE = 1
-	POINTER = 2		#Base Type, tobe Ored with appropriate type???
+	POINTER = 2	
+
 	
 class Scope:
 
@@ -23,7 +120,7 @@ class vV_Variable:
 
 		
 	name = ''
-	var_type = vV_Type.UNFOUND
+	var_type = vV_Primary_Type()
 	scope = Scope.GLOBAL
 	is_init = False
 	init_value = 0
@@ -41,6 +138,10 @@ class vV_Variable:
 		self.is_init = is_init
 		self.init_value = init_value
 		
+	def calc_size(self):
+	
+		return self.var_type.calc_size()
+		
 	def value_debug_txt(self):
 	
 	
@@ -55,6 +156,6 @@ class vV_Variable:
 		
 	def __str__(self):
 	
-		return "Var "+self.name+" \n Scope: "+OP.var_define.keys()[OP.var_define.values().index(self.scope)]+"\n Type: "+OP.var_type.keys()[OP.var_type.values().index(self.var_type)]+"\n "+ self.value_debug_txt()
+		return "Var "+self.name+" \n Scope: "+OP.var_define.keys()[OP.var_define.values().index(self.scope)]+"\n Type: "+str(self.var_type)+"\n "+ self.value_debug_txt()
 		
 		

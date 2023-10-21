@@ -636,7 +636,7 @@ vV_entry_point:
 			txt = '\
 ; Function Call					\n\
 \n\
-		call '+arg+'			\n'
+		call '+arg[0]+'			\n'
 	
 
 		elif op == OP.PUSH_VAR:

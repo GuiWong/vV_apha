@@ -4,5 +4,3 @@
  segment .bss 
 
 	u_global:
-.a: resb 4 
-.foo: resb 40 

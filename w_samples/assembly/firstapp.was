@@ -6,6 +6,7 @@
 %include "vVc/assembly/w_runtime/vV_system10.asm"		
 %include "vVc/assembly/w_runtime/vV_io.asm"			
 %include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "w_samples/assembly/firstapp_vars.was"	
 %include "vVc/assembly/w_runtime/vV_system90.asm"		
 
 
@@ -1694,6 +1695,6 @@ vV_entry_point:
 		
 		ret
 
-;Transpiled from vV with vVc version 0.0.3
+;Transpiled from vV with vVc version 0.0.4
 		
 		

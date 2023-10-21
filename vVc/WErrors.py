@@ -91,6 +91,21 @@ class InvalidSymbol(ParserError):
 
 
 		
+class InvalidType(ParserError):
+
+	symbol = ''
+
+	def __init__(self,message,location,symbol):
+	
+		super(ParserError, self).__init__(message,location)
+		
+		self.symbol = symbol
+		
+	def __str__(self):
+	
+		return 'Bad Type '+self.symbol+' encountered during parsing: '+location
+
+
 		
 		
 class BlockError(ParserError):

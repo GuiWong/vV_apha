@@ -38,13 +38,13 @@ class vV_Function:
 	
 		if name in self.local_vars.keys():
 		
-			return [self.local_vars[name].var_type , '[rbp - '+str( ( self.local_vars.keys().index(name) + 1 ) * 8 ) + "]"	]#Only for direct values
+			return [True, '[rbp - '+str( ( self.local_vars.keys().index(name) + 1 ) * 8 ) + "]"	,self.local_vars[name].var_type ]#Only for direct values
 			
 			
 		elif name in self.referenced_vars.keys():
 		
 		
-			return [self.referenced_vars[name].var_type , 'rbp + '+str( ( self.referenced_vars.keys().index(name) + 2 ) * 8 ) ]	#Only for direct values
+			return [True, 'rbp + '+str( ( self.referenced_vars.keys().index(name) + 2 ) * 8 ) , self.referenced_vars[name].var_type ]	#Only for direct values
 			
 		else:
 		

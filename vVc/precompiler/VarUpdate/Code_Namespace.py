@@ -58,18 +58,19 @@ class NameSpace_Manager:
 	
 		ret_val = ''
 		
+		
 		if scope in self.functions:
 		
-			loc = self.functions[scope].solve_var(varname)
+			loc = self.functions[scope].solve_var(varname[0])
 			
-			if loc[0] != 0:			#May need to check for ptr type
+			if loc[0]:			#May need to check for ptr type
 			
-				return [True,loc[1],False]
+				return [True,loc[1],False,loc[2]]
 				
-		if varname in self.global_vars:
+		if varname[0] in self.global_vars:
 		
 				
-			return [True,  self.global_vars[varname].name,True]
+			return [True,  self.global_vars[varname[0]].name,True,self.global_vars[varname[0]].var_type]
 			
 		else:
 		

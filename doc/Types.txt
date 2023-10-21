@@ -1,0 +1,382 @@
+
+
+2 Main "Types":
+	
+	
+	<32b_value>
+
+	<pointer> 
+	  <Ref> , or ()
+	  
+	  
+	  
+	
+current Type:
+
+	<int>
+	
+	var int name
+	
+		-Stored in .bss/.data if global
+		-Stored on Stack if local
+		
+
+Needed Type: <Array>	(may be a subtype)
+
+
+	need: <int>[]	
+	
+	var int[x] name
+	
+			Not var int [x]name
+			
+Arrays ops: [x]name:	return "value" at x index
+
+		[x]name -> ref to <int> value -> becomes a push
+		
+2D Array:
+
+	var int[8][8] board
+	
+		{ int [8] }		[ 8 ]
+		
+		Stores 8 <int>----------------------,
+						     V
+					stores 8 { 8 <int> }
+					
+					
+	(int a , int b)foo---> internally, foo gets local a and b, wich are refs to var passed as args
+	(int[64] a , int b)foo -->same
+	
+	
+
+reference type defining:
+
+var (int) a	--> a is a ref to an int value.
+			No memory is ever allocated for refs
+			
+			
+var int[64] board		->64*32bits allocated and linked	type <int[]>
+var ( int[8] ) line01		->var registered, allow 8 cells access type (<int[]>)
+			
+			
+			
+local int[10] a
+(a)foo				--> 	foo gets a a of type (<int>[])		
+
+local int b
+(b)bar				-->	bar gets a b of type (<int>)
+
+		 
+		
+
+we have:
+
+	allocate value var=
+	extract value  var
+	
+we could have:
+
+	get reference (var)
+	allocate reference  	(var)~var2			[0:7]board~line		([0:7]board)~line
+				(var) var2@			[0:7]board line@		([0:7]board) line@
+				(var) var2			[0:7]board line~		([0:7]board) line~
+				( var ) var2@			[0:7]board {line}		([0:7]board) {line}
+				
+				(var)var2			([0:7]board)line
+	
+By default:
+	
+	if reference something that can go on stack:
+		var 	means push
+		var= 	means pop 
+	else:
+		var	means ref to var
+		var=	could mean set ref, but may be confusing
+		
+
+Only non-32bit Type for now : Array (size defined collection of data of any type)
+
+	special array operator:
+	
+		[i]var		reference to ith element of var
+					-can be an int
+					-can be a ref to an int
+					-can be a ref to an array
+					
+		allow indexed access to "items"
+		
+
+
+--> (Array) Type: point to an array
+		-don't own the data,don't initialize it
+		-can dynamically change pointed data
+			> limited to one var(array) boundary
+			> type of data must match
+		
+		-allow storing/passing parts of an array as another array
+		-has boud checking, like a normal array
+		
+		
+		
+Need for reference allocation:
+
+	(x)func --> ([3][5]board)func
+	
+	([3][5]board)~x  (x)func
+	
+	like defining "x" := "([3][5]board)"
+	
+	
+	([3][5]board , x)link
+	
+	([3][5]board)~x
+
+	
+	
+	
+	
+in c: 	int a; int b*		int a ; (int) b
+	b = &a			(a) (b)=
+	do(&a) 		(a)do
+	do(b)			
+	
+	
+	
+global [6] a
+global [6] b
+
+fill_a
+
+		  a b=
+		a can't be push
+		b can't pop	
+		
+HOW TO HANDLE THIS????
+
+	 a	(STACK)push a
+	$a	(S_STACK) push a
+	(b)a	(b) push a ????
+	
+	
+Type "constructors???"
+
+	(<T>[S])<T>[S]
+	
+		default: push
+	target:variable
+
+global int[6] a
+global int[6] b
+
+fill_a		(b)a  	-> b = a   --> 
+		(a)b=	->  b = a  --> loop [i]a [i]b=
+		
+					-->if [i]a is <int>[]
+						equivalen to (<int>[])
+	<int>[] --> <int>[]			
+						ia ib=
+						
+						---> loop [i]ia [i]ib=
+						
+						
+						Deep Copy
+					
+
+	
+
+global int[6] a
+global (int[6]) b	
+
+fill_a 	(a)b=	-> b = &a  	-> done?
+
+
+	<int>[] --> (<int>[])
+
+
+global int[6] a
+global (int[6]) b	
+global int[6] c
+
+fill_a  (a)b=
+				
+		(b)c=		loop [i]b [i]c=
+	(<int>[]) --> <int>[]		|
+					V
+					b is (<int>[])
+					[] on b means: [] on pointed data
+					->[i]b => [i]a
+					
+					
+global int[6] a
+global (int[6]) b	
+global (int[6]) c
+
+fill_a  (a)b=
+				
+		(b)c=		means c = b??  c = "value of" b [point to a]
+	(<int>[]) --> (<int>[])	
+					-> c = b   b:= =>(a)
+					
+						c <=> (a)
+						
+			Won't Follow changes to b!
+			
+		
+global int[6] a
+global (int[6]) b	
+global ((int[6])) c		Double Ref?
+
+fill_a  (a)b=
+				
+		(b)c=		c = ref to b
+		
+				
+								
+
+
+
+
+
+global int[8][8] board
+
+[0]board	-->	type = (int[8]) 
+		
+
+
+
+
+
+	
+could have:	(<int>[]) --> ref to a list of int
+		(<int>)[] --> list of ref to int
+	
+	
+	
+	Types:		refs
+	
+	<int>		(<int>)
+	
+	
+	
+	"Struct":
+	
+	<>Array	(<>Array)		:is a collection of element, each element have same type
+	
+	
+	<int> 		(int)
+	<int>[] 	(<int>[])
+			(int)[]	((int)[])
+	
+	
+	<T>[s]: s consecutive T sized memory locations
+	(T)[s]: s consecutive 32b pointers to T sized memory location
+	
+	
+	<T>[a][b][c]	:	c consecutive <T>[a][b] sized memory locations
+					b consecutive <T>[a] sized memory locations
+						a consecutive <T> sized memory locations
+						
+	(<T>[a])[b][c]	:	c consecutive (<T>[a])[b] sized memory locations
+					b consecutive 32b pointers to <T>[a] sized memory locations
+						a consecutive <T>sized memory location
+						
+	Compound Types? <T>[] , <T>[][]  ,  <T>[][][]
+	
+			arr of T
+				arr of <T>[]
+						arr of <T>[][]
+						
+[x][y]map	[x] of { [y]map }
+			
+			
+	((<t>[][])[][])[]		(<t>[][])[][][]
+	
+	
+	<ref>[]			[<[]>][]
+	
+	
+future types:   <Byte> , <Byte>[]
+
+
+Structs? unordered, multi-elements "arrays"
+
+	between func and array ( access defined by declaration )
+	
+	
+	
+	
+	
+	<T>[a][b]  <==>   <T>[a*b]
+	
+	<array>	   <array>
+	2d		   	1d
+	b			a*b
+	a			<T>
+	<T>
+	
+		-check <T> 
+		-check total size
+		
+		
+___________________________________________________________
+		
+	<T>[a][b] X 		<T>[a] Y
+	
+	
+		[i]X <==> Y
+		
+	<T>[a]  <==>   <T>[a]
+	
+	<array>	   <array>
+	1d		   	1d			
+	a			a
+	<T>			<T>
+	
+		-check <T> 
+		-check total size
+		
+		
+		
+	<T>[x]  ==>  <T>[x-1] []	
+		
+		
+	<T>[3] <==> <T>[][][]	
+		
+	
+
+	Types		Refs		Dope_Refs
+	
+	 <T>		(<T>)
+	 
+---------------------------------------------------------------
+	 
+	<int>		(<int>)
+
+	
+	<T>[d]		(<T>[d])	{<T>[d]}
+	<Array>	(<array>)	{<array>}
+
+				    |
+				    |
+				    |
+			      Difference:
+		Size of every dim  |	Size of dims stored in 
+		known at compile   |	a Dope vector
+		 time              |
+
+
+	get_at(i0,i1,...,in-1)		(n = dim count)
+	
+	return Adrestart + [ (i0 * size0) + (i1 * size1) + .... + (in-1 * sizen-1)  ] * Type.size()
+	
+	
+		<int>[x] --get_at(){n=3}--> <int>[x-3]
+
+
+
+for refs: 	 size_n = known by compiler
+
+for Dope_Refs:	 size_n = Dope_adr + [( 1 + n ) * 32 ] & 0x00ffffff
+		
+		

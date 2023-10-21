@@ -1,33 +1,24 @@
 
+global int[10] foo
 
-global 50 foo		;global variable foo
-
-
-def bar
-
-	foo		;put value of foo on stack
-
-endef
-
-def barloc
-
-	local 60 foo	;local var foo
-	foo		;put value of local foo on stack
-
-endef
+global int a
 
 
-
-"#1  " wout		;print "#1  "
-
-bar out barloc out	;should print 50 and 60
-
+5 0 []foo=
+42 1 []foo=
+69 2 []foo=
 
 
-75 foo=		;set value of global foo to 75
+0 []foo out
+1 []foo out
+2 []foo out
 
 
-"#2  " wout		;print "#2  "
+46 0 []foo=
+23 1 []foo=
+'acab' 2 []foo=
 
-bar out barloc out	;should print 75 and 60
-'----' wout
+
+0 []foo out
+1 []foo out
+2 []foo wout
