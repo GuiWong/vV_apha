@@ -124,12 +124,16 @@ LOCAL = 202
 
 PUSH_VAR = 208
 ASSIGN = 209
+REF_ASSIGN = 210
 
 
 
 UINT_32 = 217
 
 
+
+RNDBRACKETL = 246
+RNDBRACKETR = 247
 SQRBRACKETL = 248
 SQRBRACKETR = 249
 SQUOTES = 250
@@ -186,6 +190,12 @@ index_op = {
 	SQRBRACKETR:']'
 
 	}
+	
+ref_op = {
+
+	RNDBRACKETL : '(',
+	RNDBRACKETR : ')'
+}
 	
 var_define = {
 

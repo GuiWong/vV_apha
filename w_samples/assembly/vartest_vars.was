@@ -1,13 +1,16 @@
  segment .data 
 
  i_global:
-.c: dq 7
-.mult: dq 2
-.colomn: dq 0
  segment .bss 
 
 	u_global:
-.a: resb 4 
-.gulf: resb 4 
-.board: resb 256 
-.foo: resb 200 
+.a: resb 16 
+.c: resb 16 
+.b: resb 4 
+.matrix: resb 64 
+.p: resb 4 
+.l4: resb 16 
+.l2: resb 16 
+.l3: resb 16 
+.l1: resb 16 
+.x: resb 4 

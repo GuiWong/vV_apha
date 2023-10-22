@@ -657,6 +657,16 @@ vV_entry_point:
 			txt += self.var_solver.pop_var(arg,self.current_scope)
 		
 			#assert False ,"TODO: MANAGE VARSOLVING"
+			
+		elif op == OP.REF_ASSIGN:
+
+			txt = '\
+; Var Ref assignement					\n\
+\n'
+			print arg
+			
+			#assert False , 'Op Unimplemented'
+			txt += self.var_solver.ref_assign(arg[0],arg[1],self.current_scope)
 		
 		
 		

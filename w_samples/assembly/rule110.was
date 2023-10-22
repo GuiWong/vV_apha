@@ -215,7 +215,7 @@ set_next:
 	mov rsp , rbp	
 	pop rbp	
 	ret	
-print:		
+popup:		
 	push rbp	
 	mov rbp , rsp	
 
@@ -227,10 +227,115 @@ print:
 
  ;OpADR: [25]  ; PUSH opcode 
 
+	vV_push 540680240 
+
+
+ ;OpADR: [26]  ; PUSH opcode 
+
+	vV_push 825303141 
+
+
+ ;OpADR: [27]  ; PUSH opcode 
+
+	vV_push 1819636256 
+
+
+ ;OpADR: [28]  ; PUSH opcode 
+
+	vV_push 1919903264 
+
+
+ ;OpADR: [29]  ; PUSH opcode 
+
+	vV_push 1684366707 
+
+
+ ;OpADR: [30]  ; PUSH opcode 
+
+	vV_push 543236210 
+
+
+ ;OpADR: [31]  ; PUSH opcode 
+
+	vV_push 1702129221 
+
+
+ ;OpADR: [32]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [33]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [34]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [35]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [36]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [37]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [38]  ; BUFF_OUT opcode (9)			
+
+
+	call vV_io_out_packed_char_buffer				
+						
+
+ ;OpADR: [39]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [40]  ; GET opcode (0)			
+
+	call vV_io_get_default			
+						
+
+ ;OpADR: [41]  ; End of func opcode					
+
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+print:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+
+ ;OpADR: [42]  ; PUSH opcode 
+
 	vV_push 0 
 
 
- ;OpADR: [26]  ; EQUAL opcode					
+ ;OpADR: [43]  ; EQUAL opcode					
 
 	mov eax , vV_top			
 	cmp DWORD vV_2nd , eax			
@@ -245,24 +350,24 @@ print:
 
 	vV_dec_sp 1				
 
- ;OpADR: [27]  ; IF opcode					
+ ;OpADR: [44]  ; IF opcode					
 
 	vV_dec_sp 1			
 	or DWORD[vV_sp] , 0			
 	je wblock_7	
 
- ;OpADR: [28]  ; PUSH opcode 
+ ;OpADR: [45]  ; PUSH opcode 
 
 	vV_push 32 
 
 
- ;OpADR: [29]  ; BUFF_OUT opcode (8)			
+ ;OpADR: [46]  ; BUFF_OUT opcode (8)			
 
 
 	call vV_io_out_char_buffer			
 						
 
- ;OpADR: [30]  ; ELIF opcode					
+ ;OpADR: [47]  ; ELIF opcode					
 
 	jmp wblock_6	
 
@@ -272,12 +377,12 @@ print:
 ;------------------------------------------------------
 
 
- ;OpADR: [31]  ; PUSH opcode 
+ ;OpADR: [48]  ; PUSH opcode 
 
 	vV_push 42 
 
 
- ;OpADR: [32]  ; BUFF_OUT opcode (8)			
+ ;OpADR: [49]  ; BUFF_OUT opcode (8)			
 
 
 	call vV_io_out_char_buffer			
@@ -289,7 +394,7 @@ print:
 ;------------------------------------------------------
 
 
- ;OpADR: [33]  ; End of func opcode					
+ ;OpADR: [50]  ; End of func opcode					
 
 
 ;------Cleanup Phase
@@ -309,22 +414,22 @@ set_seed:
 
 .tailcall:		;Body Section	
 
- ;OpADR: [34]  ; DUP opcode (1)			
+ ;OpADR: [51]  ; DUP opcode (1)			
 
 	vV_dup 1			
 
 
- ;OpADR: [35]  ; Var assignement					
+ ;OpADR: [52]  ; Var assignement					
 
 vV_pop eax
 mov [rbp - 8] , eax
 
- ;OpADR: [36]  ; PUSH opcode 
+ ;OpADR: [53]  ; PUSH opcode 
 
 	vV_push 33 
 
 
- ;OpADR: [37]  ; ADD opcode 					
+ ;OpADR: [54]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -332,12 +437,12 @@ mov [rbp - 8] , eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [38]  ; Var assignement					
+ ;OpADR: [55]  ; Var assignement					
 
 vV_pop eax
 mov [rbp - 16] , eax
 
- ;OpADR: [39]  ; PUSH opcode 
+ ;OpADR: [56]  ; PUSH opcode 
 
 	vV_push 1 
 
@@ -348,30 +453,30 @@ mov [rbp - 16] , eax
 ;------------------------------------------------------
 
 
- ;OpADR: [40]  ; DUP opcode (2)			
+ ;OpADR: [57]  ; DUP opcode (2)			
 
 	vV_dup 2			
 
 
- ;OpADR: [41]  ; OR opcode					
+ ;OpADR: [58]  ; OR opcode					
 
 	mov eax , vV_top			
 	and DWORD vV_2nd , eax			
 
 	vV_dec_sp 1				
 
- ;OpADR: [42]  ; IF opcode					
+ ;OpADR: [59]  ; IF opcode					
 
 	vV_dec_sp 1			
 	or DWORD[vV_sp] , 0			
 	je wblock_9	
 
- ;OpADR: [43]  ; PUSH opcode 
+ ;OpADR: [60]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [44]  ; ELIF opcode					
+ ;OpADR: [61]  ; ELIF opcode					
 
 	jmp wblock_8	
 
@@ -381,7 +486,7 @@ mov [rbp - 16] , eax
 ;------------------------------------------------------
 
 
- ;OpADR: [45]  ; PUSH opcode 
+ ;OpADR: [62]  ; PUSH opcode 
 
 	vV_push 0 
 
@@ -392,17 +497,17 @@ mov [rbp - 16] , eax
 ;------------------------------------------------------
 
 
- ;OpADR: [46]  ; Var invocation					
+ ;OpADR: [63]  ; Var invocation					
 
 mov eax , [i_global.size]
 vV_push eax
 
- ;OpADR: [47]  ; Var invocation					
+ ;OpADR: [64]  ; Var invocation					
 
 mov eax , [rbp - 8]
 vV_push eax
 
- ;OpADR: [48]  ; SUB opcode 					
+ ;OpADR: [65]  ; SUB opcode 					
 
 	mov eax , vV_2nd			
 	sub eax , vV_top			
@@ -410,12 +515,12 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [49]  ; PUSH opcode 
+ ;OpADR: [66]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [50]  ; SUB opcode 					
+ ;OpADR: [67]  ; SUB opcode 					
 
 	mov eax , vV_2nd			
 	sub eax , vV_top			
@@ -423,12 +528,12 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [51]  ; Var assignement					
+ ;OpADR: [68]  ; Var assignement					
 
 	xor eax , eax	
 	vV_pop edi		
 	cmp edi , 255		
-	jge vV_error_fatal		
+	jge vV_bound_error		
 	add eax , edi			
 	shl eax , 2	
 	mov esi , eax		
@@ -436,21 +541,21 @@ vV_push eax
 vV_pop eax
 mov [edi + esi] , eax
 
- ;OpADR: [52]  ; LSH opcode 					
+ ;OpADR: [69]  ; LSH opcode 					
 
 	shl DWORD vV_top , 1			
 
- ;OpADR: [53]  ; Var invocation					
+ ;OpADR: [70]  ; Var invocation					
 
 mov eax , [rbp - 8]
 vV_push eax
 
- ;OpADR: [54]  ; PUSH opcode 
+ ;OpADR: [71]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [55]  ; ADD opcode 					
+ ;OpADR: [72]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -458,22 +563,22 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [56]  ; Var assignement					
+ ;OpADR: [73]  ; Var assignement					
 
 vV_pop eax
 mov [rbp - 8] , eax
 
- ;OpADR: [57]  ; Var invocation					
+ ;OpADR: [74]  ; Var invocation					
 
 mov eax , [rbp - 8]
 vV_push eax
 
- ;OpADR: [58]  ; Var invocation					
+ ;OpADR: [75]  ; Var invocation					
 
 mov eax , [rbp - 16]
 vV_push eax
 
- ;OpADR: [59]  ; LESS opcode					
+ ;OpADR: [76]  ; LESS opcode					
 
 	mov eax , vV_top			
 	cmp DWORD vV_2nd , eax			
@@ -488,116 +593,11 @@ vV_push eax
 
 	vV_dec_sp 1				
 
- ;OpADR: [60]  ; WHILE opcode					
+ ;OpADR: [77]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
 	jne wblock_10		
-
- ;OpADR: [61]  ; End of func opcode					
-
-
-;------Cleanup Phase
-
-;------frame restore Phase
-	mov rsp , rbp	
-	pop rbp	
-	ret	
-popup:		
-	push rbp	
-	mov rbp , rsp	
-
-;------Setup Phase
-
-;------Init Phase
-
-.tailcall:		;Body Section	
-
- ;OpADR: [62]  ; PUSH opcode 
-
-	vV_push 540680240 
-
-
- ;OpADR: [63]  ; PUSH opcode 
-
-	vV_push 825303141 
-
-
- ;OpADR: [64]  ; PUSH opcode 
-
-	vV_push 1819636256 
-
-
- ;OpADR: [65]  ; PUSH opcode 
-
-	vV_push 1919903264 
-
-
- ;OpADR: [66]  ; PUSH opcode 
-
-	vV_push 1684366707 
-
-
- ;OpADR: [67]  ; PUSH opcode 
-
-	vV_push 543236210 
-
-
- ;OpADR: [68]  ; PUSH opcode 
-
-	vV_push 1702129221 
-
-
- ;OpADR: [69]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [70]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [71]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [72]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [73]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [74]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [75]  ; BUFF_OUT opcode (9)			
-
-
-	call vV_io_out_packed_char_buffer				
-						
-
- ;OpADR: [76]  ; FLUSH opcode					
-
-		call vV_io_flush	
-
- ;OpADR: [77]  ; GET opcode (0)			
-
-	call vV_io_get_default			
-						
 
  ;OpADR: [78]  ; End of func opcode					
 
@@ -625,7 +625,7 @@ vV_entry_point:
 
  ;OpADR: [1]  ; PUSH opcode 
 
-	vV_push 112 
+	vV_push 0 
 
 
  ;OpADR: [2]  ; Function Call					
@@ -648,7 +648,7 @@ vV_entry_point:
 	xor eax , eax	
 	vV_pop edi		
 	cmp edi , 255		
-	jge vV_error_fatal		
+	jge vV_bound_error		
 	add eax , edi			
 	shl eax , 2	
 	mov esi , eax		
@@ -681,7 +681,7 @@ mov [u_global.index] , eax
 	xor eax , eax	
 	vV_pop edi		
 	cmp edi , 255		
-	jge vV_error_fatal		
+	jge vV_bound_error		
 	add eax , edi			
 	shl eax , 2	
 	mov esi , eax		
@@ -699,23 +699,13 @@ vV_push eax
 	xor eax , eax	
 	vV_pop edi		
 	cmp edi , 255		
-	jge vV_error_fatal		
+	jge vV_bound_error		
 	add eax , edi			
 	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.board
 vV_pop eax
 mov [edi + esi] , eax
-
- ;OpADR: [12]  ; PUSH opcode 
-
-	vV_push 56 
-
-
- ;OpADR: [13]  ; PUSH opcode 
-
-	vV_push 67 
-
 
 
 	wblock_11:		
@@ -723,9 +713,27 @@ mov [edi + esi] , eax
 ;------------------------------------------------------
 
 
- ;OpADR: [14]  ; Var invocation					
+ ;OpADR: [12]  ; Var invocation					
 
 mov eax , [u_global.saved]
+vV_push eax
+
+ ;OpADR: [13]  ; Var invocation					
+
+mov eax , [u_global.index]
+vV_push eax
+
+ ;OpADR: [14]  ; Var invocation					
+
+	xor eax , eax	
+	vV_pop edi		
+	cmp edi , 255		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.board
+mov eax , [edi + esi]
 vV_push eax
 
  ;OpADR: [15]  ; Var invocation					
@@ -733,30 +741,12 @@ vV_push eax
 mov eax , [u_global.index]
 vV_push eax
 
- ;OpADR: [16]  ; Var invocation					
-
-	xor eax , eax	
-	vV_pop edi		
-	cmp edi , 255		
-	jge vV_error_fatal		
-	add eax , edi			
-	shl eax , 2	
-	mov esi , eax		
-	mov edi , u_global.board
-mov eax , [edi + esi]
-vV_push eax
-
- ;OpADR: [17]  ; Var invocation					
-
-mov eax , [u_global.index]
-vV_push eax
-
- ;OpADR: [18]  ; PUSH opcode 
+ ;OpADR: [16]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [19]  ; ADD opcode 					
+ ;OpADR: [17]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -764,12 +754,12 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [20]  ; Var invocation					
+ ;OpADR: [18]  ; Var invocation					
 
 	xor eax , eax	
 	vV_pop edi		
 	cmp edi , 255		
-	jge vV_error_fatal		
+	jge vV_bound_error		
 	add eax , edi			
 	shl eax , 2	
 	mov esi , eax		
@@ -777,26 +767,26 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [21]  ; Function Call					
+ ;OpADR: [19]  ; Function Call					
 
 		call set_next			
 
- ;OpADR: [22]  ; DUP opcode (1)			
+ ;OpADR: [20]  ; DUP opcode (1)			
 
 	vV_dup 1			
 
 
- ;OpADR: [23]  ; Var invocation					
+ ;OpADR: [21]  ; Var invocation					
 
 mov eax , [u_global.index]
 vV_push eax
 
- ;OpADR: [24]  ; Var invocation					
+ ;OpADR: [22]  ; Var invocation					
 
 	xor eax , eax	
 	vV_pop edi		
 	cmp edi , 255		
-	jge vV_error_fatal		
+	jge vV_bound_error		
 	add eax , edi			
 	shl eax , 2	
 	mov esi , eax		
@@ -804,22 +794,22 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [25]  ; Var assignement					
+ ;OpADR: [23]  ; Var assignement					
 
 vV_pop eax
 mov [u_global.saved] , eax
 
- ;OpADR: [26]  ; Var invocation					
+ ;OpADR: [24]  ; Var invocation					
 
 mov eax , [u_global.index]
 vV_push eax
 
- ;OpADR: [27]  ; Var assignement					
+ ;OpADR: [25]  ; Var assignement					
 
 	xor eax , eax	
 	vV_pop edi		
 	cmp edi , 255		
-	jge vV_error_fatal		
+	jge vV_bound_error		
 	add eax , edi			
 	shl eax , 2	
 	mov esi , eax		
@@ -827,21 +817,21 @@ vV_push eax
 vV_pop eax
 mov [edi + esi] , eax
 
- ;OpADR: [28]  ; Function Call					
+ ;OpADR: [26]  ; Function Call					
 
 		call print			
 
- ;OpADR: [29]  ; Var invocation					
+ ;OpADR: [27]  ; Var invocation					
 
 mov eax , [u_global.index]
 vV_push eax
 
- ;OpADR: [30]  ; PUSH opcode 
+ ;OpADR: [28]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [31]  ; ADD opcode 					
+ ;OpADR: [29]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -849,22 +839,22 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [32]  ; Var assignement					
+ ;OpADR: [30]  ; Var assignement					
 
 vV_pop eax
 mov [u_global.index] , eax
 
- ;OpADR: [33]  ; Var invocation					
+ ;OpADR: [31]  ; Var invocation					
 
 mov eax , [u_global.index]
 vV_push eax
 
- ;OpADR: [34]  ; Var invocation					
+ ;OpADR: [32]  ; Var invocation					
 
 mov eax , [i_global.size]
 vV_push eax
 
- ;OpADR: [35]  ; LESS opcode					
+ ;OpADR: [33]  ; LESS opcode					
 
 	mov eax , vV_top			
 	cmp DWORD vV_2nd , eax			
@@ -879,27 +869,27 @@ vV_push eax
 
 	vV_dec_sp 1				
 
- ;OpADR: [36]  ; WHILE opcode					
+ ;OpADR: [34]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
 	jne wblock_11		
 
- ;OpADR: [37]  ; FLUSH opcode					
+ ;OpADR: [35]  ; FLUSH opcode					
 
 		call vV_io_flush	
 
- ;OpADR: [38]  ; Var invocation					
+ ;OpADR: [36]  ; Var invocation					
 
 mov eax , [i_global.currentIter]
 vV_push eax
 
- ;OpADR: [39]  ; PUSH opcode 
+ ;OpADR: [37]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [40]  ; ADD opcode 					
+ ;OpADR: [38]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -907,22 +897,22 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [41]  ; Var assignement					
+ ;OpADR: [39]  ; Var assignement					
 
 vV_pop eax
 mov [i_global.currentIter] , eax
 
- ;OpADR: [42]  ; Var invocation					
+ ;OpADR: [40]  ; Var invocation					
 
 mov eax , [i_global.currentIter]
 vV_push eax
 
- ;OpADR: [43]  ; Var invocation					
+ ;OpADR: [41]  ; Var invocation					
 
 mov eax , [i_global.max]
 vV_push eax
 
- ;OpADR: [44]  ; LESS opcode					
+ ;OpADR: [42]  ; LESS opcode					
 
 	mov eax , vV_top			
 	cmp DWORD vV_2nd , eax			
@@ -937,18 +927,18 @@ vV_push eax
 
 	vV_dec_sp 1				
 
- ;OpADR: [45]  ; WHILE opcode					
+ ;OpADR: [43]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
 	jne wblock_12		
 
- ;OpADR: [46]  ; PUSH opcode 
+ ;OpADR: [44]  ; PUSH opcode 
 
 	vV_push 543521122 
 
 
- ;OpADR: [47]  ; OUT opcode (9)			
+ ;OpADR: [45]  ; OUT opcode (9)			
 
 								
 	call vV_io_out_packed_char				

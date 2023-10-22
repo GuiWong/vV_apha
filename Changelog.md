@@ -3,14 +3,25 @@
 
 
 
-Var Update		0.0.4.1
+Var Update	
+ 			
+ 			0.0.4.2.5
+ 			
+				-references (<int>)
+				-kinda like a pointer
+				-no arithmetic allowed on references
+ 			0.0.4.2
+
+				-Bound Checking
+		
+ 			0.0.4.1
 
 				-<int> Type
 				-<T>[d] Type( d dimention Array of <T> elements)
 				-Global uninitialized array
 				-probibly will need lots of debugging, is just a prototype for now
 
-	0.0.4
+ 			0.0.4
 
 				-Global and local vars
 				-reworked function to use stack frame

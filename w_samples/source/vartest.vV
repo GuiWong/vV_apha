@@ -1,87 +1,114 @@
 
-global int[10][5] foo
 
-global int a
-
-global int gulf
-
-
-333 gulf=
-
-5   [0][0]foo=
-42  [1][0]foo=
-69  [2][0]foo=
-43  [3][0]foo=
-67  [4][0]foo=
-
-
-34    [0][0]foo=
-467   [0][1]foo=
-888   [0][2]foo=
+;2 0 []a=
+;4 1 []a=
+;8 2 []a=
+;16 3 []a=
+;32 4 []a=
+;64 5 []a=
+;128 6 []a=
+;256 7 []a=
+;512 8 []a=
+;1024 9 []a=
 
 
 
+var int x
 
-[0][0]foo out
-[0][1]foo out
-[0][2]foo out
-
-[0][4]foo out
+420 x=
 
 
-42  [1][0]foo=
-900 [0][0]foo=
+var (int) p
 
- [1][0]foo out
- 
- 
- global int[8][8] board
+(x)p=
 
 
-global 7 c
-
-global 0 colomn
+p out
 
 
-global 2 mult
+var int[4] a
+
+var (int[4]) b
 
 
-0
+var (int)[4] c
 
-do
+(x)[0]c=
 
-dup
+[0]c out
+
+(x)[1]c=
 
 
-mult
+[0]c out
+[1]c out
 
-swp
-colomn
-
-[][]board=
+(a)b=
 
 
 
-mult mult + mult=
+var int[4] l1
+var int[4] l2
+var int[4] l3
+var int[4] l4
+
+88 [2]l1=
+99 [3]l1=
+
+77 [0]l1=
+
+66 [1]l1=
+
+0 []l1 out
+1 []l1 out
 
 
-1 +
-dup c >? !
-
-while
-
-0
+2 []l1 out
+3 []l1 out
 
 
-do
 
-dup
+var int[4][4] matrix
 
-[][0]board
-bout
+(l1)[0]matrix=
+(l2)[1]matrix=
+(l3)[2]matrix=
+(l4)[3]matrix=
 
 
-1 +
-dup c >? !
+90 [2][0]matrix=
 
-while
+[2][0]matrix out
+
+999 [2][0]matrix=
+
+88 [2]l1=
+
+
+
+
+
+2 0 []a=
+4 1 []a=
+8 2 []a=
+16 3 []a=
+
+
+665 [2]b=
+
+[2]a out
+
+
+([0]a)p=
+p out
+
+
+
+p out
+
+33 p=
+
+[0]a out
+[1]a out
+[2]a out
+[3]a out

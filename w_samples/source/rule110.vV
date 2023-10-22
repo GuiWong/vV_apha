@@ -18,6 +18,21 @@ global int index
 ;1 [8]board=
 
 
+;420
+;69
+;0 0 0 set_next out
+;0 0 1 set_next out
+;0 1 0 set_next out
+;0 1 1 set_next out
+;1 0 0 set_next out
+;1 0 1 set_next out
+;1 1 0 set_next out
+;1 1 1 set_next out
+
+
+	
+
+
 def set_next + dup 0 =? if
 
 			drp drp
@@ -38,40 +53,6 @@ def set_next + dup 0 =? if
 			,
 endef
 
-def print 0 =? if ' ' cout_ el '*' cout_ , endef
-
-
-def set_seed ;32bit value on stack as seed
-
-	local int c
-	local int m
-	
-	
-	dup c= 33 + m=
-		;c out
-	1 
-	do
-	
-	
-	2dup		; 1_seed_1_seed
-	&		; 1stbit_1_seed
-	if		; 1_seed
-	1		; 1 1 seed
-	el
-	0		; 0 1 seed
-	,
-	size c - 1 -	; size-1 value 1 seed
-		;dup out
-	[]board=	; 1_seed			value stored in board
-	<		; 1leftshifted seed
-	
-	c 1 + c=
-	c m <? 
-
-	while
-	
-endef
-	
 def popup
 
 	'0 : ' 'e 11' ' rul' ' for' 'seed' 'r a ' 'Ente'
@@ -80,41 +61,47 @@ def popup
 	
 endef
 
-;420
-;69
-;0 0 0 set_next out
-;0 0 1 set_next out
-;0 1 0 set_next out
-;0 1 1 set_next out
-;1 0 0 set_next out
-;1 0 1 set_next out
-;1 1 0 set_next out
-;1 1 1 set_next out
+def print 0 =? if ' ' cout_ el '*' cout_ , endef
 
 
+
+
+
+
+def set_seed ;32bit value on stack as seed
+
+	local int c
+	local int m
+		
+	dup c= 33 + m=
+	1 
+	do
+		2dup & if		
+			1		; 1 1 seed
+		el
+			0		; 0 1 seed
+		,
+		size c - 1 -	; size-1 value 1 seed
+		[]board=	; 1 seed			value stored in board
+		<		; 1leftshifted seed
 	
+		c 1 + c=
+		c m <? 
+
+	while
 	
-;popup
-;0
-;set_seed
+endef
 
+popup 0 set_seed
 	
-
-popup
-112
-set_seed		
-
-
 do
 
 	254 []board
-	 saved=
+	 saved=		;Link right to the left
 	0 index=
 	0 []board
-	254 []board=
+	254 []board=		;link left to the right
 
-	56
-	67
 	do
 
 		saved index []board index 1 + []board
@@ -122,25 +109,17 @@ do
 		index []board saved=
 		index []board=
 		print
-		
-		
 
 		index 1 + index=
 
-
 	index size <?
-
 	while
 
 	flush
 	
 	
-	
 	currentIter 1 + currentIter=
 
-
-currentIter max <?
-
- while
+currentIter max <? while
 
 'bye ' wout
