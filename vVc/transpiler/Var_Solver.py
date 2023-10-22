@@ -102,6 +102,8 @@ class Var_Solver:
 		
 				if tmp[2]:
 			
+					print "----------------------"
+					print tmp[3].size
 					i=1
 					
 					setup += "	xor eax , eax	\n"
@@ -129,10 +131,15 @@ class Var_Solver:
 						if d=="pop":
 						
 							setup += "	vV_pop edi		\n"
+							setup += "	cmp edi , "+str(tmp[3].size[i-1])+"		\n"
+							setup += "	jge vV_bound_error		\n"				
 							setup += "	add eax , edi			\n"
 							
 						else:
-							setup += "	add eax , "+str(d)+"			\n"
+							setup += "	mov edi , "+str(d)+"			\n"
+							setup += "	cmp edi , "+str(tmp[3].size[i-1])+"		\n"
+							setup += "	jge vV_bound_error		\n"
+							setup += "	add eax , edi			\n"
 							
 							
 						if siz in pow2:
@@ -209,7 +216,7 @@ class Var_Solver:
 		
 		txt+=adr[1]
 		
-		txt += 'mov rax , '+adr[0]+'\n' 
+		txt += 'mov eax , '+adr[0]+'\n' 
 		txt += 'vV_push eax\n' 
 		
 		return txt

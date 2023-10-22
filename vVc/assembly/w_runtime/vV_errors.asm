@@ -22,13 +22,55 @@ segment .data
 	vV_error_msg:
 	.default: db "Unhandeled Error "
 	default_size equ $-.default
+	.invalid_index: db "Invalid Index Error : "
+	inv_indx_size equ $-.invalid_index
 
 
 
 segment .text
 
 
+vV_error_invalid_index:
 
+
+	push rsi
+	push rdi	;Save reg used by syscall
+	push r9	;and by conversion func
+	push rbx	;Save Arg
+	
+	mov edx , inv_indx_size				;string lenght
+	mov rsi , vV_error_msg.invalid_index			;strng ptr
+	mov rdi , 2				;file descriptor, stderr
+	mov rax , 1				; Write sysCall
+	syscall	
+	
+	
+	pop rax
+	
+	mov edi , vV_error_buffer
+	mov r9d , vV_error_buffer_size
+	call vV_ascii_int_to_dec	
+
+	mov BYTE[vV_error_buffer + eax] , 0xa
+	
+	inc eax
+	
+	mov edx , eax				;string lenght
+	mov rsi , vV_error_buffer			;strng ptr
+	mov rdi , 2				;file descriptor, stderr
+	mov rax , 1				; Write sysCall
+	syscall
+	
+	pop r9
+	pop rdi
+	pop rsi
+	
+	call vV_error_fatal
+	
+	ret
+	
+	
+	
 
 	
 vV_error_unhandeled:
@@ -67,6 +109,8 @@ pop rax	;error code
 		
 	
 	mov BYTE[vV_error_buffer + eax] , ' '
+	
+	
 	
 	
 	lea rdi , [vV_error_buffer + eax + 1]

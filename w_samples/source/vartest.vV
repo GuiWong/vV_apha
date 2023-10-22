@@ -26,6 +26,8 @@ global int gulf
 [0][1]foo out
 [0][2]foo out
 
+[0][4]foo out
+
 
 42  [1][0]foo=
 900 [0][0]foo=

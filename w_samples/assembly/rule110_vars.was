@@ -2,11 +2,12 @@
 
  i_global:
 .currentIter: dq 0
+.max: dq 2058
 .boardPad: dq 0
-.size: dq 200
+.size: dq 254
  segment .bss 
 
 	u_global:
 .index: resb 4 
-.board: resb 804 
+.board: resb 1020 
 .saved: resb 4 

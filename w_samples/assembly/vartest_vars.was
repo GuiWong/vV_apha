@@ -10,4 +10,4 @@
 .a: resb 4 
 .gulf: resb 4 
 .board: resb 256 
-.foo: resb 256 
+.foo: resb 200 

@@ -20,8 +20,10 @@ segment .data
 ;error vectors	
 	
 	vV_error_vectors:
-	times 32 dq vV_error_unhandeled
-	
+	times 17 dq vV_error_unhandeled
+	dq vV_error_invalid_index
+	times 14 dq vV_error_unhandeled
+
 	
 	
 segment .text
@@ -52,6 +54,15 @@ vV_error_fatal:
 	
 	shr al , 3
 
+	call vV_forced_exit
+	
+vV_bound_error:
+
+	mov ebx , edi
+	mov ah , vV_ERR_MEMORY_OUT_OF_BOUND
+	call vV_error	
+	
+	mov al , vV_ERR_MEMORY_OUT_OF_BOUND
 	call vV_forced_exit
 	
 	

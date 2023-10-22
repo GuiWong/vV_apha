@@ -1017,6 +1017,13 @@ class Pre_Compiler:
 								
 								tmp_size.append(int(dim))
 								tmp_dim += 1
+								
+							print"\n\n--------------------------\n\n"	
+							print tmp_size
+							print decoded[2]
+							
+							print"\n\n--------------------------\n\n"
+							
 							
 							tmp_is_def = True
 							tmp_is_init = False

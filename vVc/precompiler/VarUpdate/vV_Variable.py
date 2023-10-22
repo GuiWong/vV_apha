@@ -60,11 +60,16 @@ class vV_Array_Type(vV_Structure_Type):
 
 		self.content = content
 		self.dim = dims
+		
+		print size
+		#print self.size
+		self.size = []
+		
 		for s in size:
 		
 			self.size.append(s)
 			
-		#print self.size
+		print self.size
 		self.size.reverse()
 		#print self.size
 		

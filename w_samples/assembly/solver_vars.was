@@ -1,0 +1,16 @@
+ segment .data 
+
+ i_global:
+.week: dq 7
+.counter: dq 0
+.current_month: dq 0
+.offset: dq 1900
+.day_name: dq 544041284
+.current_day: dq 7
+.year: dq 365
+.current_year: dq 0
+ segment .bss 
+
+	u_global:
+.month_lenght: resb 48 
+.month_name: resb 48 

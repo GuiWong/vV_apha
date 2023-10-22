@@ -47,12 +47,17 @@ mov [u_global.gulf] , eax
  ;OpADR: [3]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -66,12 +71,17 @@ mov [edi + esi] , eax
  ;OpADR: [5]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 1			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 1			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -85,12 +95,17 @@ mov [edi + esi] , eax
  ;OpADR: [7]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 2			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 2			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -104,12 +119,17 @@ mov [edi + esi] , eax
  ;OpADR: [9]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 3			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 3			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -123,12 +143,17 @@ mov [edi + esi] , eax
  ;OpADR: [11]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 4			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 4			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -142,12 +167,17 @@ mov [edi + esi] , eax
  ;OpADR: [13]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -161,12 +191,17 @@ mov [edi + esi] , eax
  ;OpADR: [15]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 1			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 1			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -180,12 +215,17 @@ mov [edi + esi] , eax
  ;OpADR: [17]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 2			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 2			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
@@ -194,15 +234,20 @@ mov [edi + esi] , eax
  ;OpADR: [18]  ; Var invocation					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
-mov rax , [edi + esi]
+mov eax , [edi + esi]
 vV_push eax
 
  ;OpADR: [19]  ; OUT opcode (0)			
@@ -213,15 +258,20 @@ vV_push eax
  ;OpADR: [20]  ; Var invocation					
 
 	xor eax , eax	
-	add eax , 1			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 1			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
-mov rax , [edi + esi]
+mov eax , [edi + esi]
 vV_push eax
 
  ;OpADR: [21]  ; OUT opcode (0)			
@@ -232,15 +282,20 @@ vV_push eax
  ;OpADR: [22]  ; Var invocation					
 
 	xor eax , eax	
-	add eax , 2			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 2			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
-mov rax , [edi + esi]
+mov eax , [edi + esi]
 vV_push eax
 
  ;OpADR: [23]  ; OUT opcode (0)			
@@ -248,64 +303,103 @@ vV_push eax
 	call vV_io_out_default			
 						
 
- ;OpADR: [24]  ; PUSH opcode 
-
-	vV_push 42 
-
-
- ;OpADR: [25]  ; Var assignement					
+ ;OpADR: [24]  ; Var invocation					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 1			
+	mov edi , 4			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 10			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
-vV_pop eax
-mov [edi + esi] , eax
+mov eax , [edi + esi]
+vV_push eax
+
+ ;OpADR: [25]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
 
  ;OpADR: [26]  ; PUSH opcode 
 
-	vV_push 900 
+	vV_push 42 
 
 
  ;OpADR: [27]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 0			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 1			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
 vV_pop eax
 mov [edi + esi] , eax
 
- ;OpADR: [28]  ; Var invocation					
+ ;OpADR: [28]  ; PUSH opcode 
+
+	vV_push 900 
+
+
+ ;OpADR: [29]  ; Var assignement					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	add eax , 1			
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
 	mov ecx , 10
 	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.foo
-mov rax , [edi + esi]
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [30]  ; Var invocation					
+
+	xor eax , eax	
+	mov edi , 0			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
+	mov ecx , 10
+	mul ecx		
+	mov edi , 1			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.foo
+mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [29]  ; OUT opcode (0)			
+ ;OpADR: [31]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [30]  ; PUSH opcode 
+ ;OpADR: [32]  ; PUSH opcode 
 
 	vV_push 0 
 
@@ -316,54 +410,56 @@ vV_push eax
 ;------------------------------------------------------
 
 
- ;OpADR: [31]  ; DUP opcode (1)			
+ ;OpADR: [33]  ; DUP opcode (1)			
 
 	vV_dup 1			
 
 
- ;OpADR: [32]  ; Var invocation					
+ ;OpADR: [34]  ; Var invocation					
 
-mov rax , [i_global.mult]
+mov eax , [i_global.mult]
 vV_push eax
 
- ;OpADR: [33]  ; SWAP opcode 
+ ;OpADR: [35]  ; SWAP opcode 
 
 
 	vV_swap		
 
 
- ;OpADR: [34]  ; Var invocation					
+ ;OpADR: [36]  ; Var invocation					
 
-mov rax , [i_global.colomn]
+mov eax , [i_global.colomn]
 vV_push eax
 
- ;OpADR: [35]  ; Var assignement					
+ ;OpADR: [37]  ; Var assignement					
 
 	xor eax , eax	
 	vV_pop edi		
+	cmp edi , 8		
+	jge vV_bound_error		
 	add eax , edi			
-	mov ecx , 8
-	mul ecx		
+	shl eax , 3	
 	vV_pop edi		
+	cmp edi , 8		
+	jge vV_bound_error		
 	add eax , edi			
-	mov ecx , 10
-	mul ecx		
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.board
 vV_pop eax
 mov [edi + esi] , eax
 
- ;OpADR: [36]  ; Var invocation					
+ ;OpADR: [38]  ; Var invocation					
 
-mov rax , [i_global.mult]
+mov eax , [i_global.mult]
 vV_push eax
 
- ;OpADR: [37]  ; Var invocation					
+ ;OpADR: [39]  ; Var invocation					
 
-mov rax , [i_global.mult]
+mov eax , [i_global.mult]
 vV_push eax
 
- ;OpADR: [38]  ; ADD opcode 					
+ ;OpADR: [40]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -371,17 +467,17 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [39]  ; Var assignement					
+ ;OpADR: [41]  ; Var assignement					
 
 vV_pop eax
 mov [i_global.mult] , eax
 
- ;OpADR: [40]  ; PUSH opcode 
+ ;OpADR: [42]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [41]  ; ADD opcode 					
+ ;OpADR: [43]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -389,17 +485,17 @@ mov [i_global.mult] , eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [42]  ; DUP opcode (1)			
+ ;OpADR: [44]  ; DUP opcode (1)			
 
 	vV_dup 1			
 
 
- ;OpADR: [43]  ; Var invocation					
+ ;OpADR: [45]  ; Var invocation					
 
-mov rax , [i_global.c]
+mov eax , [i_global.c]
 vV_push eax
 
- ;OpADR: [44]  ; MORE opcode					
+ ;OpADR: [46]  ; MORE opcode					
 
 	mov eax , vV_top			
 	cmp DWORD vV_2nd , eax			
@@ -414,17 +510,17 @@ vV_push eax
 
 	vV_dec_sp 1				
 
- ;OpADR: [45]  ; NOT opcode 					
+ ;OpADR: [47]  ; NOT opcode 					
 
 	not DWORD vV_top			
 
- ;OpADR: [46]  ; WHILE opcode					
+ ;OpADR: [48]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
 	jne wblock_0		
 
- ;OpADR: [47]  ; PUSH opcode 
+ ;OpADR: [49]  ; PUSH opcode 
 
 	vV_push 0 
 
@@ -435,38 +531,41 @@ vV_push eax
 ;------------------------------------------------------
 
 
- ;OpADR: [48]  ; DUP opcode (1)			
+ ;OpADR: [50]  ; DUP opcode (1)			
 
 	vV_dup 1			
 
 
- ;OpADR: [49]  ; Var invocation					
+ ;OpADR: [51]  ; Var invocation					
 
 	xor eax , eax	
-	add eax , 0			
-	mov ecx , 8
-	mul ecx		
-	vV_pop edi		
+	mov edi , 0			
+	cmp edi , 8		
+	jge vV_bound_error		
 	add eax , edi			
-	mov ecx , 10
-	mul ecx		
+	shl eax , 3	
+	vV_pop edi		
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
 	mov esi , eax		
 	mov edi , u_global.board
-mov rax , [edi + esi]
+mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [50]  ; OUT opcode (4)			
+ ;OpADR: [52]  ; OUT opcode (4)			
 
 	mov r10d , vV_FORMAT_BIN		
 	call vV_io_out				
 						
 
- ;OpADR: [51]  ; PUSH opcode 
+ ;OpADR: [53]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [52]  ; ADD opcode 					
+ ;OpADR: [54]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -474,17 +573,17 @@ vV_push eax
 
 	vV_dec_sp 1		
 
- ;OpADR: [53]  ; DUP opcode (1)			
+ ;OpADR: [55]  ; DUP opcode (1)			
 
 	vV_dup 1			
 
 
- ;OpADR: [54]  ; Var invocation					
+ ;OpADR: [56]  ; Var invocation					
 
-mov rax , [i_global.c]
+mov eax , [i_global.c]
 vV_push eax
 
- ;OpADR: [55]  ; MORE opcode					
+ ;OpADR: [57]  ; MORE opcode					
 
 	mov eax , vV_top			
 	cmp DWORD vV_2nd , eax			
@@ -499,11 +598,11 @@ vV_push eax
 
 	vV_dec_sp 1				
 
- ;OpADR: [56]  ; NOT opcode 					
+ ;OpADR: [58]  ; NOT opcode 					
 
 	not DWORD vV_top			
 
- ;OpADR: [57]  ; WHILE opcode					
+ ;OpADR: [59]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
