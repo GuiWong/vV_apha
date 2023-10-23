@@ -602,29 +602,65 @@ class Var_Solver:
 			if isinstance(dest_type[3],vV_Var.vV_Array_Type):
 			
 				
+				print "\n********\n	Array To Array Assignement"
+				
 				txt =''
 				
 				print src_type[3]
 				
 				assert src_type[3].content.__class__ == dest_type[3].content.__class__ , "UNIMPLEMENTED YET"
 				
-				assert src_type[3].calc_partial_size(len(src[1])) == dest_type[3].calc_partial_size(len(dest[1])) , 	"FATAL, Should be checked By Type Checker"
-				
-				print src_type[3].calc_size() 
-				
-				#TODO: Cleaner solving of Adress
-				
-				src_adr =  self.solve_var(src,scope)[1].split(',')[-1]
-				dst_adr = self.solve_var(dest,scope)[1].split(',')[-1]
-				
-				print src_adr[:-1]
-				print dst_adr
 				
 				
-				txt+='mov ecx , '+str(src_type[3].calc_size())+' \n'
-				txt+='mov rsi , '+src_adr[:-1]+ '	\n'
-				txt+='mov rdi , '+dst_adr+'		\n'
-				txt+='rep movsb		\n'
+				if src_type[3].calc_size()==dest_type[3].calc_size():
+				
+					print "SAME SIZE"
+					print src_type[3].calc_size() 
+				
+					#TODO: Cleaner solving of Adress
+				
+					src_adr =  self.solve_var(src,scope)[1].split(',')[-1]
+					dst_adr = self.solve_var(dest,scope)[1].split(',')[-1]
+				
+					print src_adr[:-1]
+					print dst_adr
+				
+				
+					txt+='mov ecx , '+str(src_type[3].calc_size() / 8)+' \n'
+					txt+='mov rsi , '+src_adr[:-1]+ '	\n'
+					txt+='mov rdi , '+dst_adr+'		\n'
+					txt+='rep movsb		\n'
+					
+				else:
+					print "Not Same SIZE"
+					
+					assert src_type[3].calc_partial_size(len(src[1])) == dest_type[3].calc_partial_size(len(dest[1])) , 	"FATAL, Should be checked By Type Checker"
+				
+					new_size = src_type[3].calc_partial_size(len(src[1])) / 8
+					new_src = src_type[3].get_partial(len(src[1]))
+					new_dst = dest_type[3].get_partial(len(dest[1]))
+					
+					src_adr =  self.solve_var(src,scope)#.split(',')
+					dst_adr = self.solve_var(dest,scope)#.split(',')
+					
+					
+					print "\nAdress :\n"
+				
+					print src_adr#[:-1]
+					print dst_adr[1]
+				
+					txt+=src_adr[1]+'\n'
+					txt+=' mov r8d , edi	\n' 
+					
+					txt += dst_adr[1]+'\n'
+					
+					txt += 'lea edi , '+dst_adr[0]+'	\n'
+				
+					txt+='mov ecx , '+str(new_size)+' \n'
+					txt+='mov rsi , r8	\n'
+					#txt+='mov rdi , '+dst_adr+'		\n'
+					txt+='rep movsb		\n'
+					
 				
 				
 				return txt

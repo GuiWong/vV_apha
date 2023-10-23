@@ -4,14 +4,8 @@
  segment .bss 
 
 	u_global:
-.a: resb 16 
-.c: resb 16 
-.b: resb 4 
 .matrix: resb 64 
-.xyg: resb 4 
-.p: resb 4 
 .l4: resb 16 
 .l2: resb 16 
 .l3: resb 16 
 .l1: resb 16 
-.x: resb 4 

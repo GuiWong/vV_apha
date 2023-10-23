@@ -1,9 +1,6 @@
 
 
-;2 0 []a=
-;4 1 []a=
-;8 2 []a=
-;16 3 []a=
+
 ;32 4 []a=
 ;64 5 []a=
 ;128 6 []a=
@@ -20,6 +17,8 @@ var int x
 
 var (int) p
 
+
+;----------Ref to Int
 (x)p=
 
 
@@ -28,10 +27,17 @@ p out
 
 var int[4] a
 
+2 0 []a=
+4 1 []a=
+8 2 []a=
+16 3 []a=
+
 var (int[4]) b
 
 
 var (int)[4] c
+
+;-------Ref in Array to int
 
 (x)[0]c=
 
@@ -39,13 +45,39 @@ var (int)[4] c
 
 (x)[1]c=
 
+666 x=
+
 
 [0]c out
 [1]c out
 
+flush flush
+
+
+;------Ref Array to Array--
 (a)b=
 
 
+[0]a out
+[3]a out
+
+[0]b out
+[3]b out
+
+flush
+
+53 [0]a=
+
+[0]b out
+
+776 [2]b=
+
+[2]a out
+
+
+;------------------------
+
+flush
 
 var int[4] l1
 var int[4] l2
@@ -55,9 +87,15 @@ var int[4] l4
 88 [2]l1=
 99 [3]l1=
 
-77 [0]l1=
+66 [0]l1=
 
-66 [1]l1=
+77 [1]l1=
+
+(l1)l2=
+
+
+22222 [1]l2=
+22222 [2]l2=
 
 0 []l1 out
 1 []l1 out
@@ -66,49 +104,70 @@ var int[4] l4
 2 []l1 out
 3 []l1 out
 
+flush
 
+0 []l2 out
+1 []l2 out
+
+
+2 []l2 out
+3 []l2 out
+
+flush
+
+
+;----------NOT WORKING: Assign Array->inside Array
+
+;	[n] --> [n+1] Block as intended
+;	[n] --> [n]  Destroy source Data???
+;		Forgot to divide size by 8
+
+
+;	Corrected solving foe [n] ->[m] with selector
+;	[n+1] ->[n] Don't Block
+;
+
+
+
+;-----------------Corrected: Index solving in array assignement
+;		(need extensive testing)
 
 var int[4][4] matrix
 
 (l1)[0]matrix=
 (l2)[1]matrix=
-(l3)[2]matrix=
-(l4)[3]matrix=
+;(l3)[2]matrix=
+;(l4)[3]matrix=
 
 
-90 [2][0]matrix=
 
+flush
+
+;(l1)[0][0]matrix=
+
+[0][0]matrix out
+[1][0]matrix out
 [2][0]matrix out
-
-999 [2][0]matrix=
-
-88 [2]l1=
-
-
-
-
-
-2 0 []a=
-4 1 []a=
-8 2 []a=
-16 3 []a=
-
-
-665 [2]b=
-
-[2]a out
-
-
-([0]a)p=
-p out
+[3][0]matrix out
+[0][1]matrix out
+[1][1]matrix out
+[2][1]matrix out
+[3][1]matrix out
 
 
 
-p out
 
-33 p=
+flush
+;-----------2d Array Refs
 
-[0]a out
-[1]a out
-[2]a out
-[3]a out
+var (int[4][4]) xyg
+
+
+(matrix)xyg=
+
+
+[1][1]xyg out
+;
+;(l2)[2]xyg=  NOT VALID FOR NOW
+;
+'bye ' wout
