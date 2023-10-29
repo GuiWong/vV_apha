@@ -1,11 +1,11 @@
  segment .data 
 
  i_global:
+.a: dq 65
+.c: dq 67
+.b: dq 66
+.d: dq 68
  segment .bss 
 
 	u_global:
-.matrix: resb 64 
-.l4: resb 16 
-.l2: resb 16 
-.l3: resb 16 
-.l1: resb 16 
+.word: resb 16 

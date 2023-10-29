@@ -44,11 +44,27 @@ class vV_Function:
 		elif name in self.referenced_vars.keys():
 		
 		
-			return [True, 'rbp + '+str( ( self.referenced_vars.keys().index(name) + 2 ) * 8 ) , self.referenced_vars[name].var_type ]	#Only for direct values
-			
+			return [True, '[rbp + '+str( ( self.referenced_vars.keys().index(name) + 2 ) * 8 ) + ']' , self.referenced_vars[name].var_type ]	#Only for direct values
+		
+		
 		else:
 		
 			return [False]
+			
+			
+			
+	def get_arg_type(self,n):
+	
+		return self.referenced_vars.values()[-1-n].var_type
+			
+			
+	def generate_call(self):
+	
+		lines = []
+		
+		for a in self.referenced_vars:
+		
+			pass
 			
 			
 			
@@ -69,7 +85,8 @@ class vV_Function:
 		
 		if  r_c > 0:
 		
-			assert False, "unimplemented yet"
+			pass
+			#assert False, "unimplemented yet"
 			
 		if l_c > 0:
 		
@@ -104,7 +121,8 @@ class vV_Function:
 		
 		if  r_c > 0:
 		
-			assert False, "unimplemented yet"
+			pass
+			#assert False, "unimplemented yet"
 			
 		if l_c > 0:
 		

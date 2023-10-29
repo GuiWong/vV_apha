@@ -256,6 +256,8 @@ class Var_Solver:
 		
 			if tmp[2]:
 			
+				print 'WTF???:'
+				print tmp
 				if self.namespace.global_vars[var_name[0]].is_init:
 			
 					adr = "[i_global."+tmp[1] + "]"
@@ -266,7 +268,8 @@ class Var_Solver:
 					
 			else:
 			
-			
+				print 'NON GLOBAL VAR : ' 
+				print tmp
 				adr = tmp[1]
 				
 				
@@ -374,8 +377,12 @@ class Var_Solver:
 			
 			if isinstance(tmp[3].content, vV_Var.vV_Int_Type):
 			
-				return ['[edi]' , "mov edi , [u_global."+tmp[1]+"]\n"]
-				
+				if tmp[2]:
+					return ['[edi]' , "mov edi , [u_global."+tmp[1]+"]\n"]
+				else:
+					
+					return ['[edi]' , "mov edi , "+tmp[1]+"\n"]
+					
 			elif isinstance(tmp[3].content, vV_Var.vV_Array_Type):
 			
 				if isinstance(tmp[3].content.content, vV_Var.vV_Int_Type):
@@ -512,6 +519,7 @@ class Var_Solver:
 	def ref_assign(self,src,dest,scope):
 		
 		txt = ''
+		print src
 		#print self.namespace.solve_var(dest[0],scope)
 		src_type = self.namespace.solve_var(src,scope)
 		dest_type = self.namespace.solve_var(dest,scope)

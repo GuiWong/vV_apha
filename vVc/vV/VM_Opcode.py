@@ -89,7 +89,12 @@ ELIF2 = 68		# End:	#is just a dest for last jump, no opcode should be added
 DO = 74		#transparent, just adress for while [But start Block]
 WHILE = 75		#sameopcode as an if, but jumps backwards
 
-BREAK = 76
+LOOP = 76
+ENDLOOP = 77
+CLEANUP_LOOP = 78
+
+
+BREAK = 85
 
 
 
@@ -103,8 +108,11 @@ BREAK = 76
 
 OUT  = 96
 BUFF_OUT = 97
-FLUSH = 98
+
 GET = 99
+
+FLUSH = 100
+FLUSH2 = 101
 
 
 
@@ -115,11 +123,13 @@ GET = 99
 DEF = 192
 ENDEF = 193
 CALL = 194
-RET = 195
+CALL_W_ARG = 195
+RET = 196
 
 IMPLICIT = 200
 GLOBAL = 201
 LOCAL = 202
+PASSED = 203
 
 
 PUSH_VAR = 208
@@ -182,6 +192,18 @@ define = {
 	'def' : DEF,
 	'endef' : ENDEF
 	
+	}
+	
+start_brack ={
+
+	#'[' : SQRBRACKETL,
+	'(': RNDBRACKETL 
+	}
+	
+end_brack ={
+
+	#']' : SQRBRACKETR,
+	')': RNDBRACKETR 
 	}
 	
 index_op = {
@@ -249,7 +271,9 @@ block_op ={		#WARNING: Need virual ops
 	DO : 'do',
 	WHILE:'while',
 	
-	BREAK : 'break'
+	BREAK : 'break',
+	LOOP : 'loop',
+	ENDLOOP : 'for',
 	#REPEAT:'repeat'
 
 }
@@ -265,7 +289,14 @@ class Block_Type:
 	WHILE = 6
 	#REPEAT=6
 	
-	BREAK = 8
+	LOOP = 7
+	ENDLOOP = 8
+	
+	BREAK = 15
+	
+	FUNC =16
+	FUNCEND = 17
+	FUNCRET = 18
 	
 block_type= {
 
@@ -275,7 +306,12 @@ block_type= {
 	DO : Block_Type.DO,
 	WHILE : Block_Type.WHILE,
 	BREAK : Block_Type.BREAK,
-	#ELIF : Block_Type.ELIF
+	#ELIF : Block_Type.ELIF,
+	DEF : Block_Type.FUNC,
+	ENDEF : Block_Type.FUNCEND,
+	
+	LOOP : Block_Type.LOOP,
+	ENDLOOP : Block_Type.ENDLOOP
 
 }
 
@@ -349,6 +385,8 @@ virtual_op = {
 	END_BLOCK : ",",
 	DO : 'do',
 	WHILE:'while',
+	LOOP : 'loop',
+	ENDLOOP : 'for',
 	BREAK : 'break'
 	
 	
@@ -393,6 +431,7 @@ direct_op = {
 	BUFF_OUT:"out_",
 	
 	FLUSH : "flush",
+	FLUSH2 : "flush_",
 	
 	
 	

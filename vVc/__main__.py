@@ -11,6 +11,11 @@ import precompiler.Opcode
 
 
 
+import Cleaner.Syn_Parser as Syntaxer
+import Cleaner.Parser as Parser
+import Cleaner.OneWayParser as OW_Parser
+
+
 import sys
 
 import vm.Program
@@ -149,7 +154,7 @@ print'	press enter to proceed to precompile step'
 
 #---------------------Init Phase---------------------------------------
 
-
+'''
 
 pre_compiler = Precompiler.Pre_Compiler()
 
@@ -157,6 +162,14 @@ pre_compiler.setup_startup(flags)
 
 
 pre_compiler.open_main_file(source_file)
+
+'''
+
+par = Parser.Parser('')
+
+par.default(source_file)
+
+
 
 
 print'	'
@@ -167,41 +180,59 @@ print'	'
 print'	starting pass 1'
 
 
-
+'''
 a, b , c = pre_compiler.first_pass()
 
 code_arr = a[0]
 labels = a[1]
 
+print '\n\n\n ------------------------------------------\n\n'
+print a
+print '\n--------------\n'
+print b
+print '\n--------------\n'
+print c
+print '\n\n ------------------------------------------\n\n\n'
+
 
 def_arr = b[0]
 v2_lab = b[1]
 def_lab = b[2]
+'''
 
 
-vs = Var_Solver.Var_Solver(c)
+parsed = par.first_pass()
+
+
+ow_parser = OW_Parser.One_Way_Parser(parsed)
+
+
+		
+for f in parsed:
+
+	ow_parser.next_token()
+	
+	
+	
+#vs = Var_Solver.Var_Solver(c)
 
 #vs.generate_var_decl()
 #print "\n\n\n\n"
 #print vs.generate_var_file()
 
-
+vs = Var_Solver.Var_Solver(ow_parser.name_space)
 
 
 #print labels
 #print def_lab
 
 
-prog2 = vm.Program.Program(def_arr)
+prog2 = vm.Program.Program(ow_parser.def_op)
 
+piler2 = Trans.Translator(prog2,ow_parser.label_manager.def_labels,vs)
 
-
-
-
-
-piler2 = Trans.Translator(prog2,v2_lab,vs,output_file)
 piler2.generate_label_names()
-piler2.def_label_names = def_lab
+piler2.def_label_names = ow_parser.func_loca
 
 for p in range(prog2.size):
 
@@ -212,14 +243,27 @@ for p in range(prog2.size):
 
 
 
+prog = vm.Program.Program(ow_parser.main_op)
+
+piler = Trans.Translator(prog,ow_parser.label_manager.labels,vs)
+
+'''
+prog2 = vm.Program.Program(def_arr)
+piler2 = Trans.Translator(prog2,v2_lab,vs,output_file)
+piler2.generate_label_names()
+piler2.def_label_names = def_lab
+
+for p in range(prog2.size):
+
+
+	piler2.step_compile()
+
 prog = vm.Program.Program(code_arr)
 
 vm = vm.Machine.Emul(prog)
 
 piler = Trans.Translator(prog,labels,vs,output_file)
-
-
-
+'''
 piler.add_inserted_code(piler2.output)
 
 

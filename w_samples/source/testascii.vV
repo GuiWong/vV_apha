@@ -1,0 +1,139 @@
+0xa631b wout		;clear screen
+
+
+
+ 
+	  ;0x34 for bg
+	  
+cout_ cout_ cout_ cout_  
+cout_ cout_ cout_ cout_	  
+cout_  flush
+
+
+global int alpha
+global 12 beta
+var int gamma
+var int delta
+var 45 kappa
+
+
+
+
+def term_bg
+
+	local int i
+	i=
+	;i wout
+	'm'
+	
+	';' '5' ';'
+	0x38 0x34  0x5b  0x1b
+	
+	cout_ cout_ cout_  cout_ cout_ cout_ cout_
+	i wout_
+	cout_
+	flush
+	
+endef
+
+def term_fg
+
+	local int i
+	i=
+
+	'm'
+	
+	';' '5' ';'
+	0x38 0x33  0x5b  0x1b
+	
+	cout_ cout_ cout_  cout_ cout_ cout_ cout_
+	i wout_
+	cout_
+	flush
+	
+endef
+
+def prompt
+
+	'r? :' 'Colo' wout_ wout_ flush_
+	
+endef
+
+def clear_screen
+
+
+'c' 0x1b cout_ cout_ flush
+
+'20H' '[' 27 cout_ cout_  wout_ flush
+
+endef
+
+
+def set_cursor
+
+local int x
+local int y
+x= y=
+
+'H' x ';' y '[' 27 cout_ cout_ out_ cout_ out_ cout_ flush_ 
+
+endef
+
+
+do
+
+;'H' '0' '20;4' '[' 27 cout_ cout_  wout_ cout_ cout_ flush_
+
+
+'x:' wout
+get
+'y:' wout
+get
+
+set_cursor
+
+
+
+'?   ' ' bg ' ' or ' ' fg ' wout_ wout_ wout_ wout_
+flush_
+
+
+
+cget dup
+
+
+'H' '0' '21;4' '[' 27 cout_ cout_  wout_ cout_ cout_ flush_
+	
+
+	'b' =? if
+			prompt wget term_bg
+		el
+		dup 'f' =? if
+				prompt wget term_fg
+			el
+			dup 'q' =? if
+				break
+				el
+					dup 'c' =? if
+						clear_screen
+						   ,
+				,
+			,
+		,
+
+
+
+
+'Done' wout
+
+
+1
+while
+
+global int[8][8] test
+global int foobar
+
+(foobar)[3][4]test=
+
+
+'bye' wout

@@ -663,16 +663,79 @@ vV_entry_point:
 			txt = '\
 ; Var Ref assignement					\n\
 \n'
+			print '#########################\n\n'
+			print op
 			print arg
+			print '#########################\n\n'
 			
 			#assert False , 'Op Unimplemented'
 			txt += self.var_solver.ref_assign(arg[0],arg[1],self.current_scope)
+			
 		
-		
-		
-		
+		elif op == OP.FLUSH2:
 
+			txt = '\
+; FLUSH opcode					\n\
+\n\
+		call vV_io_flush_no_nline	\n'
 
+	
+		elif op == OP.CALL_W_ARG:
+			txt = '\
+; Function Call with args					\n'		
+			print arg
+			i=0
+			tbl = []
+			size = 0
+			arg[1].reverse()
+			for assi in arg[1]:
+				print assi
+				#print self.var_solver.ref_assign(assi,['vV_PUSH_ARG',self.var_solver.namespace.functions[arg[0]].get_arg_type(i)],self.current_scope)
+				txt += self.var_solver.ref_assign(assi,['vV_PUSH_ARG',self.var_solver.namespace.functions[arg[0]].get_arg_type(i)],self.current_scope)
+				tbl = txt.split('\n')
+				tbl.pop()
+				tbl.pop()
+				tbl.append( '	push rax\n')
+				txt = '\n'.join(tbl)
+				i+= 1
+				size+=1	#For now
+			
+			
+			#print txt
+			
+			txt+= '	call '+arg[0]+'\n'
+			#for j in range(i):
+			
+				
+			#	txt+= '	pop rax\n'
+			txt+= 'add rsp , '+ str(size*8)
+			#assert False , 'Unimplementaed'
+
+		elif op == OP.LOOP:
+
+			txt = '\
+; Loop init 					\n'		
+			txt+='	vV_pop eax	;get index\n'
+			txt+='	push rax	\n'
+			txt+='	vV_pop eax	;get limit\n'
+			txt+='	push rax	\n'		
+			
+		elif op == OP.ENDLOOP:
+
+			txt = '\
+; Loop check 					\n'	
+			txt+='	inc DWORD[rsp + 8]\n'	
+			txt+='	mov rax , [rsp + 8]	;get index\n'
+			txt+='	mov rcx , [rsp]	;get max\n'
+			txt+='	cmp eax , ecx	\n'
+			txt+='	jbe '+self.label_names[arg[0]]+'	\n'
+			
+		elif op == OP.CLEANUP_LOOP:
+
+			txt = '\
+; Loop Cleanup 					\n'		
+			txt+='	add rsp , 16	\n'	
+	
 
 		self.output += txt
 

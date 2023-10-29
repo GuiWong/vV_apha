@@ -433,7 +433,36 @@ class Symbol_Solver:
 			
 		#print 	[valid , cmd , s_arg , r_arg]
 		return [valid , cmd , s_arg , r_arg]
+	
+	def decode_function_w_arg(self,token):
+	
+	
+		elems = token.split(')')
 		
+		argu = ')'.join(elems[:-1])
+		
+		argu = argu[1:].split(",")
+		
+		print elems	
+		print argu
+		
+		#for a in argu:
+		
+			
+		assert False , "Unimplemented"
+				
+		if self.namespace_manager.define_function(buff) != 0:	#v0.0.4
+				
+			assert False , "RAISE DEFINITION ERROR"		#v0.0.4
+					
+			current_func_name = buff					#v0.0.4
+				
+			def_state = 3
+		#	continue
+		
+		print [elems[-1]]
+	
+		assert False , "Unimplemented"	
 		
 class Function_Registerer:
 
@@ -716,8 +745,12 @@ class Pre_Compiler:
 		current_var_init = False
 		
 		
+		token_array = []
+		
+		
 		while not file_end:
 		
+			in_bracket_level = 0
 			in_quotes = 0
 		
 			mode = 0
@@ -772,12 +805,24 @@ class Pre_Compiler:
 						buff+=r
 					
 						#raise WErrors.ParserError('Misplaced Quote', self.context.build_location())
+						
+				if r in OP.start_brack and in_quotes == 0:
+				
+					in_bracket_level += 1
+					
+				if r in OP.end_brack  and in_quotes == 0:
+				
+					in_bracket_level -= 1
 				
 				if r in OP.separator and in_quotes == 0:
 				
 					if mode == 0:
 					
 						pass
+						
+					elif in_bracket_level > 0:
+					
+						buff+=r
 						
 					else:
 					
@@ -788,7 +833,7 @@ class Pre_Compiler:
 						if buff in OP.define.keys():
 						
 						
-							assert var_def_state == 0 , " RAISE UNFINISHED VAR DEFINITION"
+							assert var_def_state == 0 , " RAISE UNFINISHED VAR DEFINITION" + buff
 						
 							self.context.state=State.DEFINING
 							
@@ -802,6 +847,7 @@ class Pre_Compiler:
 							print "\n"
 							'''
 							
+							
 						
 							#check end of def
 							if def_state == 3 and OP.define[buff] == OP.ENDEF:
@@ -810,12 +856,14 @@ class Pre_Compiler:
 								#print "endef found "+ str(self.context.build_location())
 							
 								def_state = 4
+								
+								token_array.append(buff)
 						
 							elif def_state == 0 and OP.define[buff] == OP.DEF:
 							
 								#print "def found "+ str(self.context.build_location())
 								#print buff
-							
+								token_array.append([buff])
 								def_state = 1
 								
 							else:
@@ -853,6 +901,7 @@ class Pre_Compiler:
 								
 								var_def_state = 1
 								
+							token_array.append([buff])	
 								
 							self.context.state=State.VAR_DEFINING
 							
@@ -872,10 +921,12 @@ class Pre_Compiler:
 								if def_state == 0:
 								
 									current_var_scope = OP.GLOBAL
+									#token_array[-1].append(buff)
 									
 								elif def_state >=2:
 								
-									current_var_scope = OP.GLOBAL
+									current_var_scope = OP.LOCAL
+									#token_array[1].append(buff)
 						
 							#current_var_type = OP.var_type[buff]
 							
@@ -883,6 +934,8 @@ class Pre_Compiler:
 							
 							try:
 								current_var_type = vV_Var.build_type(OP.var_type[buff])
+								#token_array[-1].append(current_var_type)
+								#print current_var_type
 							except WErrors.InvalidType:
 							
 								assert False, "Unimplemented Type : "+self.context.build_location()
@@ -891,6 +944,7 @@ class Pre_Compiler:
 		#					print "setting var type..."
 							
 							self.context.state = State.VAR_DEFINING
+							print current_var_type
 							
 							var_def_state = 2	#Scoped, Typed
 								
@@ -945,6 +999,8 @@ class Pre_Compiler:
 			
 				break
 				
+			
+				
 				
 			#if self.context.state == State.DEFINING or def_state == 2:
 			
@@ -956,14 +1012,83 @@ class Pre_Compiler:
 				continue
 				
 			self.context.state =State.ISOLATING
+			
+			
+			
+			
+			
+			#print buff
+			
+			'''
+			
+			if var_def_state == 1:
+			
+				#print token_array[-1]
+				#print buff
+				var_def_state = 2
+				#token_array[-1].append(buff)
+				
+				#print token_array[-1]
+				#vlu = check_numeric_format(buff) 
+				#vlu = check_numeric_format(buff) 
+				#if var_def_state == 2 and vlu[0]:
+				
+			elif var_def_state == 2:
+			
+				print'vaarTypee'
+				print buff
+				print token_array[-1]
+				var_def_state = 3
+				token_array[-1].append(buff)
+				
+				print token_array[-1]
+				
+			elif var_def_state == 3:
+			
+				print'vaarname'
+				var_def_state = 0
+				
+				token_array[-1].append(buff)
+
+				
+				
+				
+			elif def_state == 1:
+				def_state = 2
+			elif def_state == 2:
+				token_array[-1].append(buff)
+				def_state = 3
+			elif def_state == 3 or def_state == 0:
+				token_array.append(buff)
+			elif def_state == 4:
+				def_state = 0
+				
+			
+				
+				
+			#var_def_state = 0
+			#def_state = 0
+			continue
+			
+			
+			
+			'''
+			
 				
 			if def_state == 2:
 			
 		#		print " Function Name : "+buff+" "+str(self.context.build_location())
-		
-				for c in buff:
 				
-					assert c not in OP.forbiden_chars , "FORBIDEN CHAR IN FUNC NAME"
+				if buff[0] == OP.ref_op[OP.RNDBRACKETL]:
+				
+					self.symbol_solver.decode_function_w_arg(buff)
+					
+				else:
+		
+					for c in buff:
+				
+					
+						assert c not in OP.forbiden_chars , "FORBIDEN CHAR IN FUNC NAME"
 				
 				
 				self.function_registerer.functions[len(self.def_op_array)] = buff
@@ -1895,11 +2020,14 @@ class Pre_Compiler:
 			print key
 			print self.namespace_manager.global_vars[key].var_type
 			
+			
+		print token_array
+			
 		#'''	
 			
 
 		
-	 	#print self.def_op_array , self.function_registerer.functions
+	 	print self.def_op_array , self.function_registerer.functions
 		return [self.op_array , self.context.labels] , [self.def_op_array , self.def_context.labels , self.function_registerer.functions] , self.namespace_manager
 
 

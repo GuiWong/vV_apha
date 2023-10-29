@@ -1,0 +1,10 @@
+ segment .data 
+
+ i_global:
+.current: dq 1
+.max: dq 1000000
+.biggest: dq 0
+ segment .bss 
+
+	u_global:
+.biggest_source: resb 4 

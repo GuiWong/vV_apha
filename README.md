@@ -30,7 +30,6 @@ Planned Updates:
 				
 				
 				
-	0.0.?:		Memory access, Variables
 	
 	
 	
@@ -45,7 +44,14 @@ For now, it only has:
 	- if , else , end , do , while , break for flow control
 	- numeric and ascii input/output
 	- basic Error Managment
+	
+Now(0.0.4.1) Having
 
+	-n dimention Array(only global for now)
+	-Ref Type (a kind of pointer)
+	- basic function (no arg passing)
+	
+	
 	
 	
 stack is in .bss for now, pointed to by r15

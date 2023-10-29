@@ -54,9 +54,15 @@ class NameSpace_Manager:
 		
 		
 		
+		
 	def solve_var(self,varname,scope = None):
 	
 		ret_val = ''
+		
+		
+		if varname[0] == 'vV_PUSH_ARG':
+		
+			return [True,'eax',False,varname[1]]
 		
 		
 		if scope in self.functions:

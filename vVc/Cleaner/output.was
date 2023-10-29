@@ -1,0 +1,745 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "vVc/Cleaner/output_vars.was"	
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+dostuff:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+
+ ;OpADR: [0]  ; PUSH opcode 
+
+	vV_push 538995048 
+
+
+ ;OpADR: [1]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+
+ ;OpADR: [2]  ; End of func opcode					
+
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+is_even:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+
+ ;OpADR: [3]  ; Var invocation					
+
+mov edi , [rbp + 24]
+mov eax , [edi]
+vV_push eax
+
+ ;OpADR: [4]  ; DUP opcode (1)			
+
+	vV_dup 1			
+
+
+ ;OpADR: [5]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [6]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [7]  ; OR opcode					
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+
+	vV_dec_sp 1				
+
+ ;OpADR: [8]  ; IF opcode					
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_1	
+
+ ;OpADR: [9]  ; PUSH opcode 
+
+	vV_push 543450191 
+
+
+ ;OpADR: [10]  ; ELIF opcode					
+
+	jmp wblock_0	
+
+
+	wblock_1:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [11]  ; PUSH opcode 
+
+	vV_push 1852143173 
+
+
+
+	wblock_0:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [12]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+
+ ;OpADR: [13]  ; End of func opcode					
+
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+test_order:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+
+ ;OpADR: [14]  ; PUSH opcode 
+
+	vV_push 980710193 
+
+
+ ;OpADR: [15]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+
+ ;OpADR: [16]  ; Var invocation					
+
+mov edi , [rbp + 24]
+mov eax , [edi]
+vV_push eax
+
+ ;OpADR: [17]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [18]  ; PUSH opcode 
+
+	vV_push 979660338 
+
+
+ ;OpADR: [19]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+
+ ;OpADR: [20]  ; Var invocation					
+
+mov edi , [rbp + 16]
+mov eax , [edi]
+vV_push eax
+
+ ;OpADR: [21]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [22]  ; End of func opcode					
+
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+		
+
+
+
+vV_entry_point:
+
+
+	mov rbp, rsp			;Setup Stack Frame
+	
+	
+ ;OpADR: [0]  ; Var Ref assignement					
+
+mov eax , [i_global.a] 	
+mov [u_global.b] , eax	
+
+ ;OpADR: [1]  ; Var invocation					
+
+mov eax , [u_global.b]
+vV_push eax
+
+ ;OpADR: [2]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [3]  ; PUSH opcode 
+
+	vV_push 456 
+
+
+ ;OpADR: [4]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 4			
+	cmp edi , 5		
+	jge vV_bound_error		
+	add eax , edi			
+	mov ecx , 20
+	mul ecx		
+	mov edi , 2			
+	cmp edi , 20		
+	jge vV_bound_error		
+	add eax , edi			
+	mov ecx , 10
+	mul ecx		
+	mov edi , 0			
+	cmp edi , 10		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.test_big
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [5]  ; PUSH opcode 
+
+	vV_push 2 
+
+
+ ;OpADR: [6]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [7]  ; Var assignement					
+
+	xor eax , eax	
+	vV_pop edi		
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [8]  ; PUSH opcode 
+
+	vV_push 4 
+
+
+ ;OpADR: [9]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 1			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [10]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [11]  ; Var invocation					
+
+	xor eax , eax	
+	vV_pop edi		
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+mov eax , [edi + esi]
+vV_push eax
+
+ ;OpADR: [12]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [13]  ; Var invocation					
+
+	xor eax , eax	
+	mov edi , 1			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+mov eax , [edi + esi]
+vV_push eax
+
+ ;OpADR: [14]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [15]  ; Var Ref assignement					
+
+	xor eax , eax	
+	mov esi , eax		
+	mov edi , u_global.arr
+	lea eax , [edi + esi]	
+	mov  [u_global.pt_arr] , eax	
+
+ ;OpADR: [16]  ; PUSH opcode 
+
+	vV_push 420 
+
+
+ ;OpADR: [17]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 0			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , [u_global.pt_arr]
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [18]  ; PUSH opcode 
+
+	vV_push 69 
+
+
+ ;OpADR: [19]  ; PUSH opcode 
+
+	vV_push 1 
+
+
+ ;OpADR: [20]  ; Var assignement					
+
+	xor eax , eax	
+	vV_pop edi		
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , [u_global.pt_arr]
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [21]  ; Var invocation					
+
+	xor eax , eax	
+	mov edi , 0			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+mov eax , [edi + esi]
+vV_push eax
+
+ ;OpADR: [22]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [23]  ; Var invocation					
+
+	xor eax , eax	
+	mov edi , 1			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+mov eax , [edi + esi]
+vV_push eax
+
+ ;OpADR: [24]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [25]  ; Var Ref assignement					
+
+	xor eax , eax	
+	mov edi , 2			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+ mov eax , [u_global.b]	
+
+ ;OpADR: [26]  ; Var invocation					
+
+	xor eax , eax	
+	mov edi , 2			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+mov eax , [edi + esi]
+vV_push eax
+
+ ;OpADR: [27]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [28]  ; Function Call					
+
+		call dostuff			
+
+ ;OpADR: [29]  ; Var invocation					
+
+mov eax , [i_global.a]
+vV_push eax
+
+ ;OpADR: [30]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [31]  ; Function Call with args					
+mov eax , i_global.a 	
+	push rax
+mov eax , i_global.padders 	
+	push rax
+	call is_even
+add rsp , 16
+ ;OpADR: [32]  ; PUSH opcode 
+
+	vV_push 64 
+
+
+ ;OpADR: [33]  ; Var assignement					
+
+vV_pop eax
+mov [u_global.b] , eax
+
+ ;OpADR: [34]  ; Var invocation					
+
+mov eax , [i_global.a]
+vV_push eax
+
+ ;OpADR: [35]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [36]  ; Function Call with args					
+mov eax , i_global.padders 	
+	push rax
+mov eax , i_global.a 	
+	push rax
+	call is_even
+add rsp , 16
+ ;OpADR: [37]  ; PUSH opcode 
+
+	vV_push 11 
+
+
+ ;OpADR: [38]  ; Var assignement					
+
+vV_pop eax
+mov [i_global.a] , eax
+
+ ;OpADR: [39]  ; PUSH opcode 
+
+	vV_push 22 
+
+
+ ;OpADR: [40]  ; Var assignement					
+
+vV_pop eax
+mov [u_global.b] , eax
+
+ ;OpADR: [41]  ; PUSH opcode 
+
+	vV_push 11 
+
+
+ ;OpADR: [42]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [43]  ; Var assignement					
+
+	xor eax , eax	
+	vV_pop edi		
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [44]  ; PUSH opcode 
+
+	vV_push 22 
+
+
+ ;OpADR: [45]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 1			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [46]  ; PUSH opcode 
+
+	vV_push 33 
+
+
+ ;OpADR: [47]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 2			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [48]  ; PUSH opcode 
+
+	vV_push 44 
+
+
+ ;OpADR: [49]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 3			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [50]  ; PUSH opcode 
+
+	vV_push 55 
+
+
+ ;OpADR: [51]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 4			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [52]  ; PUSH opcode 
+
+	vV_push 66 
+
+
+ ;OpADR: [53]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 5			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [54]  ; PUSH opcode 
+
+	vV_push 77 
+
+
+ ;OpADR: [55]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 6			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [56]  ; PUSH opcode 
+
+	vV_push 88 
+
+
+ ;OpADR: [57]  ; Var assignement					
+
+	xor eax , eax	
+	mov edi , 7			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+vV_pop eax
+mov [edi + esi] , eax
+
+ ;OpADR: [58]  ; PUSH opcode 
+
+	vV_push 6 
+
+
+ ;OpADR: [59]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [60]  ; Loop init 					
+	vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+	wblock_2:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [61]  ; Function Call with args					
+	xor eax , eax	
+	mov edi , 0			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+	lea eax , [edi + esi]	
+	push rax
+	xor eax , eax	
+	mov edi , 1			
+	cmp edi , 8		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.arr
+	lea eax , [edi + esi]	
+	push rax
+	call test_order
+add rsp , 16
+ ;OpADR: [62]  ; Loop check 					
+	inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jbe wblock_2	
+
+
+	wblock_3:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [63]  ; Loop Cleanup 					
+	add rsp , 16	
+
+ ;OpADR: [64]  ; PUSH opcode 
+
+	vV_push 6650210 
+
+
+ ;OpADR: [65]  ; OUT opcode (9)			
+
+								
+	call vV_io_out_packed_char				
+						
+		
+		ret
+
+;Transpiled from vV with vVc version 0.0.4
+		
+		

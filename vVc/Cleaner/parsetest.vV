@@ -1,0 +1,104 @@
+global int 25 a
+
+global int b
+
+global int 20 padders
+
+(a)b=
+
+b out
+
+global int[8] arr
+
+global (int[8]) pt_arr
+
+global int[10][20][5] test_big
+
+456 [0][2][4]test_big=
+
+def dostuff
+
+'hi  ' wout
+
+endef
+
+def (int x,int y)is_even
+
+x dup out 1 & if
+
+	'Odd '
+	
+	el
+	
+	'Even'
+	
+	,
+	
+wout
+
+endef
+
+
+def (int x_a , int x_b)test_order
+
+'1st:' wout
+x_a out
+'2nd:' wout
+x_b out
+
+endef
+
+
+
+
+2 0 []arr=
+
+4 [1]arr=
+
+0 []arr out
+[1]arr out
+
+(arr)pt_arr=
+
+
+
+420 [0]pt_arr=
+
+69 1 []pt_arr=
+
+[0]arr out
+[1]arr out
+
+(b)[2]arr=
+
+;b out
+[2]arr out
+
+
+dostuff
+a out
+(a , padders)is_even
+64 b=
+a out
+( padders , a)is_even
+
+11 a=
+22 b=
+
+11 0 []arr=
+22 [1]arr=
+33 [2]arr=
+44 [3]arr=
+55 [4]arr=
+66 [5]arr=
+77 [6]arr=
+88 [7]arr=
+
+6 0 loop
+([0]arr,[1]arr)test_order
+
+for
+
+;(b,a)test_order
+
+'bye' wout

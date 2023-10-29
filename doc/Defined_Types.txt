@@ -1,0 +1,105 @@
+
+
+Only one "Real" Type for Now:
+
+	<int>
+	
+	
+	
+	
+One "structure" Type:
+
+	<T>[d]		d-dimension Array of <T>
+	
+	
+	-Structure type need a Selector function ( [i] for Arrays )
+	-Structure stores Real data or Refs
+	
+		- no "Array of Array", but  <T>[n] => <T>[n-1] Array Operation
+		
+		- only way to have "Array of Array" is (<T>[])[]  (Array of Ref to Array)
+	
+	
+	
+One "Reference" Type:
+
+	(<T>)		reference to a var of type <T>
+	
+	-Need to "act" as a <T>
+	-Distinction is made at compile-time
+	
+	
+	
+
+ 	Type		Size		stores
+ 	
+ 	<int>		32b		data
+ 	
+ 	(<T>)		32b		adress
+ 	
+ 	
+ 	
+ 	Struct		Size		stores
+ 	
+ 	<T>[d]		<T>size	<T>
+ 			* d0 * d1...
+ 			
+ 		
+ 		--------------------------------------------	
+ 		
+ 		
+ To Come:
+ 
+ 
+ Dope Vectors:
+ 
+ 
+ 	{<T>[d]}	Ref to <T>[d]  VIA  a Dope Vector
+ 
+ 
+ 
+ 	Type			Size				stores
+ 	
+ 	{<T>[d]}		32b				Adress
+ 				 +
+ 				d * 32b			Dim Size
+ 				
+ 				
+ 	--> Dope Array: var (int[][]) foo
+ 	
+ 		-Unsized Array and refArray are unvalid
+ 		
+ 		-create a Dope_Array
+ 		
+ 	(matrix)foo=	=>	IF Same dims:
+ 					set adr to adr(matrix)
+ 					set dimsizes to matrix size
+ 					
+ 	[x][y]foo	=>	Check Bounds against foo infos, not Hardcoded size
+ 	
+ 
+ 	
+ 	Unsized Array?
+ 	Dope Array?
+ 	
+ 	
+ 	
+ 	
+ 	-----------------------------------------------
+ 	
+ 	
+ - Byte/Char Type?		for string manips ( <char>[] )
+ 
+ 
+ - Function Type?		may allow function refs
+ 
+ 		<func>		! need func signature for type check   !
+ 				! may need another kind of Dope Vector !
+ 				
+ 		<(int)func> ???
+ 	
+ 	
+ 	
+ 	
+ 	
+ 

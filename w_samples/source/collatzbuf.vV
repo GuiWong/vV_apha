@@ -1,0 +1,113 @@
+global 1000000 max
+global 3 current
+global 0 biggest
+
+global int[1000000] memo
+global 3 memoed
+
+1 [1]memo=
+2 [2]memo=
+
+
+;global int[5] test
+;global int[5] test2
+
+;(test)current=
+
+;(test)[0]current=
+
+
+
+global int biggest_source
+
+def imp
+
+	dup < 1 + + 
+	
+endef
+
+
+def collatz
+	local int val
+	local 0 c
+	 val=
+	do
+		val memoed <? if
+		
+			val []memo
+			c + c=
+			;current []memoed=
+			break
+				,
+				
+		val 1 & if
+		
+				val imp
+			el
+			
+				val >
+				
+			,
+					
+				
+		val=
+		c 1 + c=
+		val 1 =? !
+	while
+	
+	c
+	
+	;c '    ' 'Len:' wout_ wout_ out_
+	;flush
+endef
+
+def print_bigger
+
+	current out_
+	'  : ' wout_
+	dup out_
+	flush
+endef
+
+
+collatz
+
+
+do
+
+
+	
+	current collatz
+	
+	dup
+	
+	current []memo=
+
+	dup biggest >? if
+
+		
+		;print_bigger
+		biggest=
+		current biggest_source=
+		
+			el
+				drp
+			,
+			
+	current 1 + current=
+	memoed 1 + memoed=
+	
+	current max <?
+	
+while
+			
+			
+' :  ' max 'ow  ' ' bel' 'latz' ' Col'  'gest' ' Big'
+
+wout_ wout_ wout_ wout_ wout_ wout_ out_ wout_
+
+biggest_source out_ biggest 'th  ' '  wi' wout_ wout_ out_
+flush
+
+
+'bye ' wout

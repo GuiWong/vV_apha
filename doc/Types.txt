@@ -378,5 +378,45 @@ ___________________________________________________________
 for refs: 	 size_n = known by compiler
 
 for Dope_Refs:	 size_n = Dope_adr + [( 1 + n ) * 32 ] & 0x00ffffff
+
+
+
+Special Internal vars:
+
+	I for loop iteration
+	
+	10 0 loop I out endloop		should print 0 to 9
+	10 0 loop
+		10 0 loop
 		
+			I [1]I [][]data
+			
+		endloop
+	endloop	
+	
+	10 0 loop
+		local (int) y			Shouldn't be needed
+		(I)y=				Maybe souldn't even be allowed (security)
+		10 0 loop
+		
+			I y [][]data
+			
+		endloop
+	endloop
+	
+	[1]loop.index
+		
+		
+Usable special chars:	
+		
+		$		for strings I think
+		#		Need to be Important/Usefull
+		@		Should be adress-related
+		}
+		{		May be kept for a symmetric meaning
+		
+		~		Could be an operand	
+	      .  :		Probably Separators/Struct operation
+	      
+		`		Hard to see, not good
 		

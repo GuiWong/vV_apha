@@ -1,62 +1,45 @@
-var int[4] l1
-var int[4] l2
-var int[4] l3
-var int[4] l4
-
-88 [2]l1=
-99 [3]l1=
-
-66 [0]l1=
-
-77 [1]l1=
-
-0 []l1 out
-1 []l1 out
-2 []l1 out
-3 []l1 out
-
-
-flush
-
-(l1)l2=
-
-420 [0]l2=
-
-0 []l2 out
-1 []l2 out
-2 []l2 out
-3 []l2 out
-
-flush
 
 
 
-0 []l1 out
-1 []l1 out
-2 []l1 out
-3 []l1 out
+var 65 a
+var 66 b
+var 67 c
+var 68 d
+
+
+var (int)[4] word
+
+(a)[0]word=
+(b)[1]word=
+(c)[2]word=
+(d)[3]word=
 
 
 
-var int[4][4] matrix
 
-(l1)[0]matrix=
-(l2)[1]matrix=
-;(l3)[2]matrix=
-;(l4)[3]matrix=
+def makeword
 
-
-flush
-
-
-[0][0]matrix out
-[1][0]matrix out
-[2][0]matrix out
-[3][0]matrix out
-[0][1]matrix out
-[1][1]matrix out
-[2][1]matrix out
-[3][1]matrix out
+	local 0 c
+		do
+			c []word cout_
+			c 1 + c=
+			c 4 <?
+		while 
+	flush
+endef
 
 
-flush
+;def (int count , int text)repeat
+
+;	'test' wout
+
+;endef
+
+
+makeword
+
+67 b=
+65 c=
+66 d=
+
+makeword

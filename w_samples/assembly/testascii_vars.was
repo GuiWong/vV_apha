@@ -1,0 +1,13 @@
+ segment .data 
+
+ i_global:
+.kappa: dq 45
+.beta: dq 12
+ segment .bss 
+
+	u_global:
+.foobar: resb 4 
+.delta: resb 4 
+.test: resb 256 
+.alpha: resb 4 
+.gamma: resb 4 

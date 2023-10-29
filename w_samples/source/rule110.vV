@@ -29,6 +29,30 @@ global int index
 ;1 1 0 set_next out
 ;1 1 1 set_next out
 
+def term_bg
+
+	'm'
+	
+	';' '5' ';'
+	0x38 0x34  0x5b  0x1b
+	
+	cout_ cout_ cout_  cout_ cout_ cout_ cout_
+	'0' cout_
+	cout_
+	flush
+
+	'm'
+	
+	';' '5' ';'
+	0x38 0x33  0x5b  0x1b
+	
+	cout_ cout_ cout_  cout_ cout_ cout_ cout_
+	'7' cout_
+	cout_
+	flush
+	
+endef
+
 
 	
 
@@ -92,6 +116,8 @@ def set_seed ;32bit value on stack as seed
 	
 endef
 
+
+term_bg
 popup 0 set_seed
 	
 do

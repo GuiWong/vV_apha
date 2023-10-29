@@ -764,7 +764,24 @@ rep movsb
 
 		call vV_io_flush	
 
- ;OpADR: [90]  ; Var invocation					
+ ;OpADR: [90]  ; Var Ref assignement					
+
+	xor eax , eax	
+	mov edi , 0			
+	cmp edi , 4		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov edi , 0			
+	cmp edi , 4		
+	jge vV_bound_error		
+	add eax , edi			
+	shl eax , 2	
+	mov esi , eax		
+	mov edi , u_global.matrix
+ mov eax , [u_global.x]	
+
+ ;OpADR: [91]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 0			
@@ -782,12 +799,12 @@ rep movsb
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [91]  ; OUT opcode (0)			
+ ;OpADR: [92]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [92]  ; Var invocation					
+ ;OpADR: [93]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 0			
@@ -805,12 +822,12 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [93]  ; OUT opcode (0)			
+ ;OpADR: [94]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [94]  ; Var invocation					
+ ;OpADR: [95]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 0			
@@ -828,12 +845,12 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [95]  ; OUT opcode (0)			
+ ;OpADR: [96]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [96]  ; Var invocation					
+ ;OpADR: [97]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 0			
@@ -851,12 +868,12 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [97]  ; OUT opcode (0)			
+ ;OpADR: [98]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [98]  ; Var invocation					
+ ;OpADR: [99]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 1			
@@ -874,12 +891,12 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [99]  ; OUT opcode (0)			
+ ;OpADR: [100]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [100]  ; Var invocation					
+ ;OpADR: [101]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 1			
@@ -897,12 +914,12 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [101]  ; OUT opcode (0)			
+ ;OpADR: [102]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [102]  ; Var invocation					
+ ;OpADR: [103]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 1			
@@ -920,12 +937,12 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [103]  ; OUT opcode (0)			
+ ;OpADR: [104]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [104]  ; Var invocation					
+ ;OpADR: [105]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 1			
@@ -943,16 +960,16 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [105]  ; OUT opcode (0)			
+ ;OpADR: [106]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [106]  ; FLUSH opcode					
+ ;OpADR: [107]  ; FLUSH opcode					
 
 		call vV_io_flush	
 
- ;OpADR: [107]  ; Var Ref assignement					
+ ;OpADR: [108]  ; Var Ref assignement					
 
 	xor eax , eax	
 	mov esi , eax		
@@ -960,7 +977,7 @@ vV_push eax
 	lea eax , [edi + esi]	
 	mov  [u_global.xyg] , eax	
 
- ;OpADR: [108]  ; Var invocation					
+ ;OpADR: [109]  ; Var invocation					
 
 	xor eax , eax	
 	mov edi , 1			
@@ -978,17 +995,17 @@ vV_push eax
 mov eax , [edi + esi]
 vV_push eax
 
- ;OpADR: [109]  ; OUT opcode (0)			
+ ;OpADR: [110]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [110]  ; PUSH opcode 
+ ;OpADR: [111]  ; PUSH opcode 
 
 	vV_push 543521122 
 
 
- ;OpADR: [111]  ; OUT opcode (9)			
+ ;OpADR: [112]  ; OUT opcode (9)			
 
 								
 	call vV_io_out_packed_char				

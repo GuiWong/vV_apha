@@ -1,0 +1,12 @@
+ segment .data 
+
+ i_global:
+.a: dq 25
+.padders: dq 20
+ segment .bss 
+
+	u_global:
+.arr: resb 32 
+.b: resb 4 
+.test_big: resb 4000 
+.pt_arr: resb 4 
