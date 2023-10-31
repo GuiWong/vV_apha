@@ -420,3 +420,11 @@ Usable special chars:
 	      
 		`		Hard to see, not good
 		
+		
+	[0]I		-> Would need a special Type for solving
+	0:I		->
+	0.I
+	
+	key:dict
+	key.dict
+		

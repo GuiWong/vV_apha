@@ -50,8 +50,8 @@ class Var_Solver:
 	def adress_array_direct(self,var_name,scope):
 	
 	
-		print 'Solving ref Array'
-		print var_name
+#		print 'Solving ref Array'
+#		print var_name
 	
 		setup = ''	
 		pow2 = [1,2,4,8,16,32,64,128,256,512,1024,2048,4096]
@@ -64,12 +64,12 @@ class Var_Solver:
 		if d > 1:
 					
 			argu = var_name[1]
-			print argu
+#			print argu
 		
 		if tmp[2]:
 			
-			print "----------------------"
-			print tmp[3].size
+#			print "----------------------"
+#			print tmp[3].size
 			i=1
 					
 			setup += "	xor eax , eax	\n"
@@ -87,7 +87,7 @@ class Var_Solver:
 						
 					siz = tmp[3].content.calc_size()/8
 						
-				print d
+#				print d
 				if d=="pop":
 						
 					setup += "	vV_pop edi		\n"
@@ -113,9 +113,9 @@ class Var_Solver:
 					i+=1
 						
 						
-			print "\n\n-----------"
-			print tmp[3].dim
-			print argu
+#			print "\n\n-----------"
+#			print tmp[3].dim
+#			print argu
 			if tmp[3].dim != len(argu) and len(argu)!=0:
 					
 				setup += "	shl eax , 2 \n"
@@ -141,8 +141,8 @@ class Var_Solver:
 	def adress_array(self,var_name,scope):
 	
 	
-		print 'Solving ref Array'
-		print var_name
+#		print 'Solving ref Array'
+#		print var_name
 	
 		setup = ''	
 		pow2 = [1,2,4,8,16,32,64,128,256,512,1024,2048,4096]
@@ -155,12 +155,12 @@ class Var_Solver:
 		if d > 1:
 					
 			argu = var_name[1]
-			print argu
+#			print argu
 		
 		if tmp[2]:
 			
-			print "----------------------"
-			print tmp[3].size
+#			print "----------------------"
+#			print tmp[3].size
 			i=1
 					
 			setup += "	xor eax , eax	\n"
@@ -178,7 +178,7 @@ class Var_Solver:
 						
 					siz = tmp[3].content.content.calc_size()/8
 						
-				print d
+#				print d
 				if d=="pop":
 						
 					setup += "	vV_pop edi		\n"
@@ -204,9 +204,9 @@ class Var_Solver:
 					i+=1
 						
 						
-			print "\n\n-----------"
-			print tmp[3].content.dim
-			print argu
+#			print "\n\n-----------"
+#			print tmp[3].content.dim
+#			print argu
 			if tmp[3].content.dim != len(argu) and len(argu)!=0:
 					
 				setup += "	shl eax , 2 \n"
@@ -234,12 +234,12 @@ class Var_Solver:
 	def solve_var(self,var_name,scope):
 	
 	
-		print "Solving var "+str(var_name)
-		print "in scope: "+str(scope)
+#		print "Solving var "+str(var_name)
+#		print "in scope: "+str(scope)
 	
 		tmp = self.namespace.solve_var(var_name,scope)	#This should check type
 		
-		print tmp
+#		print tmp
 		adr = ''
 		setup=''
 		
@@ -256,8 +256,8 @@ class Var_Solver:
 		
 			if tmp[2]:
 			
-				print 'WTF???:'
-				print tmp
+#				print 'WTF???:'
+#				print tmp
 				if self.namespace.global_vars[var_name[0]].is_init:
 			
 					adr = "[i_global."+tmp[1] + "]"
@@ -268,8 +268,8 @@ class Var_Solver:
 					
 			else:
 			
-				print 'NON GLOBAL VAR : ' 
-				print tmp
+#				print 'NON GLOBAL VAR : ' 
+#				print tmp
 				adr = tmp[1]
 				
 				
@@ -286,12 +286,12 @@ class Var_Solver:
 				if d > 1:
 					
 					argu = var_name[1]
-					print argu
+#					print argu
 		
 				if tmp[2]:
 			
-					print "----------------------"
-					print tmp[3].size
+#					print "----------------------"
+#					print tmp[3].size
 					i=1
 					
 					setup += "	xor eax , eax	\n"
@@ -315,7 +315,7 @@ class Var_Solver:
 						
 							siz = tmp[3].content.calc_size()/8
 						
-						print d
+#						print d
 						if d=="pop":
 						
 							setup += "	vV_pop edi		\n"
@@ -341,9 +341,9 @@ class Var_Solver:
 						i+=1
 						
 						
-					print "\n\n-----------"
-					print tmp[3].dim
-					print argu
+#					print "\n\n-----------"
+#					print tmp[3].dim
+#					print argu
 					if tmp[3].dim != len(argu) and len(argu)!=0:
 					
 						setup += "	shl eax , 2 \n"
@@ -373,7 +373,7 @@ class Var_Solver:
 				
 		elif isinstance(tmp[3],vV_Var.vV_Ref_Type):
 		
-			print tmp[3].content
+#			print tmp[3].content
 			
 			if isinstance(tmp[3].content, vV_Var.vV_Int_Type):
 			
@@ -446,9 +446,9 @@ class Var_Solver:
 		
 		info = self.namespace.solve_var(varname,scope)
 		
-		print info
+#		print info
 		
-		print adr
+#		print adr
 		txt+=adr[1]
 		
 		if isinstance(info[3],vV_Var.vV_Int_Type):
@@ -474,8 +474,8 @@ class Var_Solver:
 			adress = self.adress_array_direct(varname,scope)
 			
 			txt = adress[1]
-			print "\n************************\n"
-			print txt
+#			print "\n************************\n"
+#			print txt
 			
 			if isinstance(info[3].content,vV_Var.vV_Int_Type):
 			
@@ -494,7 +494,7 @@ class Var_Solver:
 				
 			
 			
-			print adress
+#			print adress
 			
 		else:
 		
@@ -519,15 +519,15 @@ class Var_Solver:
 	def ref_assign(self,src,dest,scope):
 		
 		txt = ''
-		print src
+#		print src
 		#print self.namespace.solve_var(dest[0],scope)
 		src_type = self.namespace.solve_var(src,scope)
 		dest_type = self.namespace.solve_var(dest,scope)
 		
 		
-		print "\n solving ref assignement \n\n"
-		print src_type
-		print dest_type
+#		print "\n solving ref assignement \n\n"
+#		print src_type
+#		print dest_type
 		
 		
 		if isinstance(src_type[3],vV_Var.vV_Int_Type):
@@ -539,9 +539,9 @@ class Var_Solver:
 				dst_adr = self.solve_var(dest,scope)[0]
 				
 				
-				print "\n|\n|"
-				print dst_adr
-				print "\n|\n|"
+#				print "\n|\n|"
+#				print dst_adr
+#				print "\n|\n|"
 				
 		
 				txt += 'mov eax , '+src_adr+' 	\n'
@@ -552,7 +552,7 @@ class Var_Solver:
 				src_adr =  self.solve_var(src,scope)[0]
 				dst_adr = self.solve_var(dest,scope)[1].split(',')[1][:-1]
 				
-				print dst_adr
+#				print dst_adr
 		
 				assert isinstance(dest_type[3].content,vV_Var.vV_Int_Type),"FATAL: Should have been catched by type checks"
 				txt += 'mov eax , '+src_adr[1:-1]+' 	\n'
@@ -568,8 +568,8 @@ class Var_Solver:
 				
 				
 				#adress_array
-				print src_adr
-				print dst_adr
+#				print src_adr
+#				print dst_adr
 				
 				txt += dst_adr[1]
 
@@ -585,14 +585,14 @@ class Var_Solver:
 					assert isinstance(dest_type[3].content.content,vV_Var.vV_Int_Type),"FATAL: Should have been catched by type checks"
 				
 					txt +=' mov eax , '+src_adr[0][1:-1]+'	\n'
-					txt +=' mov '+dst_adr[0]+' , eax		\n'
+					txt +=' mov DWORD '+dst_adr[0]+' , eax		\n'
 				
 				else:
 				
 					assert False , "FATAL: NOT VALID TYPE"
 		
 					txt +=' mov eax , '+src_adr[0]+'	\n'
-					txt +=' mov '+dst_adr[0]+' , eax		\n'
+					txt +=' mov DWORD '+dst_adr[0]+' , eax		\n'
 				
 				
 			else:
@@ -600,7 +600,7 @@ class Var_Solver:
 				assert False, "Unimplemented"
 				
 			
-			print txt	
+#			print txt	
 			return txt
 			
 			
@@ -610,11 +610,11 @@ class Var_Solver:
 			if isinstance(dest_type[3],vV_Var.vV_Array_Type):
 			
 				
-				print "\n********\n	Array To Array Assignement"
+#				print "\n********\n	Array To Array Assignement"
 				
 				txt =''
 				
-				print src_type[3]
+#				print src_type[3]
 				
 				assert src_type[3].content.__class__ == dest_type[3].content.__class__ , "UNIMPLEMENTED YET"
 				
@@ -622,16 +622,16 @@ class Var_Solver:
 				
 				if src_type[3].calc_size()==dest_type[3].calc_size():
 				
-					print "SAME SIZE"
-					print src_type[3].calc_size() 
+#					print "SAME SIZE"
+#					print src_type[3].calc_size() 
 				
 					#TODO: Cleaner solving of Adress
 				
 					src_adr =  self.solve_var(src,scope)[1].split(',')[-1]
 					dst_adr = self.solve_var(dest,scope)[1].split(',')[-1]
 				
-					print src_adr[:-1]
-					print dst_adr
+#					print src_adr[:-1]
+#					print dst_adr
 				
 				
 					txt+='mov ecx , '+str(src_type[3].calc_size() / 8)+' \n'
@@ -640,7 +640,7 @@ class Var_Solver:
 					txt+='rep movsb		\n'
 					
 				else:
-					print "Not Same SIZE"
+#					print "Not Same SIZE"
 					
 					assert src_type[3].calc_partial_size(len(src[1])) == dest_type[3].calc_partial_size(len(dest[1])) , 	"FATAL, Should be checked By Type Checker"
 				
@@ -652,10 +652,10 @@ class Var_Solver:
 					dst_adr = self.solve_var(dest,scope)#.split(',')
 					
 					
-					print "\nAdress :\n"
+#					print "\nAdress :\n"
 				
-					print src_adr#[:-1]
-					print dst_adr[1]
+#					print src_adr#[:-1]
+#					print dst_adr[1]
 				
 					txt+=src_adr[1]+'\n'
 					txt+=' mov r8d , edi	\n' 
@@ -682,18 +682,18 @@ class Var_Solver:
 				#assert src_type[3].content.__class__ == dest_type[3].content.content.__class__ , "SHOULDBEOK"
 				
 				
-				print src_type[3].calc_partial_size(len(src[1]))
-				print dest_type[3].calc_pointed_size()
+#				print src_type[3].calc_partial_size(len(src[1]))
+#				print dest_type[3].calc_pointed_size()
 				
 				assert src_type[3].calc_partial_size(len(src[1])) == dest_type[3].calc_pointed_size() ,	"LIMITED FOR NOW"
 				
-				print src
+#				print src
 				
 				src_adr =  self.adress_array_direct(src,scope)#[1].split(',')[-1]
 				dst_adr = self.solve_var(dest,scope)[1].split(',')[-1]
 				
-				print src_adr
-				print dst_adr
+#				print src_adr
+#				print dst_adr
 				
 				txt+= src_adr[1]
 				

@@ -180,15 +180,19 @@ def solve_func_args(txt):
 		if len(arg) > 0:
 			cleaned.append(arg)
 			
+	print cleaned
+			
 	return [create_argument_reference(solve_type(cleaned[0]) ), solve_var(cleaned[1])]
 		
 def solve_func(txt,is_arg=False):
 	
-	if txt[0] ==  OP.ref_op[OP.RNDBRACKETL]:
+	if txt[0] ==  OP.ref_op[OP.RNDBRACKETL] and not is_arg:
 	
 		tmp = txt.split(')')
 		
 		argu = ')'.join(tmp[:-1])
+		
+		print argu
 		
 		return [solve_var(tmp[-1]) , solve_func(argu[1:],True) ]
 		

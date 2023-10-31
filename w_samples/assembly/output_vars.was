@@ -1,12 +1,13 @@
  segment .data 
 
  i_global:
-.max: dq 1000000
-.memoed: dq 3
-.current: dq 3
-.biggest: dq 0
+.kappa: dq 45
+.beta: dq 12
  segment .bss 
 
 	u_global:
-.memo: resb 4000000 
-.biggest_source: resb 4 
+.foobar: resb 4 
+.delta: resb 4 
+.test: resb 256 
+.alpha: resb 4 
+.gamma: resb 4 

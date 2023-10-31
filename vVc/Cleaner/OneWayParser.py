@@ -86,8 +86,12 @@ class One_Way_Parser:
 		else:
 			name = data[0]
 			args = {}
-			for a in data[1]:
+			print data
 			
+			
+			for a in data[1]:
+				
+				print a
 				varo = vV_Var.vV_Variable(a[1],OP.PASSED,a[0],False,0)
 			
 				args[a[1]] = varo
@@ -345,7 +349,15 @@ class One_Way_Parser:
 					#print argss
 				#	argdict[argss[1]] = vV_Var.vV_Variable(argss[1],OP.PASSED,argss[0])
 				
-				self.register_function(solved)
+				
+				if type(solved[1][0]) == list:
+				
+				
+					self.register_function(solved)
+					
+				else:
+				
+					self.register_function([solved[0],[solved[1]]])
 				
 				#print self.name_space.functions[self.current_func].referenced_vars
 				#assert False , 'unimplemented'
@@ -728,6 +740,8 @@ class One_Way_Parser:
 				if src[0]:
 					opcode.value = OP.PUSH_VAR
 					opcode.arg = [src_name,src_arg]
+					print 'Push var found with arg: \n'
+					print src_arg
 				elif len(src)>=3:
 				
 					callarg = [src_name,[]]

@@ -14,7 +14,28 @@ var (int)[4] word
 (c)[2]word=
 (d)[3]word=
 
+var int[4][3] word2
 
+;'a' 0 []word2=
+;'c' 1 []word2=
+;'a' 2 []word2=
+;'b' 3 []word2=
+
+
+var int[4] word3
+
+
+([1]word2)word3=
+
+var int[13][37][5] triple
+
+
+def basic_access
+
+a out
+'k' a=
+
+endef
 
 
 def makeword
@@ -36,10 +57,49 @@ endef
 ;endef
 
 
-makeword
+;def (int[4] argu)test
 
-67 b=
-65 c=
-66 d=
+;	local 0 c
+;		do
+;			c []argu cout_
+;			c 1 + c=
+;			c 4 <?
+;		while
 
-makeword
+;endef
+
+
+69 2 4 0 [][][]triple=
+
+2 4 0 [][][]triple out
+
+'test' wout
+
+basic_access
+
+;makeword
+
+0 0 0
+
+'N' a=
+'C' b=
+'G' c=
+'P' d=
+
+0 []word cout
+1 []word cout
+2 []word cout
+3 []word cout
+
+flush
+
+a cout_
+b cout_
+c cout_
+d cout_
+flush
+
+;(word2)test
+
+;makeword
+'bye ' wout

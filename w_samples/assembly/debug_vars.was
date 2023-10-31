@@ -9,3 +9,6 @@
 
 	u_global:
 .word: resb 16 
+.triple: resb 9620 
+.word3: resb 16 
+.word2: resb 48 

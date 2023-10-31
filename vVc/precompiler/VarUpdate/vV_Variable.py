@@ -81,6 +81,17 @@ class vV_Ref_Type(vV_Pointer_Type):
 	
 		return self.content.calc_partial_size(dim_down)
 		
+class vV_Iterator_Type(vV_Structure_Type):
+
+	direct = 0
+	skip = 0
+	def __init__(self,content,direct,skip):
+
+		self.content = content
+		self.direct = direct
+		self.skip= skip
+		
+		
 class vV_Array_Type(vV_Structure_Type):
 
 	content = vV_Primary_Type()
@@ -111,7 +122,9 @@ class vV_Array_Type(vV_Structure_Type):
 		assert deepness <= self.dim , "Fatal: trying to reduce an array toomuch"
 		
 		if deepness < self.dim:
-			return vV_Array_Type(self.content, self.dim - deepness , self.size[deepness:])
+			reversed_size = self.size[deepness:]
+			reversed_size.reverse()
+			return vV_Array_Type(self.content, self.dim - deepness , reversed_size)
 		else:
 			return self.content
 		

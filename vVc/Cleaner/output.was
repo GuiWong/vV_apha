@@ -6,7 +6,7 @@
 %include "vVc/assembly/w_runtime/vV_system10.asm"		
 %include "vVc/assembly/w_runtime/vV_io.asm"			
 %include "vVc/assembly/w_runtime/vV_ascii.asm"		
-%include "vVc/Cleaner/output_vars.was"	
+%include "Cleaner/output_vars.was"	
 %include "vVc/assembly/w_runtime/vV_system90.asm"		
 
 
@@ -690,7 +690,7 @@ mov [edi + esi] , eax
 
  ;OpADR: [61]  ; Function Call with args					
 	xor eax , eax	
-	mov edi , 0			
+	mov edi , I			
 	cmp edi , 8		
 	jge vV_bound_error		
 	add eax , edi			

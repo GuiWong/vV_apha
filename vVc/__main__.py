@@ -245,7 +245,7 @@ for p in range(prog2.size):
 
 prog = vm.Program.Program(ow_parser.main_op)
 
-piler = Trans.Translator(prog,ow_parser.label_manager.labels,vs)
+piler = Trans.Translator(prog,ow_parser.label_manager.labels,vs,output_file)
 
 '''
 prog2 = vm.Program.Program(def_arr)

@@ -3,7 +3,7 @@ import vV.VM_Opcode as OP
 import precompiler.Opcode as Opcode
 import vm.Program 
 
-
+import Cleaner.Recursive_Var_Solver as R_V_S
 
 class Translator:
 
@@ -44,6 +44,8 @@ class Translator:
 		
 		self.current_scope =None	#V0.0.4
 		self.var_solver = var_solver
+		
+		self.var_op_solver = R_V_S.Var_Op_Solver(self.var_solver.namespace)
 		
 		
 	def fetch(self):
@@ -645,7 +647,14 @@ vV_entry_point:
 ; Var invocation					\n\
 \n'
 			print arg
-			txt += self.var_solver.push_var(arg,self.current_scope)
+			print '\n-------------------------'
+			print self.var_op_solver.solve_push(arg,self.current_scope)
+			print '-------------------------\n'
+			
+			
+			txt += self.var_op_solver.solve_push(arg,self.current_scope)
+			#assert False, 'breakpoint'
+			#txt += self.var_solver.push_var(arg,self.current_scope)
 			#assert False ,"TODO: MANAGE VARSOLVING"
 		
 		elif op == OP.ASSIGN:
@@ -654,7 +663,14 @@ vV_entry_point:
 ; Var assignement					\n\
 \n'
 			print arg
-			txt += self.var_solver.pop_var(arg,self.current_scope)
+			print '\n-------------------------'
+			print self.var_op_solver.solve_pop(arg,self.current_scope)
+			print '-------------------------\n'
+			
+			
+			
+			txt += self.var_op_solver.solve_pop(arg,self.current_scope)
+			#txt += self.var_solver.pop_var(arg,self.current_scope)
 		
 			#assert False ,"TODO: MANAGE VARSOLVING"
 			
@@ -667,6 +683,14 @@ vV_entry_point:
 			print op
 			print arg
 			print '#########################\n\n'
+			
+			#print '\n-------------------------'
+			#print self.rec_var_solver.solve_var_name(arg[0],self.current_scope)
+			#print self.rec_var_solver.solve_indexing(arg[0])
+			#print '-------------------------'
+			#print self.rec_var_solver.solve_var_name(arg[1],self.current_scope)
+			#print self.rec_var_solver.solve_indexing(arg[1])
+			#print '-------------------------\n'
 			
 			#assert False , 'Op Unimplemented'
 			txt += self.var_solver.ref_assign(arg[0],arg[1],self.current_scope)

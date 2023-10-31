@@ -21,12 +21,15 @@ class NameSpace_Manager:
 
 	global_vars = {}
 	functions = {}
+	system_vars = {}
 	
 	
 	def __init__(self):
 	
 		self.global_vars = {}
 		self.functions = {}
+		
+		self.system_vars['I']=vV_Variable.vV_Variable('I',204,vV_Variable.vV_Iterator_Type(vV_Variable.vV_Int_Type,2,8))
 	
 	
 	def define_function(self,name,args = {}):
@@ -77,6 +80,10 @@ class NameSpace_Manager:
 		
 				
 			return [True,  self.global_vars[varname[0]].name,True,self.global_vars[varname[0]].var_type]
+		
+		elif varname[0] in self.system_vars:
+		
+			return [True,'rsp',False,self.system_vars[varname[0]].var_type]
 			
 		else:
 		
