@@ -152,6 +152,17 @@ class vV_Array_Type(vV_Structure_Type):
 		e = e * self.content.calc_size()
 		
 		return e
+		
+	def get_total_elem(self):
+	
+		e = 1
+		for d in range(0,self.dim):
+		
+			e = e * self.size[d]
+			
+		#e = e * self.content.calc_size()
+		
+		return e
 			
 			
 	def __str__(self):

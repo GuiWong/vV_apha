@@ -5,6 +5,7 @@ import precompiler.VarUpdate.vV_Variable as vV_Var
 
 class Var_Op_Solver:
 
+	current_assign= 0
 
 	def __init__(self,namespace):
 	
@@ -63,8 +64,191 @@ class Var_Op_Solver:
 		txt += '	mov [edi] , ecx	\n'
 		
 		return txt
+		
+	def solve_assign(self, src , dst , scope):
+	
+	
+		
+		src_dat = self.solver.solve_var_name(src,scope)
+		dst_dat = self.solver.solve_var_name(dst,scope)
+		txt=''
+		
+		
+		
+		print src_dat
+		print dst_dat
+		#if isinstance(src_dat[1],vV_Var.vV_Int_Type): 
 
-
+		txt+=src_dat[0]
+		txt += '	lea esi , [edi+eax]	\n'
+		txt += dst_dat[0]
+		txt += '	lea edi , [edi+eax]	\n'
+		txt += self.recursive_assignator(src_dat[1],dst_dat[1])
+			
+		self.current_assign+=1
+		return txt
+			
+		#	if isinstance(dst_dat[1],vV_Var.vV_Int_Type):
+		#		txt += '	mov [edi+eax] , [esi]	\n'
+		#	elif isinstance(dst_dat[1],vV_Var.vV_Ref_Type) and isinstance(dst_dat[1].content,vV_Var.vV_Int_Type):
+		#		txt += '	mov [edi+eax] , esi	\n'
+		#	return txt
+		#	
+		#else:
+		
+		#	return 'Unimplemented'
+			
+	def check_signature(self,src_type,dst_type):
+	
+		check = False
+		
+		
+		
+		if src_type.__class__ == dst_type.__class__:
+		
+			if isinstance(src_type,vV_Var.vV_Array_Type):
+				
+				if src_type.calc_size() == dst_type.calc_size():
+					
+						return self.check_signature(src_type.content,dst_type.content)
+						
+			elif isinstance(src_type,vV_Var.vV_Ref_Type):
+			
+				return self.check_signature(src_type.content,dst_type.content)
+				
+			elif isinstance(src_type,vV_Var.vV_Int_Type):
+			
+				return True
+				
+		#elif isinstance(dst_type,vV_Var.vV_Ref_Type):
+		
+		#	return self.check_signature(src_type,dst_type.content)
+			
+		else:
+		
+			return False
+			
+	def reduce_array(self,arr_type,size):
+	
+	
+		current_size = arr_type.get_total_elem()
+		remaining_size = current_size / size
+		
+		assert current_size % size == 0 , "FATAL: can't cast array"
+		
+		if remaining_size == 1:
+		
+			return arr_type.content
+		else:
+		
+			return vV_Var.vV_Array_Type(arr_type.content,1,[remaining_size])
+ 		
+		
+	def recursive_assignator(self,src_type,dst_type,loop_level=0):
+	
+	
+		if src_type.__class__ == dst_type.__class__:
+		
+			if isinstance(src_type,vV_Var.vV_Array_Type):
+			
+			
+				if src_type.content.__class__ == dst_type.content.__class__:
+				
+					
+					if src_type.calc_size() == dst_type.calc_size():
+					
+						txt = '	mov ecx , '+str(src_type.calc_size() / 8)+'	\n'
+						txt += '	rep movsb	\n'
+						return txt
+						
+					else:
+					
+						assert False , "TODO: Catch this on type check level"
+										
+				else:
+				
+					if isinstance(dst_type.content,vV_Var.vV_Ref_Type):
+					
+						size = dst_type.get_total_elem()
+						
+						print size
+						
+						new_src = self.reduce_array(src_type,size)
+						dst_data_size = dst_type.content.calc_size() / 8
+						src_data_size = new_src.calc_size() / 8
+						
+						
+						if self.check_signature(new_src,dst_type.content.content):
+						
+							txt= '	mov r8 , rsp	\n'
+							txt+= '	push rsi 	\n'
+							txt+= '	push rdi	\n'
+							
+							txt+= '	xor ecx , ecx	\n'
+							txt+= 'loop_assign_'+str(self.current_assign)+'_'+str(loop_level)+':	\n' 
+							
+							#txt+='	mov eax , ecx	\n'
+							#txt+='	mov edx , '+str(dst_data_size)+'	\n'
+							#txt+='	mul edx	\n'
+							
+							txt+='	mov esi , [r8 - 8]	\n'
+							txt+='	lea esi , [esi + ecx * '+str(src_data_size)+']	\n'
+							txt+='	mov edi , [r8 -16]	\n'
+							txt+='	lea edi , [edi + ecx * '+str(dst_data_size)+']	\n'
+							
+							
+							closetxt = '	inc ecx	\n'
+							closetxt +='	cmp ecx , '+str(size)+'	\n'
+							closetxt +='	jb '+'loop_assign_'+str(self.current_assign)+'_'+str(loop_level)+'	\n'
+							closetxt +='	add rsp , 16	\n'
+							
+							loop_level += 1
+							return txt + self.recursive_assignator(src_type.content,dst_type.content,loop_level) + closetxt
+					
+						else:
+							
+							print new_src
+							print dst_type.content
+							#print new_src
+							#print new_src.calc_size()
+							#print dst_type.content
+							assert False , "BAD SIGNATURE"		
+				
+					else:
+					
+						assert False , "TODO: Implement Array Deref"
+			else:
+			
+				if isinstance(src_type,vV_Var.vV_Ref_Type):
+				
+					if self.check_signature(src_type.content,dst_type.content):
+					
+						return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'
+						
+					elif self.check_signature(src_type,dst_type.content):
+					
+						return '	mov [edi] , esi	\n'
+						
+					else:
+						print src_type.content
+						print dst_type
+						return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'+self.recursive_assignator(src_type.content,dst_type,loop_level)
+					
+				elif isinstance(src_type,vV_Var.vV_Int_Type):
+				
+					return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'
+			
+		else:
+		
+			if isinstance(dst_type,vV_Var.vV_Ref_Type) and self.check_signature(src_type,dst_type.content):
+			
+				return '	mov [edi] , esi	\n'
+				
+				
+			if isinstance(src_type,vV_Var.vV_Ref_Type):
+			
+				
+				return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'+self.recursive_assignator(src_type.content,dst_type,loop_level)
 class Recursive_Var_Solver:
 
 
@@ -134,6 +318,7 @@ class Recursive_Var_Solver:
 			if len(name[1]) == 0:
 				return ['	xor eax , eax\n'+'	lea edi , '+self.solve_adress(ns_data)+'	\n' , ns_data[3] ]
 			else:
+				
 				ret_value = self.solve_indexing(name[1],ns_data[3])
 				return [ self.solve_referencing(ns_data,ns_data[3]) + ret_value[0] , ret_value[1] ]
 		
@@ -164,7 +349,7 @@ class Recursive_Var_Solver:
 	
 		if len(var_type.size) == 1:
 		
-			size = var_type.content.calc_size()
+			size = var_type.content.calc_size() / 8
 			
 		else:
 		
@@ -175,9 +360,9 @@ class Recursive_Var_Solver:
 		txt= ''
 		txt += '	add eax , ecx	\n'
 		
-		if size/8.0 in pow2:
+		if size in pow2:
 							
-			txt += "	shl eax , "+str(pow2.index(size/8.0) + 1) +"	\n"
+			txt += "	shl eax , "+str(pow2.index(size) + 1) +"	\n"
 			
 		elif size == 1:
 		
@@ -204,9 +389,9 @@ class Recursive_Var_Solver:
 	def finish_array(self,var_type):
 	
 		if isinstance(var_type,vV_Var.vV_Ref_Type):
-			size = var_type.calc_size()
+			size = var_type.calc_size() / 8
 		else:
-			size = var_type.calc_partial_size(1)
+			size = var_type.calc_partial_size(1) / 8
 		pow2 = [2,4,8,16,32,64,128,256,512,1024,2048,4096]
 		txt = ''
 		if size in pow2:
@@ -232,15 +417,20 @@ class Recursive_Var_Solver:
 		txt += '	xor eax , eax	\n'
 		working_type = var_type
 		
+		
+		while isinstance(working_type,vV_Var.vV_Ref_Type):
+		
+			working_type = working_type.content
+		
 		current = 1
 		for i in indexes:
 		
 			print i
-			print working_type.size[0]
+			#print working_type.size[0]
 			#print'------------------------'
 			txt += self.next_index(working_type,i)
 			working_type = working_type.get_partial(1)
-			print working_type.size
+			#print working_type.size
 			print'------------------------'
 			
 			if isinstance(working_type,vV_Var.vV_Ref_Type) and current < len(indexes):
@@ -259,6 +449,7 @@ class Recursive_Var_Solver:
 			current += 1
 		if isinstance(working_type,vV_Var.vV_Array_Type):
 	
+			#txt += 'HERE'
 			txt += self.finish_array(working_type)
 			
 		

@@ -98,7 +98,9 @@ def check_valid(type_b,type_a):
 				
 				print 'Good Base Size '
 				
-				if type_a.get_partial(dimdown).__class__ == type_b.content.__class__:
+				if type_a.get_partial(dimdown).__class__ == type_b.content.content.__class__:
+				
+				
 					if (type_a.get_partial(dimdown).__class__ == vV_Var.vV_Int_Type):
 							return True
 					else:

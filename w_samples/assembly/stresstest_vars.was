@@ -1,0 +1,14 @@
+ segment .data 
+
+ i_global:
+.var_1: dq 69
+ segment .bss 
+
+	u_global:
+.ref_var_1: resb 4 
+.ref_var_2: resb 4 
+.array_1: resb 32 
+.array_of_ref_1: resb 32 
+.double_ref_var_1: resb 4 
+.ref_to_array_1: resb 4 
+.var_2: resb 4 

@@ -1,0 +1,136 @@
+
+
+
+;-----Int------
+
+var 69 var_1
+var int var_2
+
+
+
+;----refs-------
+
+var (int) ref_var_1
+var (int) ref_var_2
+
+var ((int)) double_ref_var_1
+
+
+(var_1)var_2=
+(var_1)ref_var_1=
+
+
+def liner
+
+	'----' dup wout_ dup wout_ dup wout_ flush
+	
+endef
+
+var_1 out
+var_2 out
+ref_var_1 out
+
+flush
+420 ref_var_1=
+
+
+var_1 out
+var_2 out
+ref_var_1 out
+
+
+flush
+666999 var_2=
+
+var_1 out
+var_2 out
+ref_var_1 out
+
+flush
+0 var_1=
+
+var_1 out
+var_2 out
+ref_var_1 out
+
+liner
+
+;------Arrays------
+
+var int[8] array_1
+var (int[8]) ref_to_array_1
+
+var (int)[8] array_of_ref_1
+
+
+11 0 []array_1=
+22 1 []array_1=
+33 2 []array_1=
+44 3 []array_1=
+55 4 []array_1=
+66 5 []array_1=
+77 6 []array_1=
+88 7 []array_1=
+
+def print_array
+
+	8 0
+	do
+		
+		dup []array_1 out
+		1 +
+		;2dup out out
+		2dup
+		>?
+	while
+	
+endef
+
+print_array
+
+(array_1)ref_to_array_1=
+(array_1)array_of_ref_1=
+
+flush
+
+69 0 []ref_to_array_1=
+420 1 []ref_to_array_1=
+666999 2 []ref_to_array_1=
+10001 3 []ref_to_array_1=
+
+print_array
+
+flush
+
+690000 0 []array_of_ref_1=
+
+
+
+420 5 []array_of_ref_1=
+666999 6 []array_of_ref_1=
+10001 7 []array_of_ref_1=
+
+print_array
+
+liner
+
+
+(ref_var_1)double_ref_var_1=
+
+'a' cout
+
+42 ref_var_1=
+double_ref_var_1 out
+
+'b' cout
+
+
+(ref_var_1)ref_var_2=
+
+'c' cout
+
+ref_var_2 out
+
+'d' cout
+
+

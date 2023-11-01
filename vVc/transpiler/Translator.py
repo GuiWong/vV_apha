@@ -684,17 +684,16 @@ vV_entry_point:
 			print arg
 			print '#########################\n\n'
 			
-			#print '\n-------------------------'
-			#print self.rec_var_solver.solve_var_name(arg[0],self.current_scope)
-			#print self.rec_var_solver.solve_indexing(arg[0])
-			#print '-------------------------'
+			print '\n-------------------------'
+			print self.var_op_solver.solve_assign(arg[0],arg[1],self.current_scope)
+			print '-------------------------'
 			#print self.rec_var_solver.solve_var_name(arg[1],self.current_scope)
 			#print self.rec_var_solver.solve_indexing(arg[1])
 			#print '-------------------------\n'
 			
 			#assert False , 'Op Unimplemented'
-			txt += self.var_solver.ref_assign(arg[0],arg[1],self.current_scope)
-			
+			#txt += self.var_solver.ref_assign(arg[0],arg[1],self.current_scope)
+			txt += self.var_op_solver.solve_assign(arg[0],arg[1],self.current_scope)
 		
 		elif op == OP.FLUSH2:
 
