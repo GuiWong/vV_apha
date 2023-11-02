@@ -30,7 +30,9 @@ endef
 def collatz
 	local int val
 	local 0 c
-	 val=
+
+	val=
+
 	do
 		val memoed <? if
 		
@@ -69,9 +71,11 @@ def print_bigger
 	flush
 endef
 
+'a' cout
 
 collatz
 
+'b' cout
 
 do
 

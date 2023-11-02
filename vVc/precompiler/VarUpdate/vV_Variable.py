@@ -32,6 +32,7 @@ class vV_Pointer_Type:
 
 	size = 32
 	content = vV_Primary_Type()
+	use_offset = False
 	
 	def calc_size(self):
 	
@@ -61,9 +62,9 @@ class vV_Int_Type(vV_Primary_Type):
 	
 		pass
 	
-	def __str__(self):
+	#def __str__(self):
 	
-		return "<int>"
+	#	return "<int>"
 		
 		
 class vV_Ref_Type(vV_Pointer_Type):
@@ -72,9 +73,9 @@ class vV_Ref_Type(vV_Pointer_Type):
 	
 		self.content = content
 	
-	def __str__(self):
+	#def __str__(self):
 	
-		return "("+str(self.content)+")"
+	#	return "("+str(self.content)+")"
 		
 	def calc_partial_size(self,dim_down):
 	
@@ -164,7 +165,7 @@ class vV_Array_Type(vV_Structure_Type):
 		
 		return e
 			
-			
+	'''		
 	def __str__(self):
 	
 		buff = []
@@ -179,7 +180,7 @@ class vV_Array_Type(vV_Structure_Type):
 	
 		return str(self.content) +"["+str(self.dim)+"]"#  ---  "+str(self.content) + buff
 		
-		
+	'''	
 		
 class vV_Type:		#Need to refactor
 
@@ -239,8 +240,8 @@ class vV_Variable:
 			return "not initialized to any value"
 		
 		
-	def __str__(self):
+	#def __str__(self):
 	
-		return "Var "+self.name+" \n Scope: "+OP.var_define.keys()[OP.var_define.values().index(self.scope)]+"\n Type: "+str(self.var_type)+"\n "+ self.value_debug_txt()
+	#	return "Var "+self.name+" \n Scope: "+OP.var_define.keys()[OP.var_define.values().index(self.scope)]+"\n Type: "+str(self.var_type)+"\n "+ self.value_debug_txt()
 		
 		

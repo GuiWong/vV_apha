@@ -1,0 +1,39 @@
+
+
+
+;-----Int------
+
+var 69 var_1
+
+var int[4][8] tablo
+
+11 0 0 [][]tablo=
+22 1 0 [][]tablo=
+33 2 0 [][]tablo=
+44 3 0 [][]tablo=
+
+
+def test_local
+
+	local 87 a
+	local (int) ptr
+	local ((int)) pptr
+	
+	a out
+	(var_1)ptr=
+	ptr out
+	(a)ptr=
+	ptr out
+	(ptr)pptr=
+	a out
+	pptr out
+	'@' cout
+	([1][0]tablo)ptr=
+	'@' cout
+	(ptr)pptr=
+	pptr out
+	
+endef
+flush flush
+42 var_1=
+test_local

@@ -26,6 +26,19 @@ def liner
 	
 endef
 
+def localizer
+
+	local int a
+	local 22 b
+	local 420 c
+	
+	a=
+	b out
+	c out
+	a out
+	
+endef
+
 var_1 out
 var_2 out
 ref_var_1 out
@@ -133,4 +146,31 @@ ref_var_2 out
 
 'd' cout
 
+liner
+3389 localizer
 
+liner
+
+([2]ref_to_array_1)ref_var_1=
+ref_var_1 out
+(ref_var_1)var_1=
+var_1 out
+69 [2]ref_to_array_1=
+ref_var_1 out
+
+def test_local
+
+	local 87 a
+	local (int) ptr
+	local ((int)) pptr
+	
+	a out
+	(var_1)ptr=
+	ptr out
+	(a)ptr=
+	ptr out
+	
+endef
+flush flush
+42 var_1=
+test_local

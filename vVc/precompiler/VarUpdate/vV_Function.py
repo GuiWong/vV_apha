@@ -12,8 +12,8 @@ class vV_Function:
 
 
 	name = ''
-	referenced_vars = []
-	local_vars = []
+	referenced_vars = {}
+	local_vars = {}
 	code = []
 	
 	

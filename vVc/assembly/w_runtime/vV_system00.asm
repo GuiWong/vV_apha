@@ -13,6 +13,11 @@ segment .data
 
 	ALIGN 8
 	
+;--System adresses offsets----------------
+
+	vV_local_offset:
+	dq 0
+	
 	
 ;---------------------Error Managment----------
 

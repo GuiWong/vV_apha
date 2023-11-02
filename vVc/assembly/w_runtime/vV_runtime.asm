@@ -72,6 +72,11 @@ segment .text
 		
 		mov DWORD[vV_sys_format_mode] , vV_ascii_int_to_dec
 		
+		
+		mov ecx , 4294967295
+		sub QWORD[vV_local_offset] , rcx
+		
+		
 		ret
 		
 		
@@ -82,6 +87,8 @@ _start:				;Entry point of Every Program
 		
 
 	mov rbp, rsp				;Setup Stack Frame
+	
+	mov QWORD[vV_local_offset] , rbp
 	
 	mov r15 , fake_stack_start			;setup fake data stack
 	

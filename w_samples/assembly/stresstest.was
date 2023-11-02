@@ -79,6 +79,75 @@ liner:
 	mov rsp , rbp	
 	pop rbp	
 	ret	
+localizer:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 32	;Space for local vars	
+
+;------Init Phase
+mov DWORD[rbp  - 16 ] , 420		; space for lvar 1 (c)	
+mov DWORD[rbp  - 24 ] , 22		; space for lvar 2 (b)	
+
+.tailcall:		;Body Section	
+
+ ;OpADR: [9]  ; Var assignement					
+
+	xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
+
+ ;OpADR: [10]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+ ;OpADR: [11]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [12]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+ ;OpADR: [13]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [14]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+ ;OpADR: [15]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [16]  ; End of func opcode					
+
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
 print_array:		
 	push rbp	
 	mov rbp , rsp	
@@ -89,12 +158,12 @@ print_array:
 
 .tailcall:		;Body Section	
 
- ;OpADR: [9]  ; PUSH opcode 
+ ;OpADR: [17]  ; PUSH opcode 
 
 	vV_push 8 
 
 
- ;OpADR: [10]  ; PUSH opcode 
+ ;OpADR: [18]  ; PUSH opcode 
 
 	vV_push 0 
 
@@ -105,35 +174,36 @@ print_array:
 ;------------------------------------------------------
 
 
- ;OpADR: [11]  
- ;OpADR: [12]  ; DUP opcode (1)			
+ ;OpADR: [19]  
+ ;OpADR: [20]  ; DUP opcode (1)			
 
 	vV_dup 1			
 
 
- ;OpADR: [13]  ; Var invocation					
+ ;OpADR: [21]  ; Var invocation					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
- ;OpADR: [14]  ; OUT opcode (0)			
+ ;OpADR: [22]  ; OUT opcode (0)			
 
 	call vV_io_out_default			
 						
 
- ;OpADR: [15]  ; PUSH opcode 
+ ;OpADR: [23]  ; PUSH opcode 
 
 	vV_push 1 
 
 
- ;OpADR: [16]  ; ADD opcode 					
+ ;OpADR: [24]  ; ADD opcode 					
 
 	mov eax , vV_2nd			
 	add eax , vV_top			
@@ -141,12 +211,12 @@ print_array:
 
 	vV_dec_sp 1		
 
- ;OpADR: [17]  ; DUP opcode (2)			
+ ;OpADR: [25]  ; DUP opcode (2)			
 
 	vV_dup 2			
 
 
- ;OpADR: [18]  ; MORE opcode					
+ ;OpADR: [26]  ; MORE opcode					
 
 	mov eax , vV_top			
 	cmp DWORD vV_2nd , eax			
@@ -161,7 +231,7 @@ print_array:
 
 	vV_dec_sp 1				
 
- ;OpADR: [19]  ; WHILE opcode					
+ ;OpADR: [27]  ; WHILE opcode					
 
 	vV_dec_sp 1				
 	or DWORD[vV_sp] , 0			
@@ -173,7 +243,93 @@ print_array:
 ;------------------------------------------------------
 
 
- ;OpADR: [20]  ; End of func opcode					
+ ;OpADR: [28]  ; End of func opcode					
+
+
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+test_local:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 32	;Space for local vars	
+
+;------Init Phase
+mov DWORD[rbp  - 8 ] , 87		; space for lvar 0 (a)	
+
+.tailcall:		;Body Section	
+
+ ;OpADR: [29]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+ ;OpADR: [30]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [31]  ; Var Ref assignement					
+
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+ ;OpADR: [32]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
+
+ ;OpADR: [33]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [34]  ; Var Ref assignement					
+
+	xor rax , rax
+	lea rdi , [rbp - 8]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+ ;OpADR: [35]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
+
+ ;OpADR: [36]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [37]  ; End of func opcode					
 
 
 ;------Cleanup Phase
@@ -195,31 +351,35 @@ vV_entry_point:
 	
  ;OpADR: [0]  ; Var Ref assignement					
 
-	xor eax , eax
-	lea edi , [i_global.var_1]	
-	lea esi , [edi+eax]	
-	xor eax , eax
-	lea edi , [u_global.var_2]	
-	lea edi , [edi+eax]	
-	mov eax , [esi]	
-	mov DWORD[edi] , eax	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.var_2]	
+	add rdi , rax	
+	mov eax , [rsi]	
+	mov DWORD[rdi] , eax	
 
  ;OpADR: [1]  ; Var Ref assignement					
 
-	xor eax , eax
-	lea edi , [i_global.var_1]	
-	lea esi , [edi+eax]	
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
-	lea edi , [edi+eax]	
-	mov [edi] , esi	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
 
  ;OpADR: [2]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [i_global.var_1]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [3]  ; OUT opcode (0)			
 
@@ -228,10 +388,11 @@ vV_entry_point:
 
  ;OpADR: [4]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.var_2]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.var_2]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [5]  ; OUT opcode (0)			
 
@@ -240,11 +401,12 @@ vV_entry_point:
 
  ;OpADR: [6]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
-	mov ecx , [edi+eax]	
-	mov ecx , [ecx]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
 
  ;OpADR: [7]  ; OUT opcode (0)			
 
@@ -262,19 +424,20 @@ vV_entry_point:
 
  ;OpADR: [10]  ; Var assignement					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov edi , [edi]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov edi , [rdi]	
+	mov [rdi] , ecx	
 
  ;OpADR: [11]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [i_global.var_1]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [12]  ; OUT opcode (0)			
 
@@ -283,10 +446,11 @@ vV_entry_point:
 
  ;OpADR: [13]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.var_2]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.var_2]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [14]  ; OUT opcode (0)			
 
@@ -295,11 +459,12 @@ vV_entry_point:
 
  ;OpADR: [15]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
-	mov ecx , [edi+eax]	
-	mov ecx , [ecx]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
 
  ;OpADR: [16]  ; OUT opcode (0)			
 
@@ -317,18 +482,19 @@ vV_entry_point:
 
  ;OpADR: [19]  ; Var assignement					
 
-	xor eax , eax
-	lea edi , [u_global.var_2]	
+	xor rax , rax
+	lea rdi , [u_global.var_2]	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [20]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [i_global.var_1]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [21]  ; OUT opcode (0)			
 
@@ -337,10 +503,11 @@ vV_entry_point:
 
  ;OpADR: [22]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.var_2]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.var_2]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [23]  ; OUT opcode (0)			
 
@@ -349,11 +516,12 @@ vV_entry_point:
 
  ;OpADR: [24]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
-	mov ecx , [edi+eax]	
-	mov ecx , [ecx]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
 
  ;OpADR: [25]  ; OUT opcode (0)			
 
@@ -371,18 +539,19 @@ vV_entry_point:
 
  ;OpADR: [28]  ; Var assignement					
 
-	xor eax , eax
-	lea edi , [i_global.var_1]	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [29]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [i_global.var_1]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [30]  ; OUT opcode (0)			
 
@@ -391,10 +560,11 @@ vV_entry_point:
 
  ;OpADR: [31]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.var_2]	
-	mov ecx , [edi+eax]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.var_2]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
 
  ;OpADR: [32]  ; OUT opcode (0)			
 
@@ -403,11 +573,12 @@ vV_entry_point:
 
  ;OpADR: [33]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
-	mov ecx , [edi+eax]	
-	mov ecx , [ecx]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
 
  ;OpADR: [34]  ; OUT opcode (0)			
 
@@ -430,16 +601,16 @@ vV_entry_point:
 
  ;OpADR: [38]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [39]  ; PUSH opcode 
 
@@ -453,16 +624,16 @@ vV_entry_point:
 
  ;OpADR: [41]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [42]  ; PUSH opcode 
 
@@ -476,16 +647,16 @@ vV_entry_point:
 
  ;OpADR: [44]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [45]  ; PUSH opcode 
 
@@ -499,16 +670,16 @@ vV_entry_point:
 
  ;OpADR: [47]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [48]  ; PUSH opcode 
 
@@ -522,16 +693,16 @@ vV_entry_point:
 
  ;OpADR: [50]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [51]  ; PUSH opcode 
 
@@ -545,16 +716,16 @@ vV_entry_point:
 
  ;OpADR: [53]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [54]  ; PUSH opcode 
 
@@ -568,16 +739,16 @@ vV_entry_point:
 
  ;OpADR: [56]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [57]  ; PUSH opcode 
 
@@ -591,16 +762,16 @@ vV_entry_point:
 
  ;OpADR: [59]  ; Var assignement					
 
-	lea edi , [u_global.array_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [60]  ; Function Call					
 
@@ -608,32 +779,36 @@ vV_entry_point:
 
  ;OpADR: [61]  ; Var Ref assignement					
 
-	xor eax , eax
-	lea edi , [u_global.array_1]	
-	lea esi , [edi+eax]	
-	xor eax , eax
-	lea edi , [u_global.ref_to_array_1]	
-	lea edi , [edi+eax]	
-	mov [edi] , esi	
+	xor rax , rax
+	lea rdi , [u_global.array_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ref_to_array_1]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
 
  ;OpADR: [62]  ; Var Ref assignement					
 
-	xor eax , eax
-	lea edi , [u_global.array_1]	
-	lea esi , [edi+eax]	
-	xor eax , eax
-	lea edi , [u_global.array_of_ref_1]	
-	lea edi , [edi+eax]	
+	xor rax , rax
+	lea rdi , [u_global.array_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.array_of_ref_1]	
+	add rdi , rax	
 	mov r8 , rsp	
 	push rsi 	
 	push rdi	
 	xor ecx , ecx	
 loop_assign_7_0:	
-	mov esi , [r8 - 8]	
+	mov rsi , [r8 - 8]	
 	lea esi , [esi + ecx * 4]	
-	mov edi , [r8 -16]	
+	mov rdi , [r8 -16]	
 	lea edi , [edi + ecx * 4]	
-	mov [edi] , esi	
+	mov  rax , rsi	
+	mov [rdi] , eax	
 	inc ecx	
 	cmp ecx , 8	
 	jb loop_assign_7_0	
@@ -655,17 +830,17 @@ loop_assign_7_0:
 
  ;OpADR: [66]  ; Var assignement					
 
-	lea edi , [u_global.ref_to_array_1]	
-	mov edi , [edi]	
-	xor eax , eax	
+	lea rdi , [u_global.ref_to_array_1]	
+	mov edi , [rdi]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [67]  ; PUSH opcode 
 
@@ -679,17 +854,17 @@ loop_assign_7_0:
 
  ;OpADR: [69]  ; Var assignement					
 
-	lea edi , [u_global.ref_to_array_1]	
-	mov edi , [edi]	
-	xor eax , eax	
+	lea rdi , [u_global.ref_to_array_1]	
+	mov edi , [rdi]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [70]  ; PUSH opcode 
 
@@ -703,17 +878,17 @@ loop_assign_7_0:
 
  ;OpADR: [72]  ; Var assignement					
 
-	lea edi , [u_global.ref_to_array_1]	
-	mov edi , [edi]	
-	xor eax , eax	
+	lea rdi , [u_global.ref_to_array_1]	
+	mov edi , [rdi]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [73]  ; PUSH opcode 
 
@@ -727,17 +902,17 @@ loop_assign_7_0:
 
  ;OpADR: [75]  ; Var assignement					
 
-	lea edi , [u_global.ref_to_array_1]	
-	mov edi , [edi]	
-	xor eax , eax	
+	lea rdi , [u_global.ref_to_array_1]	
+	mov edi , [rdi]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
 
  ;OpADR: [76]  ; Function Call					
 
@@ -759,17 +934,17 @@ loop_assign_7_0:
 
  ;OpADR: [80]  ; Var assignement					
 
-	lea edi , [u_global.array_of_ref_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_of_ref_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov edi , [edi]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov edi , [rdi]	
+	mov [rdi] , ecx	
 
  ;OpADR: [81]  ; PUSH opcode 
 
@@ -783,17 +958,17 @@ loop_assign_7_0:
 
  ;OpADR: [83]  ; Var assignement					
 
-	lea edi , [u_global.array_of_ref_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_of_ref_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov edi , [edi]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov edi , [rdi]	
+	mov [rdi] , ecx	
 
  ;OpADR: [84]  ; PUSH opcode 
 
@@ -807,17 +982,17 @@ loop_assign_7_0:
 
  ;OpADR: [86]  ; Var assignement					
 
-	lea edi , [u_global.array_of_ref_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_of_ref_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov edi , [edi]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov edi , [rdi]	
+	mov [rdi] , ecx	
 
  ;OpADR: [87]  ; PUSH opcode 
 
@@ -831,17 +1006,17 @@ loop_assign_7_0:
 
  ;OpADR: [89]  ; Var assignement					
 
-	lea edi , [u_global.array_of_ref_1]	
-	xor eax , eax	
+	lea rdi , [u_global.array_of_ref_1]	
+	xor rax , rax	
 	vV_pop ecx	
 	cmp ecx , 8	
 	jge vV_bound_error	
 	add eax , ecx	
 	shl eax , 2	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov edi , [edi]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov edi , [rdi]	
+	mov [rdi] , ecx	
 
  ;OpADR: [90]  ; Function Call					
 
@@ -853,13 +1028,14 @@ loop_assign_7_0:
 
  ;OpADR: [92]  ; Var Ref assignement					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
-	lea esi , [edi+eax]	
-	xor eax , eax
-	lea edi , [u_global.double_ref_var_1]	
-	lea edi , [edi+eax]	
-	mov [edi] , esi	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.double_ref_var_1]	
+	add rdi , rax	
+	mov [rdi] , esi	
 
  ;OpADR: [93]  ; PUSH opcode 
 
@@ -879,21 +1055,22 @@ loop_assign_7_0:
 
  ;OpADR: [96]  ; Var assignement					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
 	vV_pop ecx	
-	lea edi , [edi+eax]	
-	mov edi , [edi]	
-	mov [edi] , ecx	
+	add rdi , rax	
+	mov edi , [rdi]	
+	mov [rdi] , ecx	
 
  ;OpADR: [97]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.double_ref_var_1]	
-	mov ecx , [edi+eax]	
-	mov ecx , [ecx]	
-	mov ecx , [ecx]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.double_ref_var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	mov eax , [rax]	
+	vV_push eax	
 
  ;OpADR: [98]  ; OUT opcode (0)			
 
@@ -913,14 +1090,15 @@ loop_assign_7_0:
 
  ;OpADR: [101]  ; Var Ref assignement					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_1]	
-	lea esi , [edi+eax]	
-	xor eax , eax
-	lea edi , [u_global.ref_var_2]	
-	lea edi , [edi+eax]	
-	mov eax , [esi]	
-	mov DWORD[edi] , eax	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_2]	
+	add rdi , rax	
+	mov eax , [rsi]	
+	mov DWORD[rdi] , eax	
 
  ;OpADR: [102]  ; PUSH opcode 
 
@@ -935,11 +1113,12 @@ loop_assign_7_0:
 
  ;OpADR: [104]  ; Var invocation					
 
-	xor eax , eax
-	lea edi , [u_global.ref_var_2]	
-	mov ecx , [edi+eax]	
-	mov ecx , [ecx]	
-	vV_push ecx	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_2]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
 
  ;OpADR: [105]  ; OUT opcode (0)			
 
@@ -956,6 +1135,140 @@ loop_assign_7_0:
 		
 	call vV_io_out_char				
 						
+
+ ;OpADR: [108]  ; Function Call					
+
+		call liner			
+
+ ;OpADR: [109]  ; PUSH opcode 
+
+	vV_push 3389 
+
+
+ ;OpADR: [110]  ; Function Call					
+
+		call localizer			
+
+ ;OpADR: [111]  ; Function Call					
+
+		call liner			
+
+ ;OpADR: [112]  ; Var Ref assignement					
+
+	lea rdi , [u_global.ref_to_array_1]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 2	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+ ;OpADR: [113]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
+
+ ;OpADR: [114]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [115]  ; Var Ref assignement					
+
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	add rdi , rax	
+	mov DWORD eax , [rsi]	
+	mov rsi , rax	
+	mov eax , [rsi]	
+	mov DWORD[rdi] , eax	
+
+ ;OpADR: [116]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+ ;OpADR: [117]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [118]  ; PUSH opcode 
+
+	vV_push 69 
+
+
+ ;OpADR: [119]  ; Var assignement					
+
+	lea rdi , [u_global.ref_to_array_1]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 2	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
+
+ ;OpADR: [120]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [u_global.ref_var_1]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	mov eax , [rax]	
+	vV_push eax	
+
+ ;OpADR: [121]  ; OUT opcode (0)			
+
+	call vV_io_out_default			
+						
+
+ ;OpADR: [122]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [123]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [124]  ; PUSH opcode 
+
+	vV_push 42 
+
+
+ ;OpADR: [125]  ; Var assignement					
+
+	xor rax , rax
+	lea rdi , [i_global.var_1]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov [rdi] , ecx	
+
+ ;OpADR: [126]  ; Function Call					
+
+		call test_local			
 		
 		ret
 

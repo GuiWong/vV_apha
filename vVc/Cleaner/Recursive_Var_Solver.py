@@ -25,18 +25,24 @@ class Var_Op_Solver:
 		
 		print 'solving push:'
 		print var_type
+		print data[0]
+		#print 
 		
 
-			
-		txt += '	mov ecx , [edi+eax]	\n'
+		txt += '	add rdi , rax	\n'	
+		txt += '	mov eax , [rdi]	\n'
 		
 		while isinstance(var_type,vV_Var.vV_Ref_Type):
 			
 			print 'is a ref' 
-			txt += '	mov ecx , [ecx]	\n'
+			print var_type.use_offset
+			txt += self.make_64_adress(var_type)
+			txt += '	mov eax , [rax]	\n'
+			
 			var_type = var_type.content		
 		
-		txt += '	vV_push ecx	\n'
+		#txt += self.make_32_adress(var_type)
+		txt += '	vV_push eax	\n'
 		
 		
 		return txt
@@ -55,13 +61,17 @@ class Var_Op_Solver:
 			
 		#txt += '	lea ecx , [edi+eax]	\n'
 		txt += '	vV_pop ecx	\n'
-		txt += '	lea edi , [edi+eax]	\n'
+		
+		txt += '	add rdi , rax	\n'
+		#txt += '	lea edi , [rdi]	\n'
 		
 		while isinstance(var_type,vV_Var.vV_Ref_Type):
 		
-			txt += '	mov edi , [edi]	\n'
+			txt += '	mov edi , [rdi]	\n'
+			if var_type.use_offset:
+				assert False, 'Unimplemented'
 			var_type = var_type.content
-		txt += '	mov [edi] , ecx	\n'
+		txt += '	mov [rdi] , ecx	\n'
 		
 		return txt
 		
@@ -78,11 +88,17 @@ class Var_Op_Solver:
 		print src_dat
 		print dst_dat
 		#if isinstance(src_dat[1],vV_Var.vV_Int_Type): 
+		
+		self.check_offset_adress( src , dst , scope)
+		
 
 		txt+=src_dat[0]
-		txt += '	lea esi , [edi+eax]	\n'
+		#txt += '	lea esi , [edi+eax]	\n'
+		txt += '	mov rsi , rdi	\n'
+		txt += '	add rsi , rax	\n'
 		txt += dst_dat[0]
-		txt += '	lea edi , [edi+eax]	\n'
+		#txt += '	lea edi , [edi+eax]	\n'
+		txt += '	add rdi , rax	\n'
 		txt += self.recursive_assignator(src_dat[1],dst_dat[1])
 			
 		self.current_assign+=1
@@ -97,6 +113,102 @@ class Var_Op_Solver:
 		#else:
 		
 		#	return 'Unimplemented'
+		
+	#def recursive_offset_adresser(self,)
+		
+	def check_offset_adress(self,src,dst,scope):
+	
+	
+		src_data = self.solver.name_space.solve_var(src,scope)
+		dst_data = self.solver.name_space.solve_var(dst,scope)
+		
+		src_dat = self.solver.solve_var_name(src,scope)
+		dst_dat = self.solver.solve_var_name(dst,scope)
+		print dst_data
+		offseted = False
+		
+		#assert False , 'Break'
+		
+		if not src_data[2]:
+			
+			if isinstance(src_data[3],vV_Var.vV_Ref_Type) or isinstance(src_data[3],vV_Var.vV_Int_Type):
+			
+				offseted=True
+				
+			elif isinstance (src_data[3],vV_Var.vV_Array_Type):
+			
+				assert False, 'Need to implement local Arrays'
+				
+			
+			
+		
+		
+		if isinstance(dst_dat[1],vV_Var.vV_Ref_Type):
+		
+			print 'Found a ref creation'
+			#print dst_data
+			print offseted
+			print dst
+			if dst_data[2]:
+			
+				self.solver.name_space.global_vars[dst_data[1]].var_type.use_offset=offseted
+			
+			else:
+			
+				if dst[0] in self.solver.name_space.functions[scope].local_vars.keys():
+				
+					#self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.use_offset=offseted
+					print offseted
+					dst_dat[1].use_offset=offseted
+					print self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.use_offset
+					#print  self.solver.name_space.functions[scope].local_vars[dst[0]]
+					
+					#print self.solver.name_space.functions[scope].local_vars[dst[0]].var_type
+					
+					#print dst_dat[1]
+					print  self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.use_offset
+					
+					#assert False, "Breakpoint"
+				
+				elif dst[0] in self.solver.name_space.functions[scope].referenced_vars.keys():
+				
+					self.solver.name_space.functions[scope].referenced_vars[dst[0]].var_type.use_offset=offseted
+					
+				else:
+				
+					assert False, "FATAL, couldn't solve var path : " +dst_data[1]+' - '+scope
+					
+			print 'Var offset should be updated'
+			
+			if isinstance(dst_dat[1].content,vV_Var.vV_Ref_Type):
+			
+				print 'ref of ref creation'
+				
+				offseted = src_dat[1].use_offset
+			
+				if dst_data[2]:
+			
+					self.solver.name_space.global_vars[dst_data[1]].var_type.content.use_offset=offseted
+			
+				else:
+			
+					if dst[0] in self.solver.name_space.functions[scope].local_vars.keys():
+				
+						self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.content.use_offset=offseted
+					 
+						print  self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.content
+						print self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.content
+						print  self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.content.use_offset
+				
+					elif dst[0] in self.solver.name_space.functions[scope].referenced_vars.keys():
+				
+						self.solver.name_space.functions[scope].referenced_vars[dst[0]].var_type.content.use_offset=offseted
+					
+					else:
+				
+						assert False, "FATAL, couldn't solve var path : " +dst_data[1]+' - '+scope
+					
+				
 			
 	def check_signature(self,src_type,dst_type):
 	
@@ -191,9 +303,9 @@ class Var_Op_Solver:
 							#txt+='	mov edx , '+str(dst_data_size)+'	\n'
 							#txt+='	mul edx	\n'
 							
-							txt+='	mov esi , [r8 - 8]	\n'
+							txt+='	mov rsi , [r8 - 8]	\n'					#Arrays are ALWAYS direct adressed??
 							txt+='	lea esi , [esi + ecx * '+str(src_data_size)+']	\n'
-							txt+='	mov edi , [r8 -16]	\n'
+							txt+='	mov rdi , [r8 -16]	\n'
 							txt+='	lea edi , [edi + ecx * '+str(dst_data_size)+']	\n'
 							
 							
@@ -223,32 +335,92 @@ class Var_Op_Solver:
 				
 					if self.check_signature(src_type.content,dst_type.content):
 					
-						return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'
+						#if src_type.use_offset:
+						
+						#	assert False , 'Unimplemented'
+						
+						dst_type.use_offset = src_type.use_offset
+					
+						return '	mov eax , [rsi]	\n	mov DWORD[rdi] , eax	\n'
 						
 					elif self.check_signature(src_type,dst_type.content):
 					
-						return '	mov [edi] , esi	\n'
+						#dst_type.content.use_offset = src_type.use_offset
+						txt = ''
+						
+						txt += '	mov rax , rsi	\n'
+						txt += self.make_32_adress(dst_type)
+						txt += '	mov [rdi] , eax	\n'
+						#if src_type.use_offset:
+							
+						#	print txt
+						#	assert False , 'unimplemented'
+							
+						return txt
 						
 					else:
 						print src_type.content
 						print dst_type
-						return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'+self.recursive_assignator(src_type.content,dst_type,loop_level)
+						print '\n\n\n I dont understand this????\n\n\n'
+						return '	mov eax , [rsi]	\n	mov DWORD[rdi] , eax	\n'+self.recursive_assignator(src_type.content,dst_type,loop_level)
 					
 				elif isinstance(src_type,vV_Var.vV_Int_Type):
 				
-					return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'
+					return '	mov eax , [rsi]	\n	mov DWORD[rdi] , eax	\n'
 			
 		else:
 		
 			if isinstance(dst_type,vV_Var.vV_Ref_Type) and self.check_signature(src_type,dst_type.content):
 			
-				return '	mov [edi] , esi	\n'
+			
+				print '\n\nRef Creation:'
+				print dst_type.use_offset
 				
+				#dst_type.use_offset
+				txt = ''
+				txt += '	mov  rax , rsi	\n'
+				
+				txt += self.make_32_adress(dst_type)
+				
+				txt += '	mov [rdi] , eax	\n'
+				#if src_type.use_offset:
+							
+				#	Offset Set before
+							
+				return txt
 				
 			if isinstance(src_type,vV_Var.vV_Ref_Type):
 			
 				
-				return '	mov eax , [esi]	\n	mov DWORD[edi] , eax	\n'+self.recursive_assignator(src_type.content,dst_type,loop_level)
+				txt = ''
+				txt += '	mov DWORD eax , [rsi]	\n'
+				
+				txt += self.make_64_adress(src_type)
+				
+				txt += '	mov rsi , rax	\n'
+			
+				return txt + self.recursive_assignator(src_type.content,dst_type,loop_level)
+				
+	def make_64_adress(self,ref_type):
+	
+		txt = ''
+		if ref_type.use_offset:
+
+
+			txt += '	add rax , [vV_local_offset]	\n'
+			
+		return txt
+			
+	def make_32_adress(self,ref_type):
+	
+		txt= ''
+		if ref_type.use_offset:
+		
+			txt += '	sub rax , [vV_local_offset]	\n'
+			
+		return txt
+				
+				
 class Recursive_Var_Solver:
 
 
@@ -286,11 +458,11 @@ class Recursive_Var_Solver:
 		
 		if isinstance(var_type,vV_Var.vV_Ref_Type):
 		
-			return self.solve_referencing(data,var_type.content) + '	mov edi , [edi]	\n'
+			return self.solve_referencing(data,var_type.content) + '	mov edi , [rdi]	\n'
 			
 		else:
 		
-			return '	lea edi , '+self.solve_adress(data)+'	\n'
+			return '	lea rdi , '+self.solve_adress(data)+'	\n'
 			
 			
 		
@@ -316,7 +488,7 @@ class Recursive_Var_Solver:
 		if ns_data[0]:
 		
 			if len(name[1]) == 0:
-				return ['	xor eax , eax\n'+'	lea edi , '+self.solve_adress(ns_data)+'	\n' , ns_data[3] ]
+				return ['	xor rax , rax\n'+'	lea rdi , '+self.solve_adress(ns_data)+'	\n' , ns_data[3] ]
 			else:
 				
 				ret_value = self.solve_indexing(name[1],ns_data[3])
@@ -414,7 +586,7 @@ class Recursive_Var_Solver:
 	
 
 		txt =''
-		txt += '	xor eax , eax	\n'
+		txt += '	xor rax , rax	\n'
 		working_type = var_type
 		
 		
@@ -437,7 +609,7 @@ class Recursive_Var_Solver:
 			
 				#txt += self.finish_array(working_type)
 				txt += '	add edi , eax	\n'
-				txt += '	xor eax , eax	\n'
+				txt += '	xor rax , rax	\n'
 				working_type = working_type.content
 				
 			while isinstance(working_type,vV_Var.vV_Ref_Type) and current < len(indexes):

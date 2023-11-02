@@ -1,0 +1,8 @@
+ segment .data 
+
+ i_global:
+.var_1: dq 69
+ segment .bss 
+
+	u_global:
+.tablo: resb 128 

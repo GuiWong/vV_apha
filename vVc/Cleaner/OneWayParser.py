@@ -651,7 +651,7 @@ class One_Way_Parser:
 					dst_name = datt[1]
 					
 					
-					if len(datt[0]) == 2:
+					if len(datt[0]) == 2 and type(datt[0]) != str:
 						src_name=datt[0][0]
 						for a in datt[0][1]:
 					
@@ -666,7 +666,7 @@ class One_Way_Parser:
 						src_arg.reverse()
 						
 								
-					if len(datt[1]) == 2:
+					if len(datt[1]) == 2 and type(datt[1]) != str:
 						dst_name=datt[1][0]
 				
 						for a in datt[1][1]:
