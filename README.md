@@ -51,6 +51,10 @@ Now(0.0.4.1) Having
 	-Ref Type (a kind of pointer)
 	- basic function (no arg passing)
 	
+	-arg functions
+	
+	
+	
 	
 	
 	

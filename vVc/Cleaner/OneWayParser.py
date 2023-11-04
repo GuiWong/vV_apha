@@ -10,6 +10,8 @@ import Cleaner.Label_Manager as Labl
 import Cleaner.Block_Manager as Block_Manager
 import Cleaner.Recursive_Type_Checker as T_Check
 
+import Cleaner.Global_Namespace as G_NS
+
 import precompiler.Opcode as Opcode
 
 
@@ -43,24 +45,36 @@ class One_Way_Parser:
 	current_var_scope = 0
 	current_var_value = 0
 	current_var_isinit = False
+	current_import_src = ''
 	
 	
 	
 	
 	
-	def __init__(self,tokens):
+	def __init__(self,tokens,namespace):
 	
 		self.tokens = tokens
+		
+		
 	
-		self.name_space = Namespace.NameSpace_Manager()
+		self.name_space = namespace#Namespace.NameSpace_Manager()
+		
+		#self.global_name_space = G_NS.Global_Namespace(self.name_space)
 		
 		self.current_func = ''
 	
 		self.def_state = 0
 		self.var_def_state = 0
+		self.import_state = 0
 		
 		self.pc = 0
 		self.f_pc = 0
+		
+		self.def_op = []
+		self.main_op = []
+	
+
+		self.func_loca = {}
 		
 		self.label_manager = Labl.Label_Manager()
 		self.block_manager = Block_Manager.Block_Manager()
@@ -121,7 +135,7 @@ class One_Way_Parser:
 		
 			assert False, 'Unimplemented'
 			
-	def check_scope(self,var_name):
+	def check_scope(self,var_name,namespacer = None):
 	
 		ret = []	# bool: valid 
 								# int : scope [1:global 2:local 3:argu] Notneeded for typecheck
@@ -133,7 +147,26 @@ class One_Way_Parser:
 		
 			scope = self.current_func
 			
-		data = self.name_space.solve_var([var_name],scope)
+		for c in var_name:
+		
+			assert c not in OP.forbiden_chars, "Forbiden char in var invocation"
+			
+		eff_name = ''
+		namespace = None
+			
+		if '.' in var_name:
+			tmp = var_name.split('.')
+			assert len(tmp) == 2, 'Unimplemented multi-ref-to-namespace'
+			eff_name= tmp[0]
+			namespace = tmp[1]
+			
+		else:
+		
+			eff_name = var_name
+			namespace = None
+			
+			
+		data = self.name_space.solve_var([eff_name],scope,namespace)
 		
 		print data
 		
@@ -142,15 +175,18 @@ class One_Way_Parser:
 		
 
 			print 'Couldnt find var '+var_name
-			print self.name_space.global_vars
-			print self.name_space.functions[self.current_func].local_vars
-			if var_name in self.name_space.functions.keys():
+			print eff_name
+			print namespace
+			#print self.name_space.global_vars
+			#print self.name_space.functions[self.current_func].local_vars
+			#if var_name in self.name_space.functions.keys():
+			if self.name_space.is_a_func(eff_name,namespace):
 			
 				print 'function call found'
 				
 				ret.append(False)
 				ret.append( var_name)
-				if len(self.name_space.functions[var_name].referenced_vars) > 0:
+				if len(self.name_space.get_function(eff_name,namespace).referenced_vars) > 0:
 					ret.append(False)
 					
 					#for argus in self.name_space.functions[var_name].referenced_vars:
@@ -160,10 +196,18 @@ class One_Way_Parser:
 					#ret.append()
 				else:
 					ret.append(True)
+					
+				ret.append(eff_name)
+				
+			
+			else:
+			
+				assert False , 'unreachable'
 		else:
 		
 			ret.append( data[0])
 			ret.append(data[3])
+			ret.append(eff_name)
 		
 		print '--:'
 		print ret
@@ -332,6 +376,47 @@ class One_Way_Parser:
 				self.current_var_scope = OP.var_define[tok]
 				
 				
+	#---------------------------------------------------------------------------------
+	
+		elif tok in OP.import_statement:
+				
+			if self.import_state == 0:
+				self.import_state = 1
+			elif self.import_state == 2:
+				
+				if OP.import_statement[tok]==OP.AS:
+				
+					self.import_state = 3
+					
+				else:
+				
+					self.import_state = 1
+					src_path = self.current_import_src
+					self.current_import_src = ''
+					return [src_path , None]
+			
+			
+		elif self.import_state == 1:
+		
+			self.import_state = 2
+			self.current_import_src = tok
+			#return tok
+			
+		elif self.import_state == 3:
+		
+			self.import_state = 0
+			src_path = self.current_import_src
+			self.current_import_src = ''
+			return [src_path , tok]
+			
+		elif self.import_state == 2:
+		
+			self.import_state = 0
+			src_path = self.current_import_src
+			self.current_import_src = ''
+			self.current -= 1
+			return [src_path , None]
+			
 		elif self.def_state == 1:
 		
 			#solved = Syntaxer.solve_var(tok)
@@ -433,10 +518,10 @@ class One_Way_Parser:
 				
 				
 				
-				while not isinstance(rec_t,vV_Var.vV_Int_Type):
+				#while not isinstance(rec_t,vV_Var.vV_Int_Type):
 				
-					rec_t = rec_t.content
-					print '	'+str(rec_t)
+				#	rec_t = rec_t.content
+				#	print '	'+str(rec_t)
 					
 				#print '	'+str(rec_t)
 	
@@ -633,7 +718,12 @@ class One_Way_Parser:
 						src_type = T_Check.calc_effective_type(src[1],src_arg)
 						dst_type = T_Check.calc_effective_type(dst[1],dst_arg)
 						
-						valid = T_Check.check_valid(src_type,dst_type)
+						referencing = isinstance(dst[1] , vV_Var.vV_Ref_Type)
+						
+						print src_type
+						print dst_type
+						
+						valid = T_Check.check_valid(src_type,dst_type,referencing)
 						
 					assert valid , 'Type Error!'
 					
@@ -700,6 +790,7 @@ class One_Way_Parser:
 				datt = Syntaxer.solve_var(tok)
 				print datt
 				src_arg = []
+				tmp_arg = []
 				
 				src_name = ''
 				
@@ -707,14 +798,14 @@ class One_Way_Parser:
 				
 					src = self.check_scope(datt)
 					print src
-					src_arg = []
+					tmp_arg = []
 					src_name = datt
 				
 				elif type(datt[0]) == str:
 				
 					src = self.check_scope(datt[0])
 					print src
-					src_arg = []
+					tmp_arg = datt[1]
 					
 					src_name = datt[0]
 				
@@ -722,7 +813,34 @@ class One_Way_Parser:
 				
 					assert False, 'Not Implemented Yet'
 				
+				print src_name
+				print tmp_arg
+				print src
+				
+				if type(tmp_arg) == str:
+				
+					tmp_arg = [tmp_arg]
+					
+				print tmp_arg
+				
 				print '\n\n-------\n	Arg Solving:'
+				
+				
+				for a in tmp_arg:
+				
+					print a
+					if a == '':
+						
+						src_arg.append('pop')
+						
+					else:
+						
+						src_arg.append(a)
+							
+				src_arg.reverse()
+				
+				print src_arg
+				'''
 				if len(datt) == 2:
 				
 					for a in datt[1]:
@@ -736,18 +854,21 @@ class One_Way_Parser:
 							src_arg.append(a)
 							
 					src_arg.reverse()
-					
+				'''	
 				if src[0]:
+				
+					
 					opcode.value = OP.PUSH_VAR
 					opcode.arg = [src_name,src_arg]
 					print 'Push var found with arg: \n'
 					print src_arg
-				elif len(src)>=3:
+				elif len(src)>=4:
 				
-					callarg = [src_name,[]]
+					callarg = [src[3],[]]
 					
 					for aaa in src_arg:
 					
+						print aaa
 						ab = Syntaxer.solve_var(aaa)
 						if type(ab)==str:
 						
@@ -759,7 +880,7 @@ class One_Way_Parser:
 				
 					if src[2]:
 						opcode.value = OP.CALL
-						opcode.arg = [src[1]]
+						opcode.arg = [src[3]]
 					else:
 						opcode.value = OP.CALL_W_ARG
 						print callarg
@@ -771,7 +892,7 @@ class One_Way_Parser:
 				
 			
 			
-		print [ opcode.value , opcode.arg]	
+		#print [ opcode.value , opcode.arg]	
 		return opcode , info
 		
 				

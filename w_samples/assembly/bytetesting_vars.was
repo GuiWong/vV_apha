@@ -1,11 +1,12 @@
  segment .bss
 	u_global_term:
 	u_global:
-.tablo:resb 128 
-.foo:resb 4 
+.text:resb 11 
+.colors:resb 4 
+.partial:resb 5 
  segment .data
 	i_global_term:
 .default_bg:dq 16
 .default_fg:dq 15
 	i_global:
-.var_1:dq 69
+.color_bg:db 0

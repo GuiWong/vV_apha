@@ -1,0 +1,68 @@
+
+;var int[[1,2],[3,4]] test_arr
+;var byte[[[1,2,12],[3,4,34]],[[5,6,56],[7,8,78]]] text_ptr
+
+
+
+
+include term.vV as term
+
+var byte[11] text					;Define a byte array of size 11
+var byte[5] partial					;Define a byte array of size 5
+	
+var byte 0 color_bg					;define a byte initialised to 0
+var byte[4] colors					;define a byte array of size 4
+
+14 0 []colors=						;Set array cell [0] to value 14
+11 1 []colors=						; "    "    "   [1] to value 11
+112 2 []colors=						; "    "    "   [2] to value 112
+76 3 []colors=						; "    "    "   [3] to value 76
+
+	'H' 0 []text=					;set value of array
+	'e' 1 []text=					; value index []varname=
+	'l' 2 []text=					;	|
+	'l' 3 []text=					;	|
+	'o' 4 []text=					;	|
+	' ' 5 []text=					;	|
+	'W' 6 []text=					;	|
+	'o' 7 []text=					;	|
+	'r' 8 []text=					;	|
+	'l' 9 []text=					;	|
+	'd' 10 []text=					;	|
+
+def (byte[11] txt)print					;define a function
+							; has a byte[11] argument
+	0 10 0 loop					;push 0 (index)
+							;and 10 (max) 0 (start) for loop
+		dup					;duplicate index
+		dup 4 % []colors term_fg.term		;dup and calc modulo 4 of (index) -> index for push []colors 
+							;call term_fg (top of stack should be a byte from colors var
+		[]txt cout_				;
+							;(index) -> index for push [txt] , add char to output buffer	
+		1 +					;increment (index)
+
+	for						;end of loop
+	flush_						;print output buffer without new_line
+
+endef
+
+
+color_bg term_bg.term					;push color_bg -->  term_bg.term (set bg to color_bg value)
+
+	(text)print					;create a ref to text as txt on return_stack, call function
+
+	default_color.term				;set default colors
+	flush						;flush empty : new_line
+
+		([6:]text)partial=		;Set data of partial from text data( index 6 to last)
+
+		(partial)[:5]text=		;Set data of text( index 0 to 4) from partial data
+
+color_bg term_bg.term					;push color_bg -->  term_bg.term (set bg to color_bg value)
+
+	(text)print					;create a ref to text as txt on return_stack, call function
+	default_color.term				;set default colors
+	flush						;flush empty : new_line
+
+
+

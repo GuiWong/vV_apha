@@ -1,7 +1,7 @@
 
 import vV.VM_Opcode as OP
 import WErrors as ERR
-
+import copy
 
 
 def build_type(type_id):
@@ -10,6 +10,10 @@ def build_type(type_id):
 	if type_id == OP.UINT_32:
 	
 		return vV_Int_Type()
+		
+	elif type_id == OP.UINT_8:
+	
+		return vV_Byte_Type()
 		
 	else:
 	
@@ -27,6 +31,8 @@ class vV_Primary_Type:
 	def calc_size(self):
 	
 		return self.size
+		
+
 		
 class vV_Pointer_Type:
 
@@ -49,8 +55,25 @@ class vV_Structure_Type:
 	def calc_size(self):
 	
 		return content.calc_size()
-		
+
+
+
+class vV_Byte_Type(vV_Primary_Type):
+
+
+	size = 8
 	
+	def __init__(self):
+	
+		pass
+			
+	def __str__(self):
+	
+		return "<byte>"
+		
+	def copy(self):
+	
+		return vV_Byte_Type()
 
 		
 class vV_Int_Type(vV_Primary_Type):
@@ -62,9 +85,13 @@ class vV_Int_Type(vV_Primary_Type):
 	
 		pass
 	
-	#def __str__(self):
+	def __str__(self):
 	
-	#	return "<int>"
+		return "<int>"
+	
+	def copy(self):
+	
+		return vV_Int_Type()
 		
 		
 class vV_Ref_Type(vV_Pointer_Type):
@@ -73,14 +100,18 @@ class vV_Ref_Type(vV_Pointer_Type):
 	
 		self.content = content
 	
-	#def __str__(self):
+	def __str__(self):
 	
-	#	return "("+str(self.content)+")"
+		return "("+str(self.content)+")"
 		
 	def calc_partial_size(self,dim_down):
 	
 	
 		return self.content.calc_partial_size(dim_down)
+		
+	def copy(self):
+	
+		return vV_Ref_Type(self.content.copy())
 		
 class vV_Iterator_Type(vV_Structure_Type):
 
@@ -117,6 +148,12 @@ class vV_Array_Type(vV_Structure_Type):
 		#print self.size
 		
 		
+	def copy(self):
+	
+		reversed_size = copy.copy(self.size)
+		reversed_size.reverse()
+	
+		return vV_Array_Type(self.content.copy(), self.dim , copy.copy(reversed_size))
 		
 	def get_partial(self,deepness):
 	
@@ -128,6 +165,28 @@ class vV_Array_Type(vV_Structure_Type):
 			return vV_Array_Type(self.content, self.dim - deepness , reversed_size)
 		else:
 			return self.content
+			
+	def get_from_to(self,from_index,to_index):
+	
+		if from_index == None:
+		
+			from_index = 0
+			
+		if to_index == None:
+		
+			to_index = self.size[0]
+			
+		print type(from_index)
+		print type(self.size[0] )
+			
+		assert from_index < self.size[0] , 'min index_mismatch : '+str(from_index) + ' with max : '+str(self.size[0])
+		assert to_index <= self.size[0] , 'max index mismatch : '+str(to_index)
+		
+		reversed_size = self.size
+		reversed_size[0]= (to_index - from_index )
+		reversed_size.reverse()
+		
+		return vV_Array_Type(self.content, self.dim , reversed_size)
 		
 	def calc_partial_size(self,dim_down):
 	

@@ -1,11 +1,13 @@
  segment .bss
 	u_global_term:
 	u_global:
-.tablo:resb 128 
-.foo:resb 4 
+.pa:resb 4 
+.pb:resb 4 
  segment .data
 	i_global_term:
 .default_bg:dq 16
 .default_fg:dq 15
 	i_global:
-.var_1:dq 69
+.a:dq 12
+.c:db 24
+.b:db 12

@@ -1,0 +1,100 @@
+
+
+include term.vV as term		;clear terminal
+
+
+var int 12 a
+
+var byte 12 b
+var byte 24 c
+
+var (int) pa
+
+var (byte) pb
+
+
+ 
+clear.term
+
+ 
+0 40 cursor_x_y.term		;set cursor to 0 , 40
+ 
+get				;get a value from user
+ 
+term_bg.term			;set the background color
+ 
+'done' wout
+ 
+default_color.term		;set the background and foreground color
+ 				;to default
+'done' wout
+ 
+11 default_bg.term=		;set the default background color
+0 default_fg.term=		;set the default foreground color
+
+default_color.term		;set the background and foreground color
+ 				;to default
+ 
+'done' wout
+ 
+flush flush
+
+flush
+
+
+(a)pb=
+(a)pa=
+
+287 a=
+
+a out
+pa out
+pb out
+flush
+
+523 pa=
+
+a out
+pa out
+pb out
+flush
+
+16 pb=
+
+a out
+pa out
+pb out
+flush
+
+
+(a)b=
+
+a out
+b out
+
+34 b=
+(b)a=
+
+a out
+b out
+
+flush
+
+a out
+pa out
+pb out
+flush
+
+'----' dup wout_ dup wout_ dup wout_ wout_
+
+flush
+
+(pa)pb=
+
+
+69 pb=
+
+;(b)a=
+a out
+
+'bye ' wout flush

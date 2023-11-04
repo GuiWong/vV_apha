@@ -16,6 +16,11 @@ import Cleaner.Parser as Parser
 import Cleaner.OneWayParser as OW_Parser
 
 
+import Cleaner.Global_Namespace as G_NS
+
+import importer.Recursive_Importer as Importer
+import importer.Recursive_Transpiler as R_Trans
+
 import sys
 
 import vm.Program
@@ -165,11 +170,6 @@ pre_compiler.open_main_file(source_file)
 
 '''
 
-par = Parser.Parser('')
-
-par.default(source_file)
-
-
 
 
 print'	'
@@ -201,84 +201,117 @@ def_lab = b[2]
 '''
 
 
+
+r_imp = Importer.Recursive_Importer(source_file)
+
+
+imp_result = r_imp.parse_main()
+
+for e in imp_result:
+
+	print e.namespace.filename
+	print e.f_loca
+	print e.prog.size
+	
+print '--------------------------------------------------------'
+print '--------------------------------------------------------'
+print '--------------------------------------------------------'
+print '--------------------------------------------------------'
+print '--------------------------------------------------------'
+print '--------------------------------------------------------'
+#assert False , 'Breakpoint'
+
+r_trans = R_Trans.Recursive_Transpiler(imp_result,output_file)
+
+'''
+#Tokenization
+par = Parser.Parser('')
+par.default(source_file)
 parsed = par.first_pass()
 
-
-ow_parser = OW_Parser.One_Way_Parser(parsed)
-
-
-		
+#parsing
+ow_parser = OW_Parser.One_Way_Parser(parsed,r_imp.namespace.main_namespace)		
 for f in parsed:
 
 	ow_parser.next_token()
 	
-	
-	
-#vs = Var_Solver.Var_Solver(c)
-
-#vs.generate_var_decl()
-#print "\n\n\n\n"
-#print vs.generate_var_file()
-
+#need to be removed
 vs = Var_Solver.Var_Solver(ow_parser.name_space)
 
+#-----------------
+vs = Var_Solver.Var_Solver(imp_result[0].namespace)
+prog2 = imp_result[0].prog
+lab2 = imp_result[0].labels
+def_lab = imp_result[0].f_loca
+piler2 = Trans.Translator(prog2,lab2,vs)
 
-#print labels
-#print def_lab
-
-
-prog2 = vm.Program.Program(ow_parser.def_op)
-
-piler2 = Trans.Translator(prog2,ow_parser.label_manager.def_labels,vs)
-
-piler2.generate_label_names()
-piler2.def_label_names = ow_parser.func_loca
-
-for p in range(prog2.size):
-
-
-	piler2.step_compile()
-
-
-
-
-
-prog = vm.Program.Program(ow_parser.main_op)
-
-piler = Trans.Translator(prog,ow_parser.label_manager.labels,vs,output_file)
-
-'''
-prog2 = vm.Program.Program(def_arr)
-piler2 = Trans.Translator(prog2,v2_lab,vs,output_file)
 piler2.generate_label_names()
 piler2.def_label_names = def_lab
-
 for p in range(prog2.size):
 
 
 	piler2.step_compile()
+#----------------
 
-prog = vm.Program.Program(code_arr)
+#defs transpiling
+prog2 = vm.Program.Program(ow_parser.def_op)
+piler2 = Trans.Translator(prog2,ow_parser.label_manager.def_labels,vs)
+piler2.generate_label_names()
+piler2.def_label_names = ow_parser.func_loca
+for p in range(prog2.size):
 
-vm = vm.Machine.Emul(prog)
 
-piler = Trans.Translator(prog,labels,vs,output_file)
-'''
+	piler2.step_compile()
+	
+#--------------------
+
+prog = imp_result[1].prog
+lab = imp_result[1].labels
+def_lab = imp_result[0].f_loca
+piler = Trans.Translator(prog,lab,vs,output_file)
+
 piler.add_inserted_code(piler2.output)
-
-
 piler.generate_label_names()
 piler.generate_header()
-
 for p in range(prog.size):
 
 
 	piler.step_compile()
-	
+
+#------------------
+
+#codetranspiling
+prog = vm.Program.Program(ow_parser.main_op)
+piler = Trans.Translator(prog,ow_parser.label_manager.labels,vs,output_file)
+piler.add_inserted_code(piler2.output)
+piler.generate_label_names()
+piler.generate_header()
+for p in range(prog.size):
+
+
+	piler.step_compile()
+'''	
+
+#end of file
+
+spe_piler = r_trans.build_file()
+
+
+spe_piler.end_file()
+
+
+var_decl_ar = r_imp.build_var_decl()
+var_decl_txt = var_decl_ar[0]+var_decl_ar[1]
+
+spe_piler.generate_var_file(var_decl_txt)	#TODO: replace by Global_namespace method
+
+
+spe_piler.print_file()
+'''
 piler.end_file()
 piler.generate_var_file()
 piler.print_file()
-
+'''
 
 print "file successfully created"
 

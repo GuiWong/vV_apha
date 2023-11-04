@@ -2,8 +2,24 @@
 
 
 
-
 Var Update	
+ 			
+ 			0.0.4.5:
+
+	
+				-<Byte> Type
+				-Partial array assigning
+				
+ 			
+ 			0.0.4.4:
+ 			
+ 			
+				-new parser
+				-new var_solver
+				-new type_checker
+				-new logic for relative ref (will need changes)
+
+	
  			
  			0.0.4.2.5
  			

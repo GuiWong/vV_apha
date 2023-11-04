@@ -126,13 +126,33 @@ def solve_type(txt):
 	
 		return vV_Var.build_type(OP.var_type[txt])
 		
-	elif txt[-1] ==  OP.index_op[OP.SQRBRACKETR]:
+	elif txt[-1] ==  OP.index_op[OP.SQRBRACKETR] and txt[0] != OP.index_op[OP.SQRBRACKETL]:
 	
 		separ = txt.split('[')
 		
 		arg = '['.join(separ[1:])
 		
 		print arg
+		
+		if ',' in arg:
+		
+			arg = arg[:-1]
+			
+			arguss = arg.split('[')
+			arguzz = arg.split(',')
+			print arg
+			print arguss
+			for a in arguss:
+			
+				print a
+				
+			print arguzz
+			for a in arguzz:
+			
+				print a
+				
+			
+			assert False , arg
 		
 		argus = solve_array_dims(arg)
 		
@@ -158,6 +178,9 @@ def solve_index(txt):
 		
 		else:
 	
+			return(txt)
+			assert False , 'Not a numeric value for indexing : '+str(txt)
+			
 			return solve_var(txt)
 	
 	else:

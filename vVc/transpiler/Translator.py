@@ -29,6 +29,8 @@ class Translator:
 		
 		self.def_label_names = {}
 		
+		self.name_space = ''
+		
 		
 		self.pc = -1
 		self.sp = 0#64
@@ -68,7 +70,7 @@ class Translator:
 			lbid = self.labels[l_adr]
 			
 			
-			lbname = 'wblock_'+str(lbid)
+			lbname = 'wblock_'+self.name_space+str(lbid)
 
 			
 			
@@ -81,15 +83,21 @@ class Translator:
 ;------------------------------------------------------\n\n'
 
 
-	def generate_var_file(self):
+	def generate_var_file(self,txt=None):
 	
-		self.var_solver.generate_var_decl()
+		if txt == None:
+			self.var_solver.generate_var_decl()
+			txt_out = self.var_solver.generate_var_file()
+			
+		else:
+		
+			txt_out = txt
 	
 		outf= self.out_path+self.filename+'_vars.was'
 		
 		with open(outf, 'w+') as imp:
 		
-			imp.write(self.var_solver.generate_var_file())
+			imp.write(txt_out)
 
 	def generate_header(self):
 	
@@ -135,6 +143,7 @@ segment .text
 vV_entry_point:
 
 
+	push rbp
 	mov rbp, rsp			;Setup Stack Frame
 	
 	'''
@@ -154,10 +163,10 @@ vV_entry_point:
 		if self.pc in self.def_label_names.keys():
 		
 			#self.output += self.generate_label(self.def_label_names[self.pc])
-			
-			
+	
 			
 			self.current_scope = self.def_label_names[self.pc]	
+
 			self.output += self.var_solver.namespace.functions[self.def_label_names[self.pc]].generate_head()
 			
 		if self.pc in self.labels.keys():
@@ -175,9 +184,11 @@ vV_entry_point:
 	
 		self.output += '''\
 		
+		mov rsp , rbp
+		pop rbp
 		ret
 
-;Transpiled from vV with vVc version 0.0.4
+;Transpiled from vV with vVc version 0.0.4.5
 		
 		'''
 		
@@ -648,11 +659,12 @@ vV_entry_point:
 \n'
 			print arg
 			print '\n-------------------------'
-			print self.var_op_solver.solve_push(arg,self.current_scope)
+			#print self.var_op_solver.solve_push(arg,self.current_scope)
 			print '-------------------------\n'
 			
 			
 			txt += self.var_op_solver.solve_push(arg,self.current_scope)
+			print txt
 			#assert False, 'breakpoint'
 			#txt += self.var_solver.push_var(arg,self.current_scope)
 			#assert False ,"TODO: MANAGE VARSOLVING"
@@ -664,12 +676,13 @@ vV_entry_point:
 \n'
 			print arg
 			print '\n-------------------------'
-			print self.var_op_solver.solve_pop(arg,self.current_scope)
+			#print self.var_op_solver.solve_pop(arg,self.current_scope)
 			print '-------------------------\n'
 			
 			
 			
 			txt += self.var_op_solver.solve_pop(arg,self.current_scope)
+			print txt
 			#txt += self.var_solver.pop_var(arg,self.current_scope)
 		
 			#assert False ,"TODO: MANAGE VARSOLVING"
@@ -685,7 +698,7 @@ vV_entry_point:
 			print '#########################\n\n'
 			
 			print '\n-------------------------'
-			print self.var_op_solver.solve_assign(arg[0],arg[1],self.current_scope)
+			#print self.var_op_solver.solve_assign(arg[0],arg[1],self.current_scope)
 			print '-------------------------'
 			#print self.rec_var_solver.solve_var_name(arg[1],self.current_scope)
 			#print self.rec_var_solver.solve_indexing(arg[1])
@@ -694,6 +707,7 @@ vV_entry_point:
 			#assert False , 'Op Unimplemented'
 			#txt += self.var_solver.ref_assign(arg[0],arg[1],self.current_scope)
 			txt += self.var_op_solver.solve_assign(arg[0],arg[1],self.current_scope)
+			print txt
 		
 		elif op == OP.FLUSH2:
 
@@ -714,12 +728,15 @@ vV_entry_point:
 			for assi in arg[1]:
 				print assi
 				#print self.var_solver.ref_assign(assi,['vV_PUSH_ARG',self.var_solver.namespace.functions[arg[0]].get_arg_type(i)],self.current_scope)
-				txt += self.var_solver.ref_assign(assi,['vV_PUSH_ARG',self.var_solver.namespace.functions[arg[0]].get_arg_type(i)],self.current_scope)
-				tbl = txt.split('\n')
-				tbl.pop()
-				tbl.pop()
-				tbl.append( '	push rax\n')
-				txt = '\n'.join(tbl)
+				#txt += self.var_solver.ref_assign(assi,['vV_PUSH_ARG',self.var_solver.namespace.functions[arg[0]].get_arg_type(i)],self.current_scope)
+				
+				txt += self.var_op_solver.solve_assign(assi,['vV_PUSH_ARG',self.var_solver.namespace.functions[arg[0]].get_arg_type(i)],self.current_scope)
+				
+				#tbl = txt.split('\n')
+				#tbl.pop()
+				#tbl.pop()
+				#tbl.append( '	push rax\n')
+				#txt = '\n'.join(tbl)
 				i+= 1
 				size+=1	#For now
 			

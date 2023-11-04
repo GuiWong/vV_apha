@@ -1,6 +1,6 @@
 
 
-
+include term.vV
 ;-----Int------
 
 var 69 var_1
@@ -11,6 +11,11 @@ var int[4][8] tablo
 22 1 0 [][]tablo=
 33 2 0 [][]tablo=
 44 3 0 [][]tablo=
+
+
+var int foo
+
+;foo.file out
 
 
 def test_local
@@ -34,6 +39,69 @@ def test_local
 	pptr out
 	
 endef
+
+def (int x)test_arg
+	local (int) i
+	local ((int)) j
+	x out
+	69 x=
+	
+	(x)i=
+	(i)j=
+	
+	j out
+	
+	888 j=
+	
+endef
+
+def (int x)super_func
+
+	666 x=
+	x out
+	
+	(x)test_arg
+	
+endef
+
 flush flush
 42 var_1=
-test_local
+
+(var_1)test_arg
+
+flush 
+var_1 out
+flush 
+
+(var_1)super_func
+
+flush
+
+
+ 
+ clear.term
+ 
+ get get
+ 
+ cursor_x_y.term
+ 
+ get
+ 
+ term_fg.term
+ 
+ 'done' wout
+ 
+ default_color.term
+ 
+ 'done' wout
+ 
+11 default_bg.term=
+0 default_fg.term=
+
+ default_color.term
+ 
+ 'done' wout
+ 
+ 
+
+'bye ' wout flush

@@ -1,0 +1,63 @@
+
+ 
+global 16 default_bg
+global 15 default_fg
+	  
+def clear
+
+	0xa631b wout
+	
+endef
+
+def cursor_x_y
+
+	local int x
+	local int y
+	x= y=
+
+	'H' x ';' y '[' 27 cout_ cout_ out_ cout_ out_ cout_ flush_ 
+
+endef
+
+def term_bg
+
+	local int i
+	i=
+
+	'm' ';' '5' ';'
+	0x38 0x34  0x5b  0x1b
+	cout_ cout_ cout_  cout_ cout_ cout_ cout_
+	i out_
+	cout_
+	flush_
+	
+endef
+
+def term_fg
+
+	local int i
+	i=
+
+	'm'
+	';' '5' ';'
+	0x38 0x33  0x5b  0x1b
+	cout_ cout_ cout_  cout_ cout_ cout_ cout_
+	i out_
+	cout_
+	flush_
+	
+endef
+
+def defined_color
+
+	default_bg term_bg
+	default_fg term_fg
+	
+endef
+
+def default_color
+	
+	'm' 0x39 0x34 0x5b 0x1b cout_ cout_ cout_ cout_ cout_  flush_
+	'm' 0x39 0x33 0x5b 0x1b cout_ cout_ cout_ cout_ cout_ flush_
+endef
+

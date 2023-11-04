@@ -1,7 +1,21 @@
 
 import precompiler.VarUpdate.vV_Variable as vV_Var
 
+import Cleaner.Recursive_Type_Checker as R_TC
 
+import copy
+
+def solve_var_namespace(data):
+	
+	name = data[0]
+		
+	if '.' in name:
+		
+		return name.split('.')
+			
+	else:
+		
+		return [name,None]
 
 class Var_Op_Solver:
 
@@ -12,10 +26,58 @@ class Var_Op_Solver:
 		self.solver = Recursive_Var_Solver(namespace)
 		
 		
+		self.call_data = []
+		
+	def solve_var_namespace(self,data):
+	
+		name = data[0]
+		
+		if '.' in name:
+		
+			return name.split('.')
+			
+		else:
+		
+			return [name,None]
+			
+	
+		
+		
 	def solve_push(self,data,scope):
 	
+		
+		name,namespace = self.solve_var_namespace(data)
 	
-		ns_data = self.solver.name_space.solve_var(data,scope)
+		ns_data = self.solver.name_space.solve_var([name],scope,namespace)
+		
+		
+		print name
+		print namespace
+		print ns_data[3]
+		print ns_data[3].calc_size()
+		
+		#if name == 'text':
+		
+		#	assert False , 'Breakpoint'
+		
+		
+		
+		if not ns_data[0]:
+			print data
+			print scope
+			
+			print name
+			print namespace
+			
+			print ns_data
+			
+			print self.solver.name_space.filename
+			print self.solver.name_space.imported
+			
+			print self.solver.name_space.imported[namespace].global_vars
+			
+			print self.solver.name_space.functions.keys()
+			assert False , 'Couldnt solve var: '+scope
 		print ns_data[3]
 	
 		solved = self.solver.solve_var_name(data,scope)
@@ -30,14 +92,33 @@ class Var_Op_Solver:
 		
 
 		txt += '	add rdi , rax	\n'	
-		txt += '	mov eax , [rdi]	\n'
+		
+		
+		if isinstance(var_type,vV_Var.vV_Int_Type):
+		
+			txt += '	mov eax , [rdi]	\n'
+			
+		elif isinstance(var_type,vV_Var.vV_Byte_Type):
+		
+			txt += '	mov al , [rdi]	\n'
+			
+		else:
+		
+			txt += '	mov eax , [rdi] \n'
 		
 		while isinstance(var_type,vV_Var.vV_Ref_Type):
 			
 			print 'is a ref' 
 			print var_type.use_offset
 			txt += self.make_64_adress(var_type)
-			txt += '	mov eax , [rax]	\n'
+			
+			
+			if isinstance(var_type.content,vV_Var.vV_Byte_Type):
+				txt += '	mov rdi , rax	\n'
+				txt += '	xor rax , rax	\n'
+				txt += '	mov al , [rdi]	\n'
+			else:
+				txt += '	mov eax , [rax]	\n'
 			
 			var_type = var_type.content		
 		
@@ -49,6 +130,8 @@ class Var_Op_Solver:
 		
 	def solve_pop(self,data,scope):
 	
+	
+		
 	
 		#ns_data = self.name_space.solve_var(data,scope)
 	
@@ -65,13 +148,31 @@ class Var_Op_Solver:
 		txt += '	add rdi , rax	\n'
 		#txt += '	lea edi , [rdi]	\n'
 		
+		txt += '	mov rax , rdi	\n'
+		
+		last_ref_offset=False
+		
 		while isinstance(var_type,vV_Var.vV_Ref_Type):
 		
-			txt += '	mov edi , [rdi]	\n'
-			if var_type.use_offset:
-				assert False, 'Unimplemented'
+			txt += '	mov eax , [rax]	\n'
+			#if var_type.use_offset:
+			#	assert False, 'Unimplemented'
+			txt += self.make_64_adress(var_type)
+			
+			last_ref_offset = var_type.use_offset
+			
 			var_type = var_type.content
-		txt += '	mov [rdi] , ecx	\n'
+
+		
+		if isinstance(var_type,vV_Var.vV_Int_Type):
+		
+			txt += '	mov [rax] , ecx	\n'
+			
+		elif isinstance(var_type,vV_Var.vV_Byte_Type):
+					
+			txt += '	mov BYTE[rax] , cl	\n'
+			
+		
 		
 		return txt
 		
@@ -87,43 +188,85 @@ class Var_Op_Solver:
 		
 		print src_dat
 		print dst_dat
+		print src_dat[1].calc_size()/8
+		print dst_dat[1].calc_size()/8
+		
+		
+		#assert False ,'breakpoint'
+		
+		
+		#is already redued!!!!
 		#if isinstance(src_dat[1],vV_Var.vV_Int_Type): 
 		
-		self.check_offset_adress( src , dst , scope)
+		
+		if dst[0] == 'vV_PUSH_ARG':
+		
+			dst[1].use_offset=self.check_src_offset(src,scope)
+			#self.call_data.append(self.check_src_offset(src,scope))
+			#assert False, 'Breakpoint'
+		else:
+			self.check_offset_adress( src , dst , scope,src_dat,dst_dat)
 		
 
 		txt+=src_dat[0]
 		#txt += '	lea esi , [edi+eax]	\n'
 		txt += '	mov rsi , rdi	\n'
 		txt += '	add rsi , rax	\n'
-		txt += dst_dat[0]
-		#txt += '	lea edi , [edi+eax]	\n'
-		txt += '	add rdi , rax	\n'
-		txt += self.recursive_assignator(src_dat[1],dst_dat[1])
+		
+		
+		
+		if dst[0]=='vV_PUSH_ARG':
+			
+			
+			txt += '	push rax	\n'
+			txt += '	mov rdi , rsp	\n'
+			txt += self.recursive_assignator(src_dat[1],dst_dat[1])
+			#txt += '	mov rax , rsi	\n'
+			#txt += self.make_32_adress(dst[1])
+			#txt += '	push rax	\n'
+		else:
+			txt += dst_dat[0]
+			txt += '	add rdi , rax	\n'
+			txt += self.recursive_assignator(src_dat[1],dst_dat[1])
 			
 		self.current_assign+=1
 		return txt
 			
-		#	if isinstance(dst_dat[1],vV_Var.vV_Int_Type):
-		#		txt += '	mov [edi+eax] , [esi]	\n'
-		#	elif isinstance(dst_dat[1],vV_Var.vV_Ref_Type) and isinstance(dst_dat[1].content,vV_Var.vV_Int_Type):
-		#		txt += '	mov [edi+eax] , esi	\n'
-		#	return txt
-		#	
-		#else:
 		
-		#	return 'Unimplemented'
 		
 	#def recursive_offset_adresser(self,)
+	
+	
+	def check_src_offset(self,src,scope):
+	
+		src_data = self.solver.name_space.solve_var(src,scope)
+		src_dat = self.solver.solve_var_name(src,scope)
 		
-	def check_offset_adress(self,src,dst,scope):
+		if not src_data[2]:
+			
+			if isinstance(src_data[3],vV_Var.vV_Ref_Type) or isinstance(src_data[3],vV_Var.vV_Int_Type):
+			
+				return True
+				
+			elif isinstance (src_data[3],vV_Var.vV_Array_Type):
+			
+				assert False, 'Need to implement local Arrays'
+				
+		return False
+		
+	def check_offset_adress(self,src,dst,scope , src_dat , dst_dat):
 	
 	
 		src_data = self.solver.name_space.solve_var(src,scope)
 		dst_data = self.solver.name_space.solve_var(dst,scope)
 		
-		src_dat = self.solver.solve_var_name(src,scope)
-		dst_dat = self.solver.solve_var_name(dst,scope)
+		
+		print '\n dst: '
+		print dst
+		print dst_data
+		print dst_data[3].calc_size() / 8
+		#src_dat = self.solver.solve_var_name(src,scope)
+		#dst_dat = self.solver.solve_var_name(dst,scope)
 		print dst_data
 		offseted = False
 		
@@ -155,7 +298,12 @@ class Var_Op_Solver:
 			
 			else:
 			
-				if dst[0] in self.solver.name_space.functions[scope].local_vars.keys():
+				if dst[0] == 'vV_PUSH_ARG':
+				
+					print dst[1]
+					
+					
+				elif dst[0] in self.solver.name_space.functions[scope].local_vars.keys():
 				
 					#self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.use_offset=offseted
 					print offseted
@@ -220,7 +368,7 @@ class Var_Op_Solver:
 		
 			if isinstance(src_type,vV_Var.vV_Array_Type):
 				
-				if src_type.calc_size() == dst_type.calc_size():
+				if src_type.get_total_elem() == dst_type.get_total_elem():
 					
 						return self.check_signature(src_type.content,dst_type.content)
 						
@@ -232,12 +380,22 @@ class Var_Op_Solver:
 			
 				return True
 				
+			elif isinstance(src_type,vV_Var.vV_Byte_Type):
+			
+				return True
+				
 		#elif isinstance(dst_type,vV_Var.vV_Ref_Type):
 		
 		#	return self.check_signature(src_type,dst_type.content)
 			
 		else:
 		
+		
+			if isinstance(src_type,vV_Var.vV_Int_Type):
+			
+				if isinstance(dst_type,vV_Var.vV_Byte_Type):
+				
+					return True
 			return False
 			
 	def reduce_array(self,arr_type,size):
@@ -326,9 +484,28 @@ class Var_Op_Solver:
 							#print dst_type.content
 							assert False , "BAD SIGNATURE"		
 				
-					else:
+				
+					elif isinstance(src_type.content,vV_Var.vV_Ref_Type):
 					
 						assert False , "TODO: Implement Array Deref"
+						
+					elif isinstance(src_type.content,vV_Var.vV_Int_Type):
+					
+						if isinstance(dst_type.content,vV_Var.vV_Byte_Type):
+						
+							assert False , 'unimplemented int to byte array'
+					
+					elif isinstance(src_type.content,vV_Var.vV_Byte_Type):
+					
+						if isinstance(dst_type.content,vV_Var.vV_Int_Type):
+						
+							assert False , 'unimplemented byte to int array'
+					
+					else:
+					
+						assert False , 'unimplemented'
+						
+						
 			else:
 			
 				if isinstance(src_type,vV_Var.vV_Ref_Type):
@@ -367,6 +544,10 @@ class Var_Op_Solver:
 				elif isinstance(src_type,vV_Var.vV_Int_Type):
 				
 					return '	mov eax , [rsi]	\n	mov DWORD[rdi] , eax	\n'
+					
+				elif isinstance(src_type,vV_Var.vV_Byte_Type):
+				
+					return '	mov al , [rsi]	\n	mov BYTE[rdi] ,al	\n'
 			
 		else:
 		
@@ -400,6 +581,31 @@ class Var_Op_Solver:
 				txt += '	mov rsi , rax	\n'
 			
 				return txt + self.recursive_assignator(src_type.content,dst_type,loop_level)
+			
+			
+			if isinstance(src_type,vV_Var.vV_Int_Type):
+			
+				if isinstance(dst_type,vV_Var.vV_Byte_Type):
+				
+					txt = '	mov eax , [rsi]	\n'	
+					txt += '	and rax , 0xff		\n'
+					txt += ' 	mov BYTE[rdi] , al	\n'
+					return txt
+					
+			if isinstance(src_type,vV_Var.vV_Byte_Type):
+			
+				if isinstance(dst_type,vV_Var.vV_Int_Type):
+				
+					txt = '	xor rax , rax		\n'
+					txt += '	mov BYTE al , [rsi]	\n'	
+					txt += ' 	mov DWORD[rdi] , eax	\n'
+					return txt
+					
+			print src_type
+			print dst_type
+			print dst_type.content
+			
+			assert False, 'unreachable'
 				
 	def make_64_adress(self,ref_type):
 	
@@ -430,21 +636,39 @@ class Recursive_Var_Solver:
 	
 		self.name_space = namespace
 		
+	def add_namespace(self,namespace):
+	
+		print self.name_space.internal_filename
+	
+		if namespace == None or (self.name_space.is_main and namespace == self.name_space.internal_filename):
 		
-	def solve_adress(self,data):
+			return ''
+			
+		elif namespace == self.name_space.internal_filename :
+		
+			return '_'+namespace
+		else:
+		
+			txt = self.name_space.imported[namespace].internal_filename
+			return '_'+txt
+			#assert False , 'Breakpoint'
+		
+		
+	def solve_adress(self,data,namespace=None):
 	
 	
 		if data[2]:
 		
 		
+			ns_txt = self.add_namespace(namespace)
+			if self.name_space.is_var_init(data[1],namespace):
+			#if self.name_space.global_vars[data[1]].is_init:
 			
-			if self.name_space.global_vars[data[1]].is_init:
-			
-				adr = "[i_global."+data[1] +']'
+				adr = "[i_global"+ns_txt+"."+data[1] +']'
 				
 			else:
 			
-				adr = "[u_global."+data[1] +']'
+				adr = "[u_global"+ns_txt+"."+data[1] +']'
 					
 		else:
 			
@@ -453,16 +677,16 @@ class Recursive_Var_Solver:
 		return adr
 		
 		
-	def solve_referencing(self,data,var_type):
+	def solve_referencing(self,data,var_type,namespace = None):
 	
 		
 		if isinstance(var_type,vV_Var.vV_Ref_Type):
 		
-			return self.solve_referencing(data,var_type.content) + '	mov edi , [rdi]	\n'
+			return self.solve_referencing(data,var_type.content,namespace) + '	mov edi , [rdi]	\n'
 			
 		else:
 		
-			return '	lea rdi , '+self.solve_adress(data)+'	\n'
+			return '	lea rdi , '+self.solve_adress(data,namespace)+'	\n'
 			
 			
 		
@@ -481,21 +705,47 @@ class Recursive_Var_Solver:
 	def solve_var_name(self,name,scope):
 	
 	
-		ns_data = self.name_space.solve_var(name,scope)
+		
+		varname , namespace = solve_var_namespace(name)
+		
+		effective_namespace = self.name_space.internal_filename
+		
+		if namespace != None:
+		
+			effective_namespace = namespace
+		
+		#name[0] = varname
+		vardata = name[1:]
+		
+		
+	
+	
+		ns_data = self.name_space.solve_var([varname,vardata],scope,namespace)
 		
 		print ns_data
+		print name
 		
 		if ns_data[0]:
 		
-			if len(name[1]) == 0:
-				return ['	xor rax , rax\n'+'	lea rdi , '+self.solve_adress(ns_data)+'	\n' , ns_data[3] ]
+			if name[0] == 'vV_PUSH_ARG':
+			
+				return ['' , name[1]]
+				
+			elif len(name[1]) == 0:
+				return ['	xor rax , rax\n'+'	lea rdi , '+self.solve_adress(ns_data,effective_namespace)+'	\n' , ns_data[3] ]
 			else:
 				
 				ret_value = self.solve_indexing(name[1],ns_data[3])
-				return [ self.solve_referencing(ns_data,ns_data[3]) + ret_value[0] , ret_value[1] ]
+				return [ self.solve_referencing(ns_data,ns_data[3],effective_namespace) + ret_value[0] , ret_value[1] ]
 		
 		else:
 		
+			print '\n\n\n Scope Error:'
+			print self.name_space.filename
+			print scope
+			print self.name_space.global_vars.keys()
+			print self.name_space.functions.keys()
+			print name
 			assert False , "Var Not In Scope, FATAL!!! SHOULD BECATCHED BY TYPE CHECKER"
 			
 	def get_index_arg(self,argu):
@@ -587,7 +837,7 @@ class Recursive_Var_Solver:
 
 		txt =''
 		txt += '	xor rax , rax	\n'
-		working_type = var_type
+		working_type = var_type.copy()
 		
 		
 		while isinstance(working_type,vV_Var.vV_Ref_Type):
@@ -595,15 +845,37 @@ class Recursive_Var_Solver:
 			working_type = working_type.content
 		
 		current = 1
+		#stop
 		for i in indexes:
 		
 			print i
-			#print working_type.size[0]
-			#print'------------------------'
-			txt += self.next_index(working_type,i)
-			working_type = working_type.get_partial(1)
-			#print working_type.size
-			print'------------------------'
+			
+			if type(i)==str and ':' in i:
+			
+				if current < len(indexes):
+					assert False , 'Misplaced Array Reducing'
+				else:
+					#print R_TC.solve_from_to_arg(i)
+					
+					bounds_indexes = R_TC.solve_from_to_arg(i)
+					
+					start_indx = bounds_indexes[0]
+					
+					if start_indx == None:
+					
+						start_indx = 0
+					
+					txt += self.next_index(working_type,start_indx)
+					
+					working_type = working_type.get_from_to(bounds_indexes[0],bounds_indexes[1])
+					print working_type
+					print working_type.get_total_elem()
+					#assert False , 'unimplemented array reducing op : '+str(i)
+			
+			else:
+				txt += self.next_index(working_type,i)
+				working_type = working_type.get_partial(1)
+
 			
 			if isinstance(working_type,vV_Var.vV_Ref_Type) and current < len(indexes):
 			
