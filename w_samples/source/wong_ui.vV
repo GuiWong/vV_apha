@@ -1,0 +1,622 @@
+
+include term.vV as term
+include utf_8.vV as utf_8
+
+var int[8192] char_buffer
+var byte[8192] fg_buffer
+var byte[8192] bg_buffer
+
+var int 0 free_space_ptr
+var int 8192 max_char_space
+
+var byte[4096] string_buffer
+
+var byte[16384] tilemap_buffer
+var byte[3][256] tileset
+
+
+var byte[6][8] window_data
+var int[8] window_ptr
+
+var (byte[3])[8] window_handles
+
+var int 0 current_window
+var int 0 next_window
+
+var (byte[6]) main_window
+
+
+
+var (byte[6]) actual_window
+
+var (byte[3]) return_window
+
+var int 0 is_in_window
+
+
+var byte 96 main_width
+var byte 32 main_height
+
+
+var byte 0 actual_bg
+var byte 15 actual_fg
+
+var byte 16 default_bg
+var byte 15 default_fg
+
+
+var int[4] corners
+
+
+def init_var
+
+0x2554 0 []corners=
+0x2557 1 []corners=
+0x255a 2 []corners=
+0x255d 3 []corners=
+
+6 0 loop
+
+	I dup ([:3][]window_data)[]window_handles=
+
+    for
+endef
+
+def error
+
+	kill
+
+
+endef
+
+
+
+def set_default_color_i
+
+	dup
+	
+	default_bg swp []bg_buffer=
+	
+	default_fg swp []fg_buffer=
+	
+		
+	
+endef
+
+
+def ( (byte[6]) win)fill_window_with_c
+
+	
+	[5]win			;id of window
+	
+;		'id: ' wout dup out
+		
+	[]window_ptr	; get pointer to window_data
+		
+;		'ptr:' wout dup out
+		
+	[3]win [4]win * 	;size of data
+	
+	0 
+	loop			; from 0 to size
+		
+		2dup		;dup {adress,byte} on top of stack
+		
+		I +			; calc real data from ptr and offest
+		dup set_default_color_i
+		   []char_buffer=	; set value of char from top of stack
+		
+	for
+
+endef
+
+
+
+def init_main_window
+
+	([0]window_data)main_window=
+	0 0 []main_window=
+	0 1 []main_window=
+	
+	0 2 []main_window=
+	main_width 3 []main_window= 
+	main_height 4 []main_window= 
+	0 5 []main_window=
+	
+endef
+
+
+
+def calc_window_space_id
+
+	local (byte[6]) loc_window
+	([]window_data)loc_window=
+	3 []loc_window
+	4 []loc_window
+	* 
+endef
+
+def allocate_char_window_id
+
+	dup 					; id id
+	
+		
+	calc_window_space_id			; size id
+	
+		free_space_ptr + 		; new_ptr id
+		
+		dup				; new_ptr new_ptr id
+		
+		max_char_space <? if
+		
+				el
+				
+					error
+				,
+		
+		
+		;free_space_ptr=		; new_ptr id
+	
+	
+	swp free_space_ptr swp 
+	
+	
+	
+	
+	[]window_ptr=
+	free_space_ptr=
+		
+endef
+
+
+def set_bg_from_buffer_offset
+
+	[]bg_buffer 
+	dup actual_bg =? if
+				drp
+			el
+				0xff &
+				dup term_bg.term
+
+				actual_bg=
+			,
+endef
+
+def set_fg_from_buffer_offset
+
+	[]fg_buffer 
+	dup actual_fg =? if
+				drp
+			el
+				0xff &
+				dup term_fg.term
+				actual_fg=
+			,
+endef
+
+
+
+def solve_main_offset_x_y
+
+	main_width * + 
+
+endef
+
+
+def solve_window_local_pos_x_y_i
+
+
+
+	local int tmp
+		
+	dup 1 swp		; (i 1 i y x)
+	
+
+		
+	[][]window_data 
+	
+	
+	swp	; ( i y_pos y x)
+	
+
+	
+
+				; ( i ypos y x)
+	0 swp 			; ( i 0 ypos y x)
+	[][]window_data		; ( xpos ypos y x
+	
+		
+	tmp=
+	
+	- swp tmp - swp
+	
+
+	
+endef
+
+def solve_window_offset_x_y_i
+
+	
+	3 swp [][]window_data		; (width y x)
+	
+	* +
+
+;	dup 2 swp [][]window_data		;( width i y x)
+;	swp					;( i width y x)
+;	dup 2 swp [][]window_data		; (height i width y x) (i 2 i width y x) (2 i i width y x) ( i width y x)
+;	swp drp				; (height width y x)
+;	*					; (size y x)
+;	3dup drp				
+	
+	
+endef
+
+def is_in_window_x_y_i
+
+	local 0 result
+	local int tmp
+	
+	result ! result=
+	
+	dup tmp=
+
+	2dup 1 swp [][]window_data		; (pos_y y i y x)
+	
+	    2dup <? ! result & result=		; ( pos_y y i y x)
+		
+	;swp drp swp dup				;( i i pos_y y x)
+	
+	 4 tmp [][]window_data			; (height pos_y y i y x)
+	 
+	 
+	 	+				; (max_size  y i y x)
+	
+		<? result & result=	
+		
+	swp drp				; (i x)	
+	
+	2dup 0 swp [][]window_data		; (pos_x x i x)
+	
+		2dup <? ! result & result=		; (pos_x x i x)
+		
+	 3 tmp [][]window_data		; (width pos_x x i x)
+	
+		+
+		
+		<? result & result=		; (i x)
+		
+	drp drp
+	result					;( result )		
+endef
+
+
+def solve_window_char_x_y
+
+	local int x
+	local int y
+	local int higher
+	local int higher_id
+	
+	y=
+	x=
+	
+	
+	
+	
+	0 higher=
+	0 higher_id=
+	
+	8 0 loop
+	
+		x y I is_in_window_x_y_i if
+		
+			2 I [][]window_data higher 2dup >? if
+					
+									drp higher=
+									I higher_id=
+							
+								el
+								
+									drp drp
+									
+								,
+	
+					,
+		
+	for
+	flush flush
+	x y higher_id 
+		solve_window_local_pos_x_y_i  
+	higher_id
+		solve_window_offset_x_y_i
+	
+	higher_id []window_ptr +
+		
+
+	
+endef
+
+
+def blit_at_x_y
+
+	local int dst
+
+	2dup solve_main_offset_x_y  dst= 
+		
+	flush
+
+	flush
+	solve_window_char_x_y
+
+					;( src_offset )
+	dup []char_buffer		;( char src)
+	swp dup  []fg_buffer		;(fg src char)
+	swp []bg_buffer		;( bg fg char)
+	
+
+	dst []bg_buffer=
+	dst []fg_buffer=
+	dst []char_buffer=
+
+endef
+
+def blit_main
+
+	
+
+	
+	main_height 0 loop
+
+		main_width 0 loop
+		
+		[0]I [1]I blit_at_x_y
+		
+	
+		for
+	
+	for
+	
+	
+	
+endef
+
+
+
+def flush_main
+
+	clear.term
+	0 0 cursor_x_y.term
+	
+	actual_fg term_fg.term
+	actual_bg term_bg.term
+	
+	[4]main_window 0 loop
+	
+		[3]main_window 0 loop
+		
+			[0]I [1]I solve_main_offset_x_y
+			
+			
+			dup set_fg_from_buffer_offset
+			dup set_bg_from_buffer_offset
+			
+			[]char_buffer 
+			
+				make_utf8_pckdchar.utf_8
+			
+			wout_
+			flush_
+			
+			
+		for
+		
+		I [4]main_window 1 - =? ! if flush ,
+	for
+
+endef
+
+
+
+def ((byte[3]) ptr)create_window_w_h
+
+	
+	
+
+	next_window  ([:3][]window_data)@ptr=
+
+	 4 next_window [][]window_data=
+	 3 next_window [][]window_data=
+	 2 2 next_window [][]window_data=
+	 next_window 
+	 dup 5 next_window [][]window_data=
+	 
+	dup allocate_char_window_id
+	
+	dup ([]window_data)actual_window=
+	
+	 1 + next_window=
+	
+	'#' (actual_window)fill_window_with_c
+
+
+endef
+
+
+
+def get_win_start_i
+
+
+	[]window_ptr 
+
+endef
+
+
+def ((byte[6]) win )put_c_x_y
+
+
+	[5]win 
+	
+		
+	solve_window_offset_x_y_i
+	
+
+		
+	[5]win get_win_start_i
+	
+
+	+
+	
+
+
+	[]char_buffer=
+	
+
+endef
+
+def ((byte[6]) win , byte[16] str)print_buffer_x_y_c
+
+
+			; ( c y x )
+
+	0 loop			;( y x)
+	
+		I []str
+		
+		3dup		;( c y x c y x )
+		drp		;( y x c y x )
+		
+		
+		(win)put_c_x_y
+	
+		swp 1 + swp
+	
+	for
+	
+	drp drp
+	
+	'endd' wout
+	get drp
+
+
+endef
+
+def ((byte[6]) win)make_box_x_w_y_h
+	
+	local int width
+	local int height
+	local int pos_x
+	local int pos_y
+	local int 0 is_corner
+	local int 0 corner_id
+		
+	height=
+	pos_y=
+	width=
+	pos_x=
+	
+	
+	
+	pos_y height + pos_y loop
+	
+		pos_x width + pos_x loop
+			
+				0 is_corner=
+				[0]I
+					dup pos_x =? if
+							0x2551 
+							is_corner 1 + is_corner=
+						el
+						dup  pos_x width 1 - + =? if
+						
+									0x2551
+									is_corner 1 + is_corner=
+							
+								el
+								
+									' '
+									
+								,
+						,
+				swp drp 
+				
+				;6dup out out out out out_ '-' cout_ out_ flush
+			
+				[1]I 
+				dup pos_y =? if
+							0x2550 
+							is_corner 1 + is_corner=
+						el
+						dup pos_y height 1 - + =? if
+						
+									0x2550 
+									is_corner 1 + is_corner=
+							
+								el
+								
+									' '
+									
+								,
+						,
+				swp drp 
+				
+				;2dup out_ '-' cout_ out_ flush
+				;cout_ cout_ flush
+				
+				;6dup out out out out out_ '-' cout_ out_ flush
+				
+				 
+				
+				is_corner 0 =? if
+				
+						drp
+						
+					el
+					is_corner 1 =? if
+					 		
+					 		dup ' ' =? if
+					 				drp
+					 			el
+					 				swp drp
+					 			,
+						
+						el
+						is_corner 2 =? if
+						
+								drp drp 
+								corner_id
+								dup
+								[]corners
+								;0x256c
+								swp
+								 1 + corner_id=
+							,
+						,	
+					,
+						
+				
+				
+				[0]I [1]I [5]win solve_window_offset_x_y_i 
+				[5]win  
+				
+				get_win_start_i
+				
+				+
+				[]char_buffer=
+			for
+			
+	for
+
+endef
+
+def init
+	
+	init_var
+	
+	main_width main_height resize_x_y.term
+	clear.term
+	init_main_window 0 
+	next_window 1 + next_window=
+	allocate_char_window_id
+	
+
+endef

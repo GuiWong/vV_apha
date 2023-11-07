@@ -1,0 +1,36 @@
+ segment .bss
+	u_global_term:
+	u_global_wong_ui:
+.bg_buffer:resb 8192 
+.window_ptr:resb 32 
+.fg_buffer:resb 8192 
+.char_buffer:resb 8192 
+.tileset:resb 768 
+.main_window:resb 4 
+.tilemap_buffer:resb 16384 
+.window_data:resb 48 
+.string_buffer:resb 4096 
+.actual_window:resb 4 
+	u_global:
+.test1:resb 64 
+.test3:resb 4 
+.test2:resb 4 
+.test4:resb 64 
+.buffer:resb 1536 
+.lines:resb 96 
+.palette:resb 8 
+.e_line:resb 64 
+.u_line:resb 4 
+ segment .data
+	i_global_term:
+.default_bg:dq 16
+.default_y_size:dq 32
+.default_x_size:dq 96
+.default_fg:dq 15
+	i_global_wong_ui:
+.main_height:db 32
+.current_window:dq 0
+.main_width:db 96
+.is_in_window:dq 0
+	i_global:
+.ptr:dq 0

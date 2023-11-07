@@ -65,6 +65,13 @@ vV_error_invalid_index:
 	pop rdi
 	pop rsi
 	
+	
+	mov rax , rdi 
+	vV_push eax
+	call vV_io_out_default
+	call vV_io_flush
+	
+	call vV_climb_call_stack
 	call vV_error_fatal
 	
 	ret
@@ -140,6 +147,41 @@ pop rax	;error code
 	
 	
 	
+	
+	ret
+	
+	
+	
+vV_climb_call_stack:
+
+	mov rcx , rbp
+	
+	push rcx
+	
+	
+	..@loop_call:
+	
+	;xor rax , rax
+	mov rax , [rcx+8]
+	
+	cmp rax , vV_initial_return
+	
+	je ..@exit
+	
+	vV_push eax	
+	call vV_io_out_default
+	
+	pop rcx 
+	mov rcx , [rcx]
+	push rcx
+	
+	jmp ..@loop_call
+	..@exit:
+	
+	vV_push eax	
+	call vV_io_out_default
+	
+	pop rcx 
 	
 	ret
 	

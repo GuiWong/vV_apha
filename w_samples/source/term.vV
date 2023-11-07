@@ -2,6 +2,9 @@
  
 global 16 default_bg
 global 15 default_fg
+
+global 96 default_x_size
+global 32 default_y_size
 	  
 def clear
 
@@ -9,11 +12,31 @@ def clear
 	
 endef
 
+def resize_x_y
+
+	0x3B 0x38  0x5b  0x1b
+	cout_ cout_ cout_ cout_
+	out_ 
+	0x3B cout_
+	out_
+	't' cout_
+	flush_
+	
+endef
+
+def resize_default
+
+	default_x_size
+	default_y_size
+	resize_x_y
+
+endef
+
 def cursor_x_y
 
 	local int x
 	local int y
-	x= y=
+	y= x=
 
 	'H' x ';' y '[' 27 cout_ cout_ out_ cout_ out_ cout_ flush_ 
 

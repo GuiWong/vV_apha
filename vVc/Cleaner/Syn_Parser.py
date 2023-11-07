@@ -80,7 +80,14 @@ def solve_array_dims(txt):
 	for d in dims:
 	
 		if len(d) > 0:
-			sizes.append(solve_index(d[:-1]))
+		
+			value = solve_index(d[:-1])
+			
+			#if value == '':
+			
+			#	assert False , 'Array need size'
+			
+			sizes.append(value)
 		
 		
 	print sizes
@@ -253,6 +260,11 @@ def solve_var(txt):
 		
 		
 		return [solve_var(tmp[-1]) , solve_var(argu[1:]) ]
+		
+	if txt[0] ==  OP.index_op[OP.SQRBRACKETL] and txt[-1] ==  OP.index_op[OP.SQRBRACKETR] :	
+	
+		return txt
+	
 		
 	if ',' in txt:
 	

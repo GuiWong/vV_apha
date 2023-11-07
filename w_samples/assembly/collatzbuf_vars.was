@@ -1,12 +1,10 @@
- segment .data 
-
- i_global:
-.max: dq 1000000
-.memoed: dq 3
-.current: dq 3
-.biggest: dq 0
- segment .bss 
-
+ segment .bss
 	u_global:
-.memo: resb 4000000 
-.biggest_source: resb 4 
+.memo:resb 4000000 
+.biggest_source:resb 4 
+ segment .data
+	i_global:
+.max:dq 1000000
+.memoed:dq 3
+.current:dq 3
+.biggest:dq 0

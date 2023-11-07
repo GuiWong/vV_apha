@@ -1,0 +1,9 @@
+ segment .bss
+	u_global:
+.ref1:resb 4 
+.ref_of_ref:resb 4 
+.ref2:resb 4 
+ segment .data
+	i_global:
+.a:dq 42
+.b:dq 44203

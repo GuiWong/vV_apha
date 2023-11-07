@@ -12,7 +12,7 @@ class Block:
 	sub_blocks_inverted = []
 	
 	arg_adress = 0
-	
+
 	def __init__(self,adr,b_t,f_p):
 	
 		self.adress = adr
@@ -20,6 +20,7 @@ class Block:
 		self.filepos = f_p
 		self.sub_blocks = []
 		
+
 		
 	def __str__(self):
 	
@@ -34,11 +35,24 @@ class Block_Manager:
 	blocks = []
 	level = 0
 	
+	
+	loop_level = 0
+	max_loop_level = 0
+	
+	
 	def __init__(self):
 	
 		self.blocks = []
 		self.level = 0
+				
+		self.loop_level = 0
+		self.max_loop_level = 0
 		
+	def update_max_loop(self):
+	
+		if self.loop_level > self.max_loop_level:
+		
+			self.max_loop_level = self.loop_level
 	
 		
 	def manage_block(self,op_adr,b_type,filepos = 'noPos'):
@@ -72,6 +86,8 @@ class Block_Manager:
 		elif actual.b_type == OP.Block_Type.LOOP:
 		
 			self.start_block(actual)
+			self.loop_level += 1
+			self.update_max_loop()
 			return []
 			
 			
@@ -141,6 +157,8 @@ class Block_Manager:
 			assert self.blocks[-1].b_type in [OP.Block_Type.LOOP] , "Block Mismatch"
 			
 			self.blocks[-1].arg_adress = actual.adress 
+			
+			self.loop_level-= 1
 			
 			return [self.end_block()]		
 				

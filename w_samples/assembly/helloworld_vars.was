@@ -1,0 +1,11 @@
+ segment .bss
+	u_global:
+ segment .data
+	i_global:
+.sizes: dd  11 , 31 , 21 , 26 , 48 , 35 
+.line5:db "and passing string type as argument"
+.line4:db "to allow storing different sized Stings in array"
+.line3:db "next is a real String type"
+.line2:db "and initialized Array"
+.line1:db "vV now support String Litterals"
+.str:db "Hello World"

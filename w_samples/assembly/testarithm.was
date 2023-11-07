@@ -1,0 +1,245 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "w_samples/assembly/testarithm_vars.was"	
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+		
+
+
+
+vV_entry_point:
+
+
+	push rbp
+	mov rbp, rsp			;Setup Stack Frame
+	
+	;OpADR: [0] ; PUSH opcode 
+
+	vV_push 8
+
+;OpADR: [1] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [2] ; PUSH opcode 
+
+	vV_push 356
+
+;OpADR: [3] ; PUSH opcode 
+
+	vV_push 722
+
+;OpADR: [4] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [5] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [6] ; PUSH opcode 
+
+	vV_push 255
+
+;OpADR: [7] ; PUSH opcode 
+
+	vV_push 240
+
+;OpADR: [8] ; PUSH opcode 
+
+	vV_push 8
+
+;OpADR: [9] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [10] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [11] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [12] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_testarithm0:		
+
+;------------------------------------------------------
+
+;OpADR: [13]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [14] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [15] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [16]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [17] ; SUB opcode 
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+	vV_dec_sp 1		
+
+;OpADR: [18] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [19]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [20] ; MUL opcode 
+
+	mov eax , vV_2nd			
+	mul DWORD vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1	
+
+;OpADR: [21] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [22]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [23] ; DIV opcode 
+
+	xor edx , edx				
+	mov eax , vV_2nd			
+	div DWORD vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [24] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [25]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [26] ; MOD opcode 
+
+	xor edx , edx	
+	mov eax , vV_2nd			
+	div DWORD vV_top			
+	mov vV_2nd , edx			
+	vV_dec_sp 1				
+
+;OpADR: [27] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [28]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [29] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [30] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [31]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [32] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [33] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [34]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [35] ; XOR opcode 
+
+	mov eax , vV_top			
+	xor DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [36] ; BUFF_OUT opcode (4)
+
+	 mov r10d , vV_FORMAT_BIN	
+	call vV_io_out
+
+;OpADR: [37] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [38] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [39] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_testarithm0	
+
+
+
+	wblock_testarithm1:		
+
+;------------------------------------------------------
+
+;OpADR: [40] ; Loop Cleanup 
+
+	add rsp , 16	
+
+		
+		mov rsp , rbp
+		pop rbp
+		ret
+
+;Transpiled from vV with vVc version 0.0.4.5
+		
+		

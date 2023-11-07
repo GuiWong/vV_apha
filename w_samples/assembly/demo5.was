@@ -1,0 +1,6910 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "w_samples/assembly/demo5_vars.was"	
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+term_clear:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [0] ; PUSH opcode 
+
+	vV_push 680731
+
+;OpADR: [1] ; BUFF_OUT opcode (9)
+
+	call vV_io_out_packed_char
+
+;OpADR: [2] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+term_resize_x_y:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [3] ; PUSH opcode 
+
+	vV_push 59
+
+;OpADR: [4] ; PUSH opcode 
+
+	vV_push 56
+
+;OpADR: [5] ; PUSH opcode 
+
+	vV_push 91
+
+;OpADR: [6] ; PUSH opcode 
+
+	vV_push 27
+
+;OpADR: [7] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [8] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [9] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [10] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [11] ; OUT opcode (0)
+
+	call vV_io_out_buffer_default	
+
+;OpADR: [12] ; PUSH opcode 
+
+	vV_push 59
+
+;OpADR: [13] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [14] ; OUT opcode (0)
+
+	call vV_io_out_buffer_default	
+
+;OpADR: [15] ; PUSH opcode 
+
+	vV_push 116
+
+;OpADR: [16] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [17] ; FLUSH opcode
+
+	call vV_io_flush_no_nline 
+
+;OpADR: [18] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+term_resize_default:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [19] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_term.default_x_size]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [20] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_term.default_y_size]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [21] ; Function Call
+
+	call term_resize_x_y
+
+;OpADR: [22] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+term_cursor_x_y:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 24	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [23] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [24] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [25] ; PUSH opcode 
+
+	vV_push 72
+
+;OpADR: [26] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [27] ; PUSH opcode 
+
+	vV_push 59
+
+;OpADR: [28] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [29] ; PUSH opcode 
+
+	vV_push 91
+
+;OpADR: [30] ; PUSH opcode 
+
+	vV_push 27
+
+;OpADR: [31] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [32] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [33] ; OUT opcode (0)
+
+	call vV_io_out_buffer_default	
+
+;OpADR: [34] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [35] ; OUT opcode (0)
+
+	call vV_io_out_buffer_default	
+
+;OpADR: [36] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [37] ; FLUSH opcode
+
+	call vV_io_flush_no_nline 
+
+;OpADR: [38] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+term_term_bg:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 16	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [39] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [40] ; PUSH opcode 
+
+	vV_push 109
+
+;OpADR: [41] ; PUSH opcode 
+
+	vV_push 59
+
+;OpADR: [42] ; PUSH opcode 
+
+	vV_push 53
+
+;OpADR: [43] ; PUSH opcode 
+
+	vV_push 59
+
+;OpADR: [44] ; PUSH opcode 
+
+	vV_push 56
+
+;OpADR: [45] ; PUSH opcode 
+
+	vV_push 52
+
+;OpADR: [46] ; PUSH opcode 
+
+	vV_push 91
+
+;OpADR: [47] ; PUSH opcode 
+
+	vV_push 27
+
+;OpADR: [48] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [49] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [50] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [51] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [52] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [53] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [54] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [55] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [56] ; OUT opcode (0)
+
+	call vV_io_out_buffer_default	
+
+;OpADR: [57] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [58] ; FLUSH opcode
+
+	call vV_io_flush_no_nline 
+
+;OpADR: [59] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+term_term_fg:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 16	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [60] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [61] ; PUSH opcode 
+
+	vV_push 109
+
+;OpADR: [62] ; PUSH opcode 
+
+	vV_push 59
+
+;OpADR: [63] ; PUSH opcode 
+
+	vV_push 53
+
+;OpADR: [64] ; PUSH opcode 
+
+	vV_push 59
+
+;OpADR: [65] ; PUSH opcode 
+
+	vV_push 56
+
+;OpADR: [66] ; PUSH opcode 
+
+	vV_push 51
+
+;OpADR: [67] ; PUSH opcode 
+
+	vV_push 91
+
+;OpADR: [68] ; PUSH opcode 
+
+	vV_push 27
+
+;OpADR: [69] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [70] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [71] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [72] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [73] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [74] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [75] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [76] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [77] ; OUT opcode (0)
+
+	call vV_io_out_buffer_default	
+
+;OpADR: [78] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [79] ; FLUSH opcode
+
+	call vV_io_flush_no_nline 
+
+;OpADR: [80] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+term_defined_color:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [81] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_term.default_bg]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [82] ; Function Call
+
+	call term_term_bg
+
+;OpADR: [83] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_term.default_fg]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [84] ; Function Call
+
+	call term_term_fg
+
+;OpADR: [85] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+term_default_color:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [86] ; PUSH opcode 
+
+	vV_push 109
+
+;OpADR: [87] ; PUSH opcode 
+
+	vV_push 57
+
+;OpADR: [88] ; PUSH opcode 
+
+	vV_push 52
+
+;OpADR: [89] ; PUSH opcode 
+
+	vV_push 91
+
+;OpADR: [90] ; PUSH opcode 
+
+	vV_push 27
+
+;OpADR: [91] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [92] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [93] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [94] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [95] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [96] ; FLUSH opcode
+
+	call vV_io_flush_no_nline 
+
+;OpADR: [97] ; PUSH opcode 
+
+	vV_push 109
+
+;OpADR: [98] ; PUSH opcode 
+
+	vV_push 57
+
+;OpADR: [99] ; PUSH opcode 
+
+	vV_push 51
+
+;OpADR: [100] ; PUSH opcode 
+
+	vV_push 91
+
+;OpADR: [101] ; PUSH opcode 
+
+	vV_push 27
+
+;OpADR: [102] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [103] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [104] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [105] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [106] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [107] ; FLUSH opcode
+
+	call vV_io_flush_no_nline 
+
+;OpADR: [108] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+utf_8_make_24_bytes:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 16	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [0]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [1] ; PUSH opcode 
+
+	vV_push 63
+
+;OpADR: [2] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [3] ; PUSH opcode 
+
+	vV_push 128
+
+;OpADR: [4] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [5] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [6] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [7] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [8] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [9] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [10] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [11] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [12]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [13] ; PUSH opcode 
+
+	vV_push 63
+
+;OpADR: [14] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [15] ; PUSH opcode 
+
+	vV_push 128
+
+;OpADR: [16] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [17] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [18] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [19] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [20] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [21] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [22] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [23] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [24] ; PUSH opcode 
+
+	vV_push 15
+
+;OpADR: [25] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [26] ; PUSH opcode 
+
+	vV_push 224
+
+;OpADR: [27] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [28] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [29] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [30] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [31] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [32] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [33] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [34] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [35] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [36] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [37] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [38] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [39] ; PUSH opcode 
+
+	vV_push 16
+
+;OpADR: [40] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [41] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_utf_80:		
+
+;------------------------------------------------------
+
+;OpADR: [42] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [43] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_utf_80	
+
+
+
+	wblock_utf_81:		
+
+;------------------------------------------------------
+
+;OpADR: [44] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [45] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [46] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+utf_8_make_32_bytes:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [47]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [48] ; Function Call
+
+	call utf_8_make_24_bytes
+
+;OpADR: [49] ; PUSH opcode 
+
+	vV_push 4294967055
+
+;OpADR: [50] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [51] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [52] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [53] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [54] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [55] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [56] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [57] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [58] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [59] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [60] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [61] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [62] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [63] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [64] ; PUSH opcode 
+
+	vV_push 48
+
+;OpADR: [65] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [66] ; PUSH opcode 
+
+	vV_push 128
+
+;OpADR: [67] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [68] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [69] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [70] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [71] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [72] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [73] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [74] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [75] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [76] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [77] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [78] ; PUSH opcode 
+
+	vV_push 18
+
+;OpADR: [79] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [80] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_utf_82:		
+
+;------------------------------------------------------
+
+;OpADR: [81] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [82] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_utf_82	
+
+
+
+	wblock_utf_83:		
+
+;------------------------------------------------------
+
+;OpADR: [83] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [84] ; PUSH opcode 
+
+	vV_push 7
+
+;OpADR: [85] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [86] ; PUSH opcode 
+
+	vV_push 240
+
+;OpADR: [87] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [88] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [89] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+utf_8_make_16_bytes:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [90]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [91] ; PUSH opcode 
+
+	vV_push 63
+
+;OpADR: [92] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [93] ; PUSH opcode 
+
+	vV_push 128
+
+;OpADR: [94] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [95] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [96] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [97] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [98] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [99] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [100] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [101] ; RSH opcode 
+
+	shr DWORD vV_top , 1
+
+;OpADR: [102] ; PUSH opcode 
+
+	vV_push 31
+
+;OpADR: [103] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [104] ; PUSH opcode 
+
+	vV_push 192
+
+;OpADR: [105] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [106] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [107] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [108] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [109] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [110] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [111] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [112] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [113] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [114] ; LSH opcode 
+
+	shl DWORD vV_top , 1
+
+;OpADR: [115] ; OR opcode 
+
+	mov eax , vV_top			
+	or DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [116] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+utf_8_make_utf8_pckdchar:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [117]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [118] ; PUSH opcode 
+
+	vV_push 1114111
+
+;OpADR: [119] ; MORE opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jbe short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [120] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_utf_84	
+
+;OpADR: [121] ; User kill
+
+		mov ah , vV_ERR_USER_UNDEFINED
+	or ax , 0	
+xor rbx , rbx	
+call vV_error		
+
+
+
+	wblock_utf_84:		
+
+;------------------------------------------------------
+
+;OpADR: [122]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [123] ; PUSH opcode 
+
+	vV_push 65535
+
+;OpADR: [124] ; MORE opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jbe short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [125] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_utf_810	
+
+;OpADR: [126] ; Function Call
+
+	call utf_8_make_32_bytes
+
+;OpADR: [127] ; ELSE opcode 
+
+	jmp wblock_utf_89	
+
+
+
+	wblock_utf_810:		
+
+;------------------------------------------------------
+
+;OpADR: [128]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [129] ; PUSH opcode 
+
+	vV_push 2047
+
+;OpADR: [130] ; MORE opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jbe short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [131] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_utf_88	
+
+;OpADR: [132] ; Function Call
+
+	call utf_8_make_24_bytes
+
+;OpADR: [133] ; ELSE opcode 
+
+	jmp wblock_utf_89	
+
+
+
+	wblock_utf_88:		
+
+;------------------------------------------------------
+
+;OpADR: [134]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [135] ; PUSH opcode 
+
+	vV_push 127
+
+;OpADR: [136] ; MORE opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jbe short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [137] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_utf_86	
+
+;OpADR: [138] ; Function Call
+
+	call utf_8_make_16_bytes
+
+;OpADR: [139] ; ELSE opcode 
+
+	jmp wblock_utf_89	
+
+
+
+	wblock_utf_86:		
+
+;------------------------------------------------------
+
+;OpADR: [140]  DUP opcode (1)
+	vV_dup 1
+
+
+
+	wblock_utf_89:		
+
+;------------------------------------------------------
+
+;OpADR: [141] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [142] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [143] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_init_var:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [0] ; PUSH opcode 
+
+	vV_push 9556
+
+;OpADR: [1] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [2] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.corners]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 4	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [3] ; PUSH opcode 
+
+	vV_push 9559
+
+;OpADR: [4] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [5] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.corners]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 4	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [6] ; PUSH opcode 
+
+	vV_push 9562
+
+;OpADR: [7] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [8] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.corners]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 4	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [9] ; PUSH opcode 
+
+	vV_push 9565
+
+;OpADR: [10] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [11] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.corners]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 4	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [12] ; PUSH opcode 
+
+	vV_push 6
+
+;OpADR: [13] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [14] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui0:		
+
+;------------------------------------------------------
+
+;OpADR: [15] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [16]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [17] ; Var Ref assignement	
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	mov ecx , 0	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov rsi , rdi	
+	add rsi , rax	
+	lea rdi , [u_global_wong_ui.window_handles]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [18] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui0	
+
+
+
+	wblock_wong_ui1:		
+
+;------------------------------------------------------
+
+;OpADR: [19] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [20] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_error:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [21] ; User kill
+
+		mov ah , vV_ERR_USER_UNDEFINED
+	or ax , 0	
+xor rbx , rbx	
+call vV_error		
+
+;OpADR: [22] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_set_default_color_i:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [23]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [24] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.default_bg]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [25] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [26] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.bg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [27] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.default_fg]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [28] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [29] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.fg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [30] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_fill_window_with_c:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [31] ; Var invocation
+
+		lea rdi , [rbp + 16]	
+	mov edi , [rdi]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 5	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [32] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_ptr]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [33] ; Var invocation
+
+		lea rdi , [rbp + 16]	
+	mov edi , [rdi]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 3	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [34] ; Var invocation
+
+		lea rdi , [rbp + 16]	
+	mov edi , [rdi]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 4	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [35] ; MUL opcode 
+
+	mov eax , vV_2nd			
+	mul DWORD vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1	
+
+;OpADR: [36] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [37] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui2:		
+
+;------------------------------------------------------
+
+;OpADR: [38]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [39] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [40] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [41]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [42] ; Function Call
+
+	call wong_ui_set_default_color_i
+
+;OpADR: [43] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.char_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [44] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui2	
+
+
+
+	wblock_wong_ui3:		
+
+;------------------------------------------------------
+
+;OpADR: [45] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [46] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_init_main_window:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [47] ; Var Ref assignement	
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global_wong_ui.main_window]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [48] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [49] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [50] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [51] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [52] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [53] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [54] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [55] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [56] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [57] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.main_width]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [58] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [59] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [60] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.main_height]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [61] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [62] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [63] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [64] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [65] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [66] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_calc_window_space_id:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 16	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [67] ; Var Ref assignement	
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [68] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [69] ; Var invocation
+
+		lea rdi , [rbp - 8]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [70] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [71] ; Var invocation
+
+		lea rdi , [rbp - 8]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [72] ; MUL opcode 
+
+	mov eax , vV_2nd			
+	mul DWORD vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1	
+
+;OpADR: [73] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_allocate_char_window_id:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [74]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [75] ; Function Call
+
+	call wong_ui_calc_window_space_id
+
+;OpADR: [76] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.free_space_ptr]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [77] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [78]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [79] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.max_char_space]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [80] ; LESS opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [81] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui5	
+
+;OpADR: [82] ; ELSE opcode 
+
+	jmp wblock_wong_ui4	
+
+
+
+	wblock_wong_ui5:		
+
+;------------------------------------------------------
+
+;OpADR: [83] ; Function Call
+
+	call wong_ui_error
+
+
+
+	wblock_wong_ui4:		
+
+;------------------------------------------------------
+
+;OpADR: [84] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [85] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.free_space_ptr]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [86] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [87] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.window_ptr]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [88] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.free_space_ptr]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [89] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_set_bg_from_buffer_offset:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [90] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.bg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [91]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [92] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.actual_bg]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [93] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [94] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui7	
+
+;OpADR: [95] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [96] ; ELSE opcode 
+
+	jmp wblock_wong_ui6	
+
+
+
+	wblock_wong_ui7:		
+
+;------------------------------------------------------
+
+;OpADR: [97] ; PUSH opcode 
+
+	vV_push 255
+
+;OpADR: [98] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [99]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [100] ; Function Call
+
+	call term_term_bg
+
+;OpADR: [101] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.actual_bg]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+
+
+	wblock_wong_ui6:		
+
+;------------------------------------------------------
+
+;OpADR: [102] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_set_fg_from_buffer_offset:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [103] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.fg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [104]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [105] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.actual_fg]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [106] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [107] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui9	
+
+;OpADR: [108] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [109] ; ELSE opcode 
+
+	jmp wblock_wong_ui8	
+
+
+
+	wblock_wong_ui9:		
+
+;------------------------------------------------------
+
+;OpADR: [110] ; PUSH opcode 
+
+	vV_push 255
+
+;OpADR: [111] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [112]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [113] ; Function Call
+
+	call term_term_fg
+
+;OpADR: [114] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.actual_fg]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+
+
+	wblock_wong_ui8:		
+
+;------------------------------------------------------
+
+;OpADR: [115] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_solve_main_offset_x_y:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [116] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.main_width]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [117] ; MUL opcode 
+
+	mov eax , vV_2nd			
+	mul DWORD vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1	
+
+;OpADR: [118] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [119] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_solve_window_local_pos_x_y_i:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 16	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [120]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [121] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [122] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [123] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [124] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [125] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [126] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [127] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [128] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [129] ; SUB opcode 
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+	vV_dec_sp 1		
+
+;OpADR: [130] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [131] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [132] ; SUB opcode 
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+	vV_dec_sp 1		
+
+;OpADR: [133] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [134] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_solve_window_offset_x_y_i:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [135] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [136] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [137] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [138] ; MUL opcode 
+
+	mov eax , vV_2nd			
+	mul DWORD vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1	
+
+;OpADR: [139] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [140] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_is_in_window_x_y_i:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 24	;Space for local vars	
+
+;------Init Phase
+mov DWORD[rbp  - 16 ] , 0		; space for lvar 1 (result)	
+
+.tailcall:		;Body Section	
+;OpADR: [141] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [142] ; NOT opcode 
+
+	not DWORD vV_top
+
+;OpADR: [143] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [144]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [145] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [146]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [147] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [148] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [149] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [150]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [151] ; LESS opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [152] ; NOT opcode 
+
+	not DWORD vV_top
+
+;OpADR: [153] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [154] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [155] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [156] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [157] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [158] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [159] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [160] ; LESS opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [161] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [162] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [163] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [164] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [165] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [166]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [167] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [168] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [169] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [170]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [171] ; LESS opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [172] ; NOT opcode 
+
+	not DWORD vV_top
+
+;OpADR: [173] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [174] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [175] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [176] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [177] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [178] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [179] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [180] ; LESS opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jae short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [181] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [182] ; AND opcode 
+
+	mov eax , vV_top			
+	and DWORD vV_2nd , eax			
+	vV_dec_sp 1				
+
+;OpADR: [183] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [184] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [185] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [186] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [187] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_solve_window_char_x_y:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 40	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [188] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [189] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [190] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [191] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 32]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [192] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [193] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [194] ; PUSH opcode 
+
+	vV_push 8
+
+;OpADR: [195] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [196] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui13:		
+
+;------------------------------------------------------
+
+;OpADR: [197] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [198] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [199] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [200] ; Function Call
+
+	call wong_ui_is_in_window_x_y_i
+
+;OpADR: [201] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui12	
+
+;OpADR: [202] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [203] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [204] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [205] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 32]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [206]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [207] ; MORE opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jbe short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [208] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui11	
+
+;OpADR: [209] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [210] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 32]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [211] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [212] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [213] ; ELSE opcode 
+
+	jmp wblock_wong_ui12	
+
+
+
+	wblock_wong_ui11:		
+
+;------------------------------------------------------
+
+;OpADR: [214] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [215] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+
+
+	wblock_wong_ui12:		
+
+;------------------------------------------------------
+
+;OpADR: [216] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui13	
+
+
+
+	wblock_wong_ui14:		
+
+;------------------------------------------------------
+
+;OpADR: [217] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [218] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [219] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [220] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [221] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [222] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [223] ; Function Call
+
+	call wong_ui_solve_window_local_pos_x_y_i
+
+;OpADR: [224] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [225] ; Function Call
+
+	call wong_ui_solve_window_offset_x_y_i
+
+;OpADR: [226] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [227] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_ptr]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [228] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [229] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_blit_at_x_y:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 16	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [230]  DUP opcode (2)
+	vV_dup 2
+
+;OpADR: [231] ; Function Call
+
+	call wong_ui_solve_main_offset_x_y
+
+;OpADR: [232] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [233] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [234] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [235] ; Function Call
+
+	call wong_ui_solve_window_char_x_y
+
+;OpADR: [236]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [237] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.char_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [238] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [239]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [240] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.fg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [241] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [242] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.bg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [243] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [244] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.bg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [245] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [246] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.fg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [247] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [248] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.char_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [249] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_blit_main:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [250] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.main_height]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [251] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [252] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui17:		
+
+;------------------------------------------------------
+
+;OpADR: [253] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.main_width]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [254] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [255] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui15:		
+
+;------------------------------------------------------
+
+;OpADR: [256] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [257] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [258] ; Function Call
+
+	call wong_ui_blit_at_x_y
+
+;OpADR: [259] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui15	
+
+
+
+	wblock_wong_ui16:		
+
+;------------------------------------------------------
+
+;OpADR: [260] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [261] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui17	
+
+
+
+	wblock_wong_ui18:		
+
+;------------------------------------------------------
+
+;OpADR: [262] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [263] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_flush_main:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [264] ; Function Call
+
+	call term_clear
+
+;OpADR: [265] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [266] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [267] ; Function Call
+
+	call term_cursor_x_y
+
+;OpADR: [268] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.actual_fg]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [269] ; Function Call
+
+	call term_term_fg
+
+;OpADR: [270] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.actual_bg]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [271] ; Function Call
+
+	call term_term_bg
+
+;OpADR: [272] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 4	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [273] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [274] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui22:		
+
+;------------------------------------------------------
+
+;OpADR: [275] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 3	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [276] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [277] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui19:		
+
+;------------------------------------------------------
+
+;OpADR: [278] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [279] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [280] ; Function Call
+
+	call wong_ui_solve_main_offset_x_y
+
+;OpADR: [281]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [282] ; Function Call
+
+	call wong_ui_set_fg_from_buffer_offset
+
+;OpADR: [283]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [284] ; Function Call
+
+	call wong_ui_set_bg_from_buffer_offset
+
+;OpADR: [285] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.char_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [286] ; Function Call
+
+	call utf_8_make_utf8_pckdchar
+
+;OpADR: [287] ; OUT opcode (9)
+
+	call vV_io_out_packed_char_buffer 
+
+;OpADR: [288] ; FLUSH opcode
+
+	call vV_io_flush_no_nline 
+
+;OpADR: [289] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui19	
+
+
+
+	wblock_wong_ui20:		
+
+;------------------------------------------------------
+
+;OpADR: [290] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [291] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [292] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.main_window]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 4	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [293] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [294] ; SUB opcode 
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+	vV_dec_sp 1		
+
+;OpADR: [295] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [296] ; NOT opcode 
+
+	not DWORD vV_top
+
+;OpADR: [297] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui21	
+
+;OpADR: [298] ; FLUSH opcode
+
+	call vV_io_flush 
+
+
+
+	wblock_wong_ui21:		
+
+;------------------------------------------------------
+
+;OpADR: [299] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui22	
+
+
+
+	wblock_wong_ui23:		
+
+;------------------------------------------------------
+
+;OpADR: [300] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [301] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_create_window_w_h:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [302] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [303] ; Var Deref assignement	
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	mov ecx , 0	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [rbp + 16]	
+	add rdi , rax	
+	mov rax , rdi	
+	mov eax , [rax]	
+	mov rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [304] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [305] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [306] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [307] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [308] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [309] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [310] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [311] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [312] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [313] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [314] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [315]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [316] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [317] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [318] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [319]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [320] ; Function Call
+
+	call wong_ui_allocate_char_window_id
+
+;OpADR: [321]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [322] ; Var Ref assignement	
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global_wong_ui.actual_window]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [323] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [324] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [325] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [326] ; PUSH opcode 
+
+	vV_push 35
+
+;OpADR: [327] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global_wong_ui.actual_window]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_fill_window_with_c
+add rsp , 8
+;OpADR: [328] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_get_win_start_i:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [329] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.window_ptr]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [330] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_put_c_x_y:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [331] ; Var invocation
+
+		lea rdi , [rbp + 16]	
+	mov edi , [rdi]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 5	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [332] ; Function Call
+
+	call wong_ui_solve_window_offset_x_y_i
+
+;OpADR: [333] ; Var invocation
+
+		lea rdi , [rbp + 16]	
+	mov edi , [rdi]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 5	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [334] ; Function Call
+
+	call wong_ui_get_win_start_i
+
+;OpADR: [335] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [336] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.char_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [337] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_print_buffer_x_y_c:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [338] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [339] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui24:		
+
+;------------------------------------------------------
+
+;OpADR: [340] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [341] ; Var invocation
+
+		lea rdi , [rbp + 24]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [342]  DUP opcode (3)
+	vV_dup 3
+
+;OpADR: [343] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [344] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [rbp + 16]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov eax , [rsi]	
+	mov DWORD[rdi] , eax	
+	call wong_ui_put_c_x_y
+add rsp , 8
+;OpADR: [345] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [346] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [347] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [348] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [349] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui24	
+
+
+
+	wblock_wong_ui25:		
+
+;------------------------------------------------------
+
+;OpADR: [350] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [351] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [352] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [353] ; PUSH opcode 
+
+	vV_push 1684303461
+
+;OpADR: [354] ; BUFF_OUT opcode (9)
+
+	call vV_io_out_packed_char
+
+;OpADR: [355] ;GET opcode (0)
+
+	; GET opcode (0)			
+
+call vV_io_get_default	
+
+;OpADR: [356] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [357] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_make_box_x_w_y_h:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 56	;Space for local vars	
+
+;------Init Phase
+mov DWORD[rbp  - 8 ] , 0		; space for lvar 0 (corner_id)	
+mov DWORD[rbp  - 48 ] , 0		; space for lvar 5 (is_corner)	
+
+.tailcall:		;Body Section	
+;OpADR: [358] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 32]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [359] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [360] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 40]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [361] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [362] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [363] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 32]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [364] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [365] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [366] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui43:		
+
+;------------------------------------------------------
+
+;OpADR: [367] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [368] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 40]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [369] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [370] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [371] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_wong_ui41:		
+
+;------------------------------------------------------
+
+;OpADR: [372] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [373] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [374] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [375]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [376] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [377] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [378] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui29	
+
+;OpADR: [379] ; PUSH opcode 
+
+	vV_push 9553
+
+;OpADR: [380] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [381] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [382] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [383] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [384] ; ELSE opcode 
+
+	jmp wblock_wong_ui28	
+
+
+
+	wblock_wong_ui29:		
+
+;------------------------------------------------------
+
+;OpADR: [385]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [386] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [387] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 40]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [388] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [389] ; SUB opcode 
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+	vV_dec_sp 1		
+
+;OpADR: [390] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [391] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [392] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui27	
+
+;OpADR: [393] ; PUSH opcode 
+
+	vV_push 9553
+
+;OpADR: [394] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [395] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [396] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [397] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [398] ; ELSE opcode 
+
+	jmp wblock_wong_ui28	
+
+
+
+	wblock_wong_ui27:		
+
+;------------------------------------------------------
+
+;OpADR: [399] ; PUSH opcode 
+
+	vV_push 32
+
+
+
+	wblock_wong_ui28:		
+
+;------------------------------------------------------
+
+;OpADR: [400] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [401] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [402] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [403]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [404] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [405] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [406] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui33	
+
+;OpADR: [407] ; PUSH opcode 
+
+	vV_push 9552
+
+;OpADR: [408] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [409] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [410] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [411] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [412] ; ELSE opcode 
+
+	jmp wblock_wong_ui32	
+
+
+
+	wblock_wong_ui33:		
+
+;------------------------------------------------------
+
+;OpADR: [413]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [414] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 24]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [415] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 32]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [416] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [417] ; SUB opcode 
+
+	mov eax , vV_2nd			
+	sub eax , vV_top			
+	mov vV_2nd, eax			
+	vV_dec_sp 1		
+
+;OpADR: [418] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [419] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [420] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui31	
+
+;OpADR: [421] ; PUSH opcode 
+
+	vV_push 9552
+
+;OpADR: [422] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [423] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [424] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [425] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [426] ; ELSE opcode 
+
+	jmp wblock_wong_ui32	
+
+
+
+	wblock_wong_ui31:		
+
+;------------------------------------------------------
+
+;OpADR: [427] ; PUSH opcode 
+
+	vV_push 32
+
+
+
+	wblock_wong_ui32:		
+
+;------------------------------------------------------
+
+;OpADR: [428] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [429] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [430] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [431] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [432] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [433] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui40	
+
+;OpADR: [434] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [435] ; ELSE opcode 
+
+	jmp wblock_wong_ui39	
+
+
+
+	wblock_wong_ui40:		
+
+;------------------------------------------------------
+
+;OpADR: [436] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [437] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [438] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [439] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui38	
+
+;OpADR: [440]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [441] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [442] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [443] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui35	
+
+;OpADR: [444] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [445] ; ELSE opcode 
+
+	jmp wblock_wong_ui34	
+
+
+
+	wblock_wong_ui35:		
+
+;------------------------------------------------------
+
+;OpADR: [446] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [447] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+
+
+	wblock_wong_ui34:		
+
+;------------------------------------------------------
+
+;OpADR: [448] ; ELSE opcode 
+
+	jmp wblock_wong_ui39	
+
+
+
+	wblock_wong_ui38:		
+
+;------------------------------------------------------
+
+;OpADR: [449] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 48]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [450] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [451] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [452] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_wong_ui39	
+
+;OpADR: [453] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [454] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [455] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [456]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [457] ; Var invocation
+
+		lea rdi , [u_global_wong_ui.corners]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 4	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [458] ; SWAP opcode 
+
+	vV_swap 
+
+;OpADR: [459] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [460] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [461] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+
+
+	wblock_wong_ui39:		
+
+;------------------------------------------------------
+
+;OpADR: [462] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [463] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [464] ; Var invocation
+
+		lea rdi , [rbp + 16]	
+	mov edi , [rdi]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 5	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [465] ; Function Call
+
+	call wong_ui_solve_window_offset_x_y_i
+
+;OpADR: [466] ; Var invocation
+
+		lea rdi , [rbp + 16]	
+	mov edi , [rdi]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 5	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [467] ; Function Call
+
+	call wong_ui_get_win_start_i
+
+;OpADR: [468] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [469] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.char_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [470] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui41	
+
+
+
+	wblock_wong_ui42:		
+
+;------------------------------------------------------
+
+;OpADR: [471] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [472] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_wong_ui43	
+
+
+
+	wblock_wong_ui44:		
+
+;------------------------------------------------------
+
+;OpADR: [473] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [474] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+wong_ui_init:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [475] ; Function Call
+
+	call wong_ui_init_var
+
+;OpADR: [476] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.main_width]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [477] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.main_height]	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [478] ; Function Call
+
+	call term_resize_x_y
+
+;OpADR: [479] ; Function Call
+
+	call term_clear
+
+;OpADR: [480] ; Function Call
+
+	call wong_ui_init_main_window
+
+;OpADR: [481] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [482] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [483] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [484] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [485] ; Var assignement
+
+		xor rax , rax
+	lea rdi , [i_global_wong_ui.next_window]	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov [rax] , ecx	
+
+;OpADR: [486] ; Function Call
+
+	call wong_ui_allocate_char_window_id
+
+;OpADR: [487] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+
+		
+
+
+
+vV_entry_point:
+
+
+	push rbp
+	mov rbp, rsp			;Setup Stack Frame
+	
+	;OpADR: [0] ; PUSH opcode 
+
+	vV_push 87
+
+;OpADR: [1] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [2] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [3] ; PUSH opcode 
+
+	vV_push 111
+
+;OpADR: [4] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [5] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [6] ; PUSH opcode 
+
+	vV_push 110
+
+;OpADR: [7] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [8] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [9] ; PUSH opcode 
+
+	vV_push 103
+
+;OpADR: [10] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [11] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [12] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [13] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [14] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [15] ; PUSH opcode 
+
+	vV_push 85
+
+;OpADR: [16] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [17] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [18] ; PUSH opcode 
+
+	vV_push 73
+
+;OpADR: [19] ; PUSH opcode 
+
+	vV_push 6
+
+;OpADR: [20] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [21] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [22] ; PUSH opcode 
+
+	vV_push 7
+
+;OpADR: [23] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [24] ; PUSH opcode 
+
+	vV_push 68
+
+;OpADR: [25] ; PUSH opcode 
+
+	vV_push 8
+
+;OpADR: [26] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [27] ; PUSH opcode 
+
+	vV_push 101
+
+;OpADR: [28] ; PUSH opcode 
+
+	vV_push 9
+
+;OpADR: [29] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [30] ; PUSH opcode 
+
+	vV_push 109
+
+;OpADR: [31] ; PUSH opcode 
+
+	vV_push 10
+
+;OpADR: [32] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [33] ; PUSH opcode 
+
+	vV_push 111
+
+;OpADR: [34] ; PUSH opcode 
+
+	vV_push 11
+
+;OpADR: [35] ; Var assignement
+
+		lea rdi , [u_global.tile]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 12	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [36] ; PUSH opcode 
+
+	vV_push 84
+
+;OpADR: [37] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [38] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [39] ; PUSH opcode 
+
+	vV_push 101
+
+;OpADR: [40] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [41] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [42] ; PUSH opcode 
+
+	vV_push 115
+
+;OpADR: [43] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [44] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [45] ; PUSH opcode 
+
+	vV_push 116
+
+;OpADR: [46] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [47] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [48] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [49] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [50] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [51] ; PUSH opcode 
+
+	vV_push 83
+
+;OpADR: [52] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [53] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [54] ; PUSH opcode 
+
+	vV_push 116
+
+;OpADR: [55] ; PUSH opcode 
+
+	vV_push 6
+
+;OpADR: [56] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [57] ; PUSH opcode 
+
+	vV_push 114
+
+;OpADR: [58] ; PUSH opcode 
+
+	vV_push 7
+
+;OpADR: [59] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [60] ; PUSH opcode 
+
+	vV_push 105
+
+;OpADR: [61] ; PUSH opcode 
+
+	vV_push 8
+
+;OpADR: [62] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [63] ; PUSH opcode 
+
+	vV_push 110
+
+;OpADR: [64] ; PUSH opcode 
+
+	vV_push 9
+
+;OpADR: [65] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [66] ; PUSH opcode 
+
+	vV_push 103
+
+;OpADR: [67] ; PUSH opcode 
+
+	vV_push 10
+
+;OpADR: [68] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [69] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [70] ; PUSH opcode 
+
+	vV_push 11
+
+;OpADR: [71] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [72] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [73] ; PUSH opcode 
+
+	vV_push 12
+
+;OpADR: [74] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [75] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [76] ; PUSH opcode 
+
+	vV_push 13
+
+;OpADR: [77] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [78] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [79] ; PUSH opcode 
+
+	vV_push 14
+
+;OpADR: [80] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [81] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [82] ; PUSH opcode 
+
+	vV_push 15
+
+;OpADR: [83] ; Var assignement
+
+		lea rdi , [u_global.string_test]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 16	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [84] ; Var invocation
+
+		lea rdi , [i_global.truc]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 3	
+	mul ecx	
+	mov ecx , 0	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [85] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [86] ; Var invocation
+
+		lea rdi , [i_global.truc]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 3	
+	mul ecx	
+	mov ecx , 0	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [87] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [88] ; Function Call
+
+	call wong_ui_init
+
+;OpADR: [89] ; PUSH opcode 
+
+	vV_push 1953066601
+
+;OpADR: [90] ; BUFF_OUT opcode (9)
+
+	call vV_io_out_packed_char
+
+;OpADR: [91] ; PUSH opcode 
+
+	vV_push 96
+
+;OpADR: [92] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [93] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global.main_win]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_create_window_w_h
+add rsp , 8
+;OpADR: [94] ; PUSH opcode 
+
+	vV_push 94
+
+;OpADR: [95] ; PUSH opcode 
+
+	vV_push 12
+
+;OpADR: [96] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global.win_test]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_create_window_w_h
+add rsp , 8
+;OpADR: [97] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [98] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [99] ; PUSH opcode 
+
+	vV_push 20
+
+;OpADR: [100] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [101] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [102] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 2	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [103] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [104] ; Var assignement
+
+		lea rdi , [u_global.main_win]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 2	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [105] ; Var Ref assignement	
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.main_win_ptr]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [106] ; Var Ref assignement	
+
+		lea rdi , [u_global_wong_ui.window_data]	
+	xor rax , rax	
+	mov ecx , 2	
+	cmp ecx , 8	
+	jge vV_bound_error	
+	add eax , ecx	
+	mov ecx , 6	
+	mul ecx	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.win_test_ptr]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [107] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [108] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global.main_win_ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_fill_window_with_c
+add rsp , 8
+;OpADR: [109] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [110] ; PUSH opcode 
+
+	vV_push 96
+
+;OpADR: [111] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [112] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [113] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global.main_win_ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_make_box_x_w_y_h
+add rsp , 8
+;OpADR: [114] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [115] ; PUSH opcode 
+
+	vV_push 32
+
+;OpADR: [116] ; PUSH opcode 
+
+	vV_push 6
+
+;OpADR: [117] ; PUSH opcode 
+
+	vV_push 20
+
+;OpADR: [118] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global.main_win_ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_make_box_x_w_y_h
+add rsp , 8
+;OpADR: [119] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [120] ; PUSH opcode 
+
+	vV_push 94
+
+;OpADR: [121] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [122] ; PUSH opcode 
+
+	vV_push 12
+
+;OpADR: [123] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global.win_test_ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_make_box_x_w_y_h
+add rsp , 8
+;OpADR: [124] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [125] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [126] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global.string_test_len]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [127] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [u_global.string_test]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+	xor rax , rax
+	lea rdi , [u_global.win_test_ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_print_buffer_x_y_c
+add rsp , 16
+;OpADR: [128] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [129] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [130] ; PUSH opcode 
+
+	vV_push 16
+
+;OpADR: [131] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [i_global.str2]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+	xor rax , rax
+	lea rdi , [u_global.win_test_ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov rax , rsi	
+	mov [rdi] , eax	
+	call wong_ui_print_buffer_x_y_c
+add rsp , 16
+;OpADR: [132] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [133] ; PUSH opcode 
+
+	vV_push 25
+
+;OpADR: [134] ; PUSH opcode 
+
+	vV_push 7
+
+;OpADR: [135] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_demo52:		
+
+;------------------------------------------------------
+
+;OpADR: [136] ; PUSH opcode 
+
+	vV_push 63
+
+;OpADR: [137] ; PUSH opcode 
+
+	vV_push 33
+
+;OpADR: [138] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_demo50:		
+
+;------------------------------------------------------
+
+;OpADR: [139]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [140] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [141] ; Var invocation
+
+		lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [142] ; Function Call
+
+	call wong_ui_solve_main_offset_x_y
+
+;OpADR: [143] ; PUSH opcode 
+
+	vV_push 3072
+
+;OpADR: [144] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [145] ; Var assignement
+
+		lea rdi , [u_global_wong_ui.bg_buffer]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 8192	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [146] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_demo50	
+
+
+
+	wblock_demo51:		
+
+;------------------------------------------------------
+
+;OpADR: [147] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [148] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_demo52	
+
+
+
+	wblock_demo53:		
+
+;------------------------------------------------------
+
+;OpADR: [149] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [150] ; Function Call
+
+	call wong_ui_blit_main
+
+;OpADR: [151] ; Function Call
+
+	call wong_ui_flush_main
+
+
+
+	wblock_demo55:		
+
+;------------------------------------------------------
+
+;OpADR: [152] ;OpADR: [153] ; Var invocation
+
+		lea rdi , [u_global.win_test_ptr]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [154] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [155] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [156] ; Var invocation
+
+		lea rdi , [u_global.win_test_ptr]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [157] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [158] ; ADD opcode 
+
+	mov eax , vV_2nd			
+	add eax , vV_top			
+	mov vV_2nd , eax			
+	vV_dec_sp 1		
+
+;OpADR: [159] ; Function Call
+
+	call term_cursor_x_y
+
+;OpADR: [160] ;GET opcode (0)
+
+	; GET opcode (0)			
+
+call vV_io_get_default	
+
+;OpADR: [161]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [162] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [163] ; EQUAL opcode 
+
+	mov eax , vV_top			
+	cmp DWORD vV_2nd , eax			
+
+	jnz short 0xb				
+
+			mov DWORD vV_2nd , -1	
+
+	jmp short 0x9				
+
+			mov DWORD vV_2nd , 0	
+
+	vV_dec_sp 1				
+
+;OpADR: [164] ; IF opcode 
+
+	vV_dec_sp 1			
+	or DWORD[vV_sp] , 0			
+	je wblock_demo54	
+
+;OpADR: [165] ; DROP opcode 
+
+	vV_dec_sp 1 
+
+;OpADR: [166] ; BREAK opcode 
+
+	jmp wblock_demo56
+
+
+
+	wblock_demo54:		
+
+;------------------------------------------------------
+
+;OpADR: [167] ; PUSH opcode 
+
+	vV_push 96
+
+;OpADR: [168] ; MOD opcode 
+
+	xor edx , edx	
+	mov eax , vV_2nd			
+	div DWORD vV_top			
+	mov vV_2nd , edx			
+	vV_dec_sp 1				
+
+;OpADR: [169] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [170] ; Function Call
+
+	call wong_ui_blit_main
+
+;OpADR: [171] ; Function Call
+
+	call wong_ui_flush_main
+
+;OpADR: [172] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [173] ; WHILE opcode 
+
+	vV_dec_sp 1				
+	or DWORD[vV_sp] , 0			
+	jne wblock_demo55		
+
+
+
+	wblock_demo56:		
+
+;------------------------------------------------------
+
+;OpADR: [174] ;GET opcode (0)
+
+	; GET opcode (0)			
+
+call vV_io_get_default	
+
+;OpADR: [175] ; PUSH opcode 
+
+	vV_push 48
+
+;OpADR: [176] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [177] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [178] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [179] ; Function Call
+
+	call wong_ui_blit_main
+
+;OpADR: [180] ; Function Call
+
+	call wong_ui_flush_main
+
+;OpADR: [181] ;GET opcode (0)
+
+	; GET opcode (0)			
+
+call vV_io_get_default	
+
+;OpADR: [182] ; PUSH opcode 
+
+	vV_push 56
+
+;OpADR: [183] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [184] ; PUSH opcode 
+
+	vV_push 16
+
+;OpADR: [185] ; Var assignement
+
+		lea rdi , [u_global.win_test]	
+	mov edi , [rdi]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 3	
+	jge vV_bound_error	
+	add eax , ecx	
+	vV_pop ecx	
+	add rdi , rax	
+	mov rax , rdi	
+	mov BYTE[rax] , cl	
+
+;OpADR: [186] ; Function Call
+
+	call wong_ui_blit_main
+
+;OpADR: [187] ; Function Call
+
+	call wong_ui_flush_main
+
+;OpADR: [188] ;GET opcode (0)
+
+	; GET opcode (0)			
+
+call vV_io_get_default	
+
+;OpADR: [189] ; Function Call
+
+	call term_clear
+
+;OpADR: [190] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [191] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [192] ; Function Call
+
+	call term_cursor_x_y
+
+		
+		mov rsp , rbp
+		pop rbp
+		ret
+
+;Transpiled from vV with vVc version 0.0.4.5
+		
+		

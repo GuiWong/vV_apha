@@ -28,16 +28,63 @@ def solve_from_to_arg(arg):
 	
 	return data
 	assert False , 'unimplemented'
+	
+def one_step_reduce(type_a):
 
-
+	
+	if isinstance(type_a , vV_Var.vV_Array_Type):
+	
+		return type_a.get_partial(1)	
+	
+	elif isinstance(type_a , vV_Var.vV_Ref_Type):
+	
+		return self.one_step_reduce(type_a.content)
+	
+	else:
+	
+		assert False , 'Trying to index a non indexable value'
+	
+def calc_eff_type_2(type_a,argus):
+	
+	
+	
+	for argu in argus[1:]:
+		assert type(argu)!=str or ':' not in argu , 'Unimplemented partial array indexing'
+		
+	reduce_value = len(argus)
+	
+	f_t_arg = None
+	
+	if reduce_value > 0 and type(argus[0])==str and ':' in argus[0]:
+		
+		reduce_value -=1
+		f_t_arg = solve_from_to_arg(argus[0])
+	
+	r_type = type_a.copy()
+	
+	for i in range(reduce_value):
+	
+	
+		r_type = one_step_reduce(r_type)
+		
+	if f_t_arg != None:
+	
+		r_type = r_type.get_from_to(f_t_arg[0],f_t_arg[1])
+		
+	return r_type
+		
+		
 def calc_effective_type(type_a,argus):
 
 	print argus
 	#assert isinstance(type_a , vV_Var.vV_Array_Type) , "ERROR, SHOULDN't solve non-Array"
+	
+
+	
 	if isinstance(type_a , vV_Var.vV_Array_Type):
 	
 		for argu in argus[1:]:
-			#print argu
+			print argu 
 			assert type(argu)!=str or ':' not in argu , 'Unimplemented partial array indexing'
 		
 		reduce_value = len(argus)
@@ -105,7 +152,14 @@ def check_valid(type_b,type_a,dest_derefed = False):
 			
 				print 'Same Array Size'
 				return True
-			
+				
+			else:
+				
+				print type_a.dim
+				print type_b.dim
+				print type_a.get_total_elem()
+				print type_b.get_total_elem()
+				assert False , 'Error Solving Array Size'
 		else:
 		
 			print 'bad content : '
@@ -114,7 +168,7 @@ def check_valid(type_b,type_a,dest_derefed = False):
 			
 			if type_a.content.__class__ == vV_Var.vV_Ref_Type:
 			
-				print "One is a ref"
+				print "Src is a ref"
 				
 				dimdown = type_a.dim
 				print dimdown
@@ -132,7 +186,7 @@ def check_valid(type_b,type_a,dest_derefed = False):
 				
 			elif type_b.content.__class__ == vV_Var.vV_Ref_Type:
 			
-				print "One is a ref"
+				print "Dst is a ref"
 				
 				dimdown = type_b.dim
 				print dimdown
@@ -152,11 +206,17 @@ def check_valid(type_b,type_a,dest_derefed = False):
 					if (type_a.get_partial(dimdown).__class__ == vV_Var.vV_Int_Type):
 							return True
 					else:
-						if type_a.get_partial(dimdown).get_total_elem() == type_b.content.get_total_elem():
+						if isinstance(type_a.get_partial(dimdown),vV_Var.vV_Array_Type):
 						
-							if type_a.get_partial(dimdown).content.__class__ == type_b.content.content.__class__:
+							if type_a.get_partial(dimdown).get_total_elem() == type_b.content.content.get_total_elem():
 						
-								return True
+								if type_a.get_partial(dimdown).content.__class__ == type_b.content.content.content.__class__:
+						
+									return True
+									
+						elif isinstance(type_a.get_partial(dimdown),vV_Var.vV_Ref_Type):
+						
+							assert False , 'Unimplemented ref checking'
 								
 				print 'Cant create Ref from not matching data !'
 				return False

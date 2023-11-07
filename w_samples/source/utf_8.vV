@@ -1,0 +1,132 @@
+
+
+	
+
+def make_24_bytes
+
+	local int lower_byte
+	
+	
+	dup			;(arg arg)
+	
+		0x3f &		;(lb arg)
+		0x80 |		;(lb arg)
+	
+	lower_byte=		;(arg)
+	
+	> > > > > > 		;(shifted arg)
+	
+	dup			;(arg arg)
+		0x3f &
+		0x80 |		;(mb arg)
+	swp			;(arg mb)
+	
+	> > > > > > 
+	
+	
+		0x0f &
+		0xe0 |		;(hb mb)
+	swp
+	
+	< < < < < < < <
+	
+	|			;(mb-hb)
+	
+	lower_byte		;(lb mb-hb)
+	
+	16 0 loop < for
+	
+	|			;(lb-mb-hb)
+		
+endef
+
+
+def make_32_bytes
+
+	dup make_24_bytes
+	
+	0xffffff0f &
+	swp 
+	> > > > > > > > > > > > 
+	0x30 &
+	0x80 |
+	|
+	
+	
+
+	
+	< < < < < < < <
+	swp
+	
+		18 0 loop > for
+		
+		0b111 &
+		0xf0 |
+		
+		|
+		
+endef
+	
+
+
+def make_16_bytes
+
+	
+	dup
+	
+		0x3f &
+		0x80 |
+	
+	swp
+	
+	> > > > > > 
+	
+	0x1f &
+	0xc0 |
+	swp
+	
+	< < < < < < < <
+	
+	|
+		
+endef
+		
+	
+
+
+def make_utf8_pckdchar
+
+	
+	
+	dup 0x10ffff >? if
+	
+				kill	
+			,
+	
+	dup 0xffff >? if
+	
+				make_32_bytes
+			el
+			
+			dup 0x07ff >? if
+						make_24_bytes
+					el
+					
+					dup 0x7f >? if
+					
+							make_16_bytes
+							
+						     el
+							 
+							dup
+							
+						      ,
+						      
+					,
+			,
+			
+	swp drp
+			
+endef
+
+

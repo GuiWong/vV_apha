@@ -1,0 +1,523 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "w_samples/assembly/helloworld_vars.was"	
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+
+		
+
+
+
+vV_entry_point:
+
+
+	push rbp
+	mov rbp, rsp			;Setup Stack Frame
+	
+	;OpADR: [0] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [1] ; Var invocation
+
+		lea rdi , [i_global.sizes]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [2] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [3] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_helloworld0:		
+
+;------------------------------------------------------
+
+;OpADR: [4] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [5] ; Var invocation
+
+		lea rdi , [i_global.str]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 11	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [6] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [7] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_helloworld0	
+
+
+
+	wblock_helloworld1:		
+
+;------------------------------------------------------
+
+;OpADR: [8] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [9] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [10] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [11] ; PUSH opcode 
+
+	vV_push 1
+
+;OpADR: [12] ; Var invocation
+
+		lea rdi , [i_global.sizes]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [13] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [14] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_helloworld2:		
+
+;------------------------------------------------------
+
+;OpADR: [15] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [16] ; Var invocation
+
+		lea rdi , [i_global.line1]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 31	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [17] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [18] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_helloworld2	
+
+
+
+	wblock_helloworld3:		
+
+;------------------------------------------------------
+
+;OpADR: [19] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [20] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [21] ; PUSH opcode 
+
+	vV_push 2
+
+;OpADR: [22] ; Var invocation
+
+		lea rdi , [i_global.sizes]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [23] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [24] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_helloworld4:		
+
+;------------------------------------------------------
+
+;OpADR: [25] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [26] ; Var invocation
+
+		lea rdi , [i_global.line2]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 21	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [27] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [28] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_helloworld4	
+
+
+
+	wblock_helloworld5:		
+
+;------------------------------------------------------
+
+;OpADR: [29] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [30] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [31] ; PUSH opcode 
+
+	vV_push 3
+
+;OpADR: [32] ; Var invocation
+
+		lea rdi , [i_global.sizes]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [33] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [34] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_helloworld6:		
+
+;------------------------------------------------------
+
+;OpADR: [35] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [36] ; Var invocation
+
+		lea rdi , [i_global.line3]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 26	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [37] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [38] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_helloworld6	
+
+
+
+	wblock_helloworld7:		
+
+;------------------------------------------------------
+
+;OpADR: [39] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [40] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [41] ; PUSH opcode 
+
+	vV_push 4
+
+;OpADR: [42] ; Var invocation
+
+		lea rdi , [i_global.sizes]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [43] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [44] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_helloworld8:		
+
+;------------------------------------------------------
+
+;OpADR: [45] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [46] ; Var invocation
+
+		lea rdi , [i_global.line4]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 48	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [47] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [48] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_helloworld8	
+
+
+
+	wblock_helloworld9:		
+
+;------------------------------------------------------
+
+;OpADR: [49] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [50] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [51] ; PUSH opcode 
+
+	vV_push 5
+
+;OpADR: [52] ; Var invocation
+
+		lea rdi , [i_global.sizes]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 6	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 2	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [53] ; PUSH opcode 
+
+	vV_push 0
+
+;OpADR: [54] ; Loop check 
+
+		vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+
+	wblock_helloworld10:		
+
+;------------------------------------------------------
+
+;OpADR: [55] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+;OpADR: [56] ; Var invocation
+
+		lea rdi , [i_global.line5]	
+	xor rax , rax	
+	vV_pop ecx	
+	cmp ecx , 35	
+	jge vV_bound_error	
+	add eax , ecx	
+	add rdi , rax	
+	mov al , [rdi]	
+	vV_push eax	
+
+;OpADR: [57] ; OUT opcode (8)
+
+	call vV_io_out_char_buffer
+
+;OpADR: [58] ; ; Loop init 
+
+		inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_helloworld10	
+
+
+
+	wblock_helloworld11:		
+
+;------------------------------------------------------
+
+;OpADR: [59] ; Loop Cleanup 
+
+	add rsp , 16	
+
+;OpADR: [60] ; FLUSH opcode
+
+	call vV_io_flush 
+
+		
+		mov rsp , rbp
+		pop rbp
+		ret
+
+;Transpiled from vV with vVc version 0.0.4.5
+		
+		

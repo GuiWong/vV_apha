@@ -1,0 +1,143 @@
+
+
+include term.vV as term
+include wong_ui.vV as wong_ui
+include utf_8.vV as utf8
+
+
+var byte[12] tile
+
+var int[3][2] [[1,2,3],[4,5,6]] truc
+
+var byte[6] [1,255,3,'e',5,6] arr1
+;var int[] 'test init string' str1
+var byte[] 'test init string' str2
+
+'W' 0 []tile=
+'o' 1 []tile=
+'n' 2 []tile=
+'g' 3 []tile=
+' ' 4 []tile=
+'U' 5 []tile=
+'I' 6 []tile=
+' ' 7 []tile=
+'D' 8 []tile=
+'e' 9 []tile=
+'m' 10 []tile=
+'o' 11 []tile=
+
+
+var (byte[3]) win_test
+var (byte[3]) main_win
+var (byte[6]) main_win_ptr
+var (int[3072]) main_win_data
+
+var (byte[6]) win_test_ptr
+
+
+var byte[16] string_test
+var int 11 string_test_len
+
+'T' 0 []string_test=
+'e' 1 []string_test=
+'s' 2 []string_test=
+'t' 3 []string_test=
+' ' 4 []string_test=
+'S' 5 []string_test=
+'t' 6 []string_test=
+'r' 7 []string_test=
+'i' 8 []string_test=
+'n' 9 []string_test=
+'g' 10 []string_test=
+0 11 []string_test=
+0 12 []string_test=
+0 13 []string_test=
+0 14 []string_test=
+0 15 []string_test=
+
+
+[0][0]truc out
+[0][1]truc out
+
+;get
+
+
+
+
+init.wong_ui
+
+'init' wout
+
+96 32 (main_win)create_window_w_h.wong_ui
+94 12 (win_test)create_window_w_h.wong_ui
+
+	1 [0]win_test=
+	20 [1]win_test=
+	
+	4 [2]win_test=
+	2 [2]main_win=
+
+
+([1]window_data.wong_ui)main_win_ptr=
+([2]window_data.wong_ui)win_test_ptr=
+
+
+' ' (main_win_ptr)fill_window_with_c.wong_ui
+
+
+
+0 96 0 32 (main_win_ptr)make_box_x_w_y_h.wong_ui
+
+32 32 6 20 (main_win_ptr)make_box_x_w_y_h.wong_ui
+
+0 94 0 12 (win_test_ptr)make_box_x_w_y_h.wong_ui
+
+1 1 string_test_len ( win_test_ptr , string_test)print_buffer_x_y_c.wong_ui
+
+1 2 16 (win_test_ptr , str2 )print_buffer_x_y_c.wong_ui
+
+4
+25 7 loop
+	63 33 loop
+	dup [0]I [1]I solve_main_offset_x_y.wong_ui 3072 + []bg_buffer.wong_ui=
+	for
+for
+
+
+blit_main.wong_ui
+flush_main.wong_ui
+
+do
+	[0]win_test_ptr 2 + [1]win_test_ptr 3 + cursor_x_y.term
+	get
+	
+	dup 0 =? if drp break ,
+	
+	96 % [0]win_test=
+	
+		blit_main.wong_ui
+		flush_main.wong_ui
+
+1 while
+
+get
+
+48 [0]win_test=
+4 [1]win_test=
+
+blit_main.wong_ui
+
+flush_main.wong_ui
+get
+
+56 [0]win_test=
+16 [1]win_test=
+
+blit_main.wong_ui
+
+flush_main.wong_ui
+get
+
+
+clear.term
+0 0 cursor_x_y.term

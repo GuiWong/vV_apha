@@ -1,0 +1,23 @@
+
+var byte[] 'Hello World' 						str
+var byte[] 'vV now support String Litterals' 				line1
+var byte[] 'and initialized Array'					line2
+var byte[] 'next is a real String type'				line3
+var byte[] 'to allow storing different sized Stings in array'	line4
+var byte[] 'and passing string type as argument'			line5
+
+var int[6] [11,31,21,26,48,35] 	sizes
+
+
+0 []sizes 0 loop	I []str cout_		for		flush flush
+
+1 []sizes 0 loop	I []line1 cout_	for		flush	
+
+2 []sizes 0 loop	I []line2 cout_	for		flush	
+
+3 []sizes 0 loop	I []line3 cout_	for		flush	
+
+4 []sizes 0 loop	I []line4 cout_	for		flush	
+
+5 []sizes 0 loop	I []line5 cout_	for		flush	
+

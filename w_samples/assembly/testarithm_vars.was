@@ -1,0 +1,4 @@
+ segment .bss
+	u_global:
+ segment .data
+	i_global:

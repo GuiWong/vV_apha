@@ -1,0 +1,43 @@
+
+
+var int u_a
+var int u_b
+
+var int 8 i_a
+var int 16 i_b
+
+
+
+var byte[8] buffer
+
+def test
+
+12 24 +
+
+endef
+
+
+def set_i
+
+ []buffer=
+
+endef
+
+
+def caller
+
+	10 0 loop
+	
+		test I set_i flush I out
+	
+	for
+
+endef
+
+
+
+'strt' wout
+
+caller
+
+'end' wout

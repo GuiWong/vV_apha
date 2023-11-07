@@ -1,0 +1,101 @@
+
+
+var int[2048] array
+
+var int 12 a
+var int 24 b
+var int 10 c
+
+var int 42 d
+
+
+var (int) ptr
+
+var (int) ptr2
+
+var ((int)) pptr
+
+var (int)[4] arptr
+var (int[4]) data
+var (int[4])[4] tryout
+
+def test
+
+	local (int) x
+	local ((int)) y
+	
+	(a)x=
+	(x)y=
+	
+	x  out
+	y out
+	
+	flush
+	x@ xout
+	y@ xout
+	
+	@y@ xout
+	
+	flush
+
+	(ptr)@y=
+	
+	x  out
+	y out
+	
+	flush
+	x@ xout
+	y@ xout
+	
+	@y@ xout
+	
+	flush
+	
+endef
+	
+	
+	
+(b)ptr=
+(d)ptr2=	
+
+ptr@ xout
+
+(ptr)pptr=
+
+pptr@ xout
+@pptr@ xout
+
+flush 
+
+ptr out
+pptr out
+ptr2 out
+
+(a)ptr=
+flush
+
+ptr out
+pptr out
+ptr2 out
+
+(ptr2)pptr=
+flush
+
+ptr out
+pptr out
+ptr2 out
+
+(c)@pptr= 
+flush
+
+ptr out
+pptr out
+ptr2 out
+
+
+(d)ptr=
+
+test
+
+
+'end ' wout

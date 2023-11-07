@@ -5,6 +5,14 @@ import Cleaner.Recursive_Type_Checker as R_TC
 
 import copy
 
+import os
+import sys
+home_path = os.path.expanduser('~') 
+
+sys.path.append(home_path+'/.local/share/vVCompiler/utilities/')
+
+import Logger
+
 def solve_var_namespace(data):
 	
 	name = data[0]
@@ -40,9 +48,68 @@ class Var_Op_Solver:
 		
 			return [name,None]
 			
+	def solve_deref_push(self,data,scope,deref_level = 0):
 	
+	
+	
+		deref_level = data[2]
+		name,namespace = self.solve_var_namespace(data)
+	
+		ns_data = self.solver.name_space.solve_var([name],scope,namespace)
 		
 		
+		Logger.log( name			,	10  , Logger.Type.DEBUG)
+		Logger.log(  namespace			,	10  , Logger.Type.DEBUG)
+		Logger.log(  ns_data[3]		,	10  , Logger.Type.DEBUG)
+		Logger.log(  ns_data[3].calc_size()	,	10  , Logger.Type.DEBUG)	
+		
+		if not ns_data[0]:
+			Logger.log( str(data) +' '+ str(scope) +' '+ str(name) +' '+ str(namespace) , 0 , Logger.Type.ERROR, Logger.Flag.DATA)
+			
+			assert False , 'Couldnt solve var: '+scope
+			
+		
+
+		
+		solved = self.solver.solve_var_name(data,scope)
+		
+		txt = solved[0]
+		var_type = solved[1]	
+		
+		Logger.log( ' solving var deref push : '+data[0] , 8 , Logger.Type.DEBUG, Logger.Flag.TEXT)
+		
+		Logger.log( var_type , 8 , Logger.Type.DEBUG, Logger.Flag.DATA)
+		
+		Logger.log( solved , 8 , Logger.Type.DEBUG, Logger.Flag.DATA)
+		
+
+		
+		if not isinstance(var_type, vV_Var.vV_Ref_Type):
+		
+			assert False , "can't deref a value"
+			
+			
+		txt += '	add rdi , rax	\n'
+		txt += '	mov eax , [rdi]\n'
+		
+		while deref_level > 0:
+		
+			txt+= 	self.make_64_adress(var_type)
+			txt+= '	mov eax , [rax]	\n'
+			deref_level-= 1
+		
+		
+		txt += '	vV_push eax	'
+		
+		
+		Logger.log( txt , 8 , Logger.Type.DEBUG, Logger.Flag.DATA)
+		
+		#assert False , 'unimplemented deref op'
+		return txt
+		
+
+		
+				
 	def solve_push(self,data,scope):
 	
 		
@@ -51,16 +118,11 @@ class Var_Op_Solver:
 		ns_data = self.solver.name_space.solve_var([name],scope,namespace)
 		
 		
-		print name
-		print namespace
-		print ns_data[3]
-		print ns_data[3].calc_size()
-		
-		#if name == 'text':
-		
-		#	assert False , 'Breakpoint'
-		
-		
+		Logger.log( name			,	10  , Logger.Type.DEBUG)
+		Logger.log(  namespace			,	10  , Logger.Type.DEBUG)
+		Logger.log(  ns_data[3]		,	10  , Logger.Type.DEBUG)
+		Logger.log(  ns_data[3].calc_size()	,	10  , Logger.Type.DEBUG)
+			
 		
 		if not ns_data[0]:
 			print data
@@ -176,7 +238,7 @@ class Var_Op_Solver:
 		
 		return txt
 		
-	def solve_assign(self, src , dst , scope):
+	def solve_assign(self, src , dst , scope , deref = 0):
 	
 	
 		
@@ -185,14 +247,25 @@ class Var_Op_Solver:
 		txt=''
 		
 		
+		deref_max = deref
+		
+		#original_type
+		
+		Logger.log('padding')
 		
 		print src_dat
 		print dst_dat
+		
+		if isinstance(dst_dat[1],vV_Var.vV_Ref_Type):
+		
+			Logger.log( str(dst_dat[1].use_offset) )
+		
 		print src_dat[1].calc_size()/8
 		print dst_dat[1].calc_size()/8
 		
 		
-		#assert False ,'breakpoint'
+		
+		
 		
 		
 		#is already redued!!!!
@@ -205,7 +278,30 @@ class Var_Op_Solver:
 			#self.call_data.append(self.check_src_offset(src,scope))
 			#assert False, 'Breakpoint'
 		else:
-			self.check_offset_adress( src , dst , scope,src_dat,dst_dat)
+		
+			if deref == 0:
+				self.check_offset_adress( src , dst , scope,src_dat,dst_dat , deref)
+			else:
+				final_dst = dst_dat[1]
+				while deref > 0:
+				 	
+				 	
+				 	final_dst = final_dst.content
+				 	deref -= 1
+				 	
+				 	
+				 	
+				final_dst_array = ['',final_dst]
+				#final_dst_array[1] = final_dst
+				
+				#dst_dat[1] = final_dst
+				 	
+				self.check_offset_adress( src , dst , scope,src_dat,final_dst_array)
+		
+		
+		if isinstance(dst_dat[1],vV_Var.vV_Ref_Type):
+		
+			Logger.log( str(dst_dat[1].use_offset) )			
 		
 
 		txt+=src_dat[0]
@@ -214,6 +310,9 @@ class Var_Op_Solver:
 		txt += '	add rsi , rax	\n'
 		
 		
+		
+		derefed = 0
+		new_dst = dst_dat[1]
 		
 		if dst[0]=='vV_PUSH_ARG':
 			
@@ -226,10 +325,49 @@ class Var_Op_Solver:
 			#txt += '	push rax	\n'
 		else:
 			txt += dst_dat[0]
+			
+			
 			txt += '	add rdi , rax	\n'
-			txt += self.recursive_assignator(src_dat[1],dst_dat[1])
+			
+			
+			if deref_max > 0:
+				txt += '	mov rax , rdi	\n'
+			while derefed < deref_max:
+			
+			
+				print '\n--'
+				print new_dst.use_offset
+				#assert False , 'BP'
+			
+				
+				txt += '	mov eax , [rax]	\n'	
+				txt += self.make_64_adress(new_dst)
+				
+				new_dst = new_dst.content
+				#new_dst = new_dst.content
+				derefed += 1
+			if deref_max > 0:
+				txt += '	mov rdi , rax	\n'	
+			#txt += '	mov rdi , rax	\n'
+			
+			
+			if deref_max > 0:
+			
+				txt += self.recursive_assignator(src_dat[1],final_dst)
+			
+			else:
+			
+				txt += self.recursive_assignator(src_dat[1],new_dst)
 			
 		self.current_assign+=1
+		
+		
+		#if dst[0] == 'ptr':
+		
+		#	print '\n\n'
+		#	print txt
+		#	print '\n\n'
+		#	assert False ,'breakpoint'
 		return txt
 			
 		
@@ -239,7 +377,11 @@ class Var_Op_Solver:
 	
 	def check_src_offset(self,src,scope):
 	
-		src_data = self.solver.name_space.solve_var(src,scope)
+		print '\n '+str(src)+'\n'
+		name , namespace = solve_var_namespace(src)
+		print name
+		print namespace
+		src_data = self.solver.name_space.solve_var([name,[]],scope,namespace)
 		src_dat = self.solver.solve_var_name(src,scope)
 		
 		if not src_data[2]:
@@ -254,17 +396,27 @@ class Var_Op_Solver:
 				
 		return False
 		
-	def check_offset_adress(self,src,dst,scope , src_dat , dst_dat):
+	def check_offset_adress(self,src,dst,scope , src_dat , dst_dat, deref = 0):
 	
 	
-		src_data = self.solver.name_space.solve_var(src,scope)
-		dst_data = self.solver.name_space.solve_var(dst,scope)
+		src_name, src_namespace = solve_var_namespace(src)
+		dst_name, dst_namespace = solve_var_namespace(dst)
+		
+		print src_name
+		print dst_name
+	
+		src_data = self.solver.name_space.solve_var([src_name],scope,src_namespace)
+		dst_data = self.solver.name_space.solve_var([dst_name],scope,dst_namespace)
 		
 		
 		print '\n dst: '
 		print dst
 		print dst_data
 		print dst_data[3].calc_size() / 8
+		print '---'
+		print src
+		print src_data
+		print src_dat
 		#src_dat = self.solver.solve_var_name(src,scope)
 		#dst_dat = self.solver.solve_var_name(dst,scope)
 		print dst_data
@@ -309,6 +461,7 @@ class Var_Op_Solver:
 					print offseted
 					dst_dat[1].use_offset=offseted
 					print self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.use_offset
+					#print self.solver.name_space.functions[scope].local_vars[dst[0]].var_type.content.use_offset
 					#print  self.solver.name_space.functions[scope].local_vars[dst[0]]
 					
 					#print self.solver.name_space.functions[scope].local_vars[dst[0]].var_type
@@ -417,6 +570,10 @@ class Var_Op_Solver:
 	def recursive_assignator(self,src_type,dst_type,loop_level=0):
 	
 	
+		print '-----------------------------------'
+		print src_type
+		print dst_type
+	
 		if src_type.__class__ == dst_type.__class__:
 		
 			if isinstance(src_type,vV_Var.vV_Array_Type):
@@ -442,12 +599,15 @@ class Var_Op_Solver:
 						size = dst_type.get_total_elem()
 						
 						print size
+						print src_type.size
 						
 						new_src = self.reduce_array(src_type,size)
 						dst_data_size = dst_type.content.calc_size() / 8
 						src_data_size = new_src.calc_size() / 8
 						
-						
+						print dst_data_size
+						print src_data_size
+						print new_src.size
 						if self.check_signature(new_src,dst_type.content.content):
 						
 							txt= '	mov r8 , rsp	\n'
@@ -457,12 +617,12 @@ class Var_Op_Solver:
 							txt+= '	xor ecx , ecx	\n'
 							txt+= 'loop_assign_'+str(self.current_assign)+'_'+str(loop_level)+':	\n' 
 							
-							#txt+='	mov eax , ecx	\n'
-							#txt+='	mov edx , '+str(dst_data_size)+'	\n'
-							#txt+='	mul edx	\n'
+							txt+='	mov eax , ecx	\n'
+							txt+='	mov edx , '+str(dst_data_size)+'	\n'
+							txt+='	mul edx	\n'
 							
 							txt+='	mov rsi , [r8 - 8]	\n'					#Arrays are ALWAYS direct adressed??
-							txt+='	lea esi , [esi + ecx * '+str(src_data_size)+']	\n'
+							txt+='	add rsi , rax	\n'
 							txt+='	mov rdi , [r8 -16]	\n'
 							txt+='	lea edi , [edi + ecx * '+str(dst_data_size)+']	\n'
 							
@@ -473,7 +633,8 @@ class Var_Op_Solver:
 							closetxt +='	add rsp , 16	\n'
 							
 							loop_level += 1
-							return txt + self.recursive_assignator(src_type.content,dst_type.content,loop_level) + closetxt
+							
+							return txt + self.recursive_assignator(new_src,dst_type.content,loop_level) + closetxt
 					
 						else:
 							
@@ -525,9 +686,18 @@ class Var_Op_Solver:
 						#dst_type.content.use_offset = src_type.use_offset
 						txt = ''
 						
-						txt += '	mov rax , rsi	\n'
+						txt += '	mov rax , rsi	\n' 
 						txt += self.make_32_adress(dst_type)
+						
+						
+						#if isinstance(dst_type.content,vV_Var.vV_Ref_Type):
+						
+						#	txt += '	mov edi , [rdi]	\n'
+						#	txt += self.make_64_adress(dst_type.content)
+						
+		
 						txt += '	mov [rdi] , eax	\n'
+						txt 
 						#if src_type.use_offset:
 							
 						#	print txt
@@ -548,6 +718,9 @@ class Var_Op_Solver:
 				elif isinstance(src_type,vV_Var.vV_Byte_Type):
 				
 					return '	mov al , [rsi]	\n	mov BYTE[rdi] ,al	\n'
+					
+					
+				#if is_instance(dst_type)
 			
 		else:
 		
@@ -569,6 +742,19 @@ class Var_Op_Solver:
 				#	Offset Set before
 							
 				return txt
+				
+			else:
+			
+				print'-----------'
+				print src_type
+				print src_type.dim
+				print src_type.size
+				print src_type.content
+				print src_type.content.calc_size()
+				print src_type.calc_size()
+				print dst_type.content.calc_size()
+				#print dst_type.content.calc_size()
+				print'-----------'
 				
 			if isinstance(src_type,vV_Var.vV_Ref_Type):
 			
@@ -776,6 +962,11 @@ class Recursive_Var_Solver:
 		else:
 		
 			size = var_type.size[1]
+			
+			
+		if isinstance(var_type,vV_Var.vV_Iterator_Type):
+		
+			size = var_type.calc_size() / 8
 			
 		pow2 = [2,4,8,16,32,64,128,256,512,1024,2048,4096]
 		

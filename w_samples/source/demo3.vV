@@ -1,0 +1,214 @@
+
+
+include term.vV as term
+include wong_ui.vV as wong_ui
+include utf_8.vV as utf8
+
+
+var byte[12] tile
+
+
+'W' 0 []tile=
+'o' 1 []tile=
+'n' 2 []tile=
+'g' 3 []tile=
+' ' 4 []tile=
+'U' 5 []tile=
+'I' 6 []tile=
+' ' 7 []tile=
+'D' 8 []tile=
+'e' 9 []tile=
+'m' 10 []tile=
+'o' 11 []tile=
+
+
+var (byte[3]) win_test
+var (byte[3]) main_win
+var (byte[6]) main_win_ptr
+var (int[3072]) main_win_data
+
+var (byte[6]) win_test_ptr
+
+
+var byte[16] string_test
+var int 11 string_test_len
+
+'T' 0 []string_test=
+'e' 1 []string_test=
+'s' 2 []string_test=
+'t' 3 []string_test=
+' ' 4 []string_test=
+'S' 5 []string_test=
+'t' 6 []string_test=
+'r' 7 []string_test=
+'i' 8 []string_test=
+'n' 9 []string_test=
+'g' 10 []string_test=
+0 11 []string_test=
+0 12 []string_test=
+0 13 []string_test=
+0 14 []string_test=
+0 15 []string_test=
+
+
+
+
+
+init.wong_ui
+
+'init' wout
+
+def draw_card_c_o_v_c
+
+	
+	
+	4 % 
+	16 * 
+	
+	swp
+	
+	1 - 0xd % 1 +
+	
+	+
+	
+	0x1f0a0
+	
+	+
+	
+	 swp
+	 2dup
+	 
+	 3072 + []char_buffer.wong_ui=
+	  
+	  swp
+	  drp
+	  
+	  dup 
+	11 swp 3072 + []fg_buffer.wong_ui=
+	
+	2dup 3072 + []bg_buffer.wong_ui=
+	2dup 1 3072 + + []bg_buffer.wong_ui=
+
+	drp
+endef
+
+([3072:6144]char_buffer.wong_ui)main_win_data=
+
+
+
+96 32 (main_win)create_window_w_h.wong_ui
+16 16 (win_test)create_window_w_h.wong_ui
+
+	4 [0]win_test=
+	4 [1]win_test=
+	
+	4 [2]win_test=
+	2 [2]main_win=
+
+
+([1]window_data.wong_ui)main_win_ptr=
+([2]window_data.wong_ui)win_test_ptr=
+
+
+	' ' (main_win_ptr)fill_window_with_c.wong_ui
+
+
+
+0 96 0 32 (main_win_ptr)make_box_x_w_y_h.wong_ui
+
+32 32 6 20 (main_win_ptr)make_box_x_w_y_h.wong_ui
+
+0 16 0 16 (win_test_ptr)make_box_x_w_y_h.wong_ui
+
+
+0x1f0a1 8 2 (win_test_ptr)put_c_x_y.wong_ui
+
+
+	1 1 string_test_len ( win_test_ptr , string_test)print_buffer_x_y_c.wong_ui
+
+4
+25 7 loop
+	63 33 loop
+
+	;dup 32 + [0]I [1]I solve_main_offset_x_y.wong_ui []main_win_data=
+	dup [0]I [1]I solve_main_offset_x_y.wong_ui 3072 + []bg_buffer.wong_ui=
+	;dup out
+		
+	;1 + 0x5f %
+	for
+for
+
+
+
+0
+54 6 96 * + 42 6 96 * + loop
+
+	dup []tile I 3072 + []char_buffer.wong_ui=
+	1 +
+for
+
+drp
+
+0x255e 54 6 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x2561 42 6 96 * + 1 - 3072 + []char_buffer.wong_ui= ; []main_win_data=
+
+0x26a7 48 8 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x26a1 40 8 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x0 41 8 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x2705 44 12 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x0 45 12 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+
+0x1f032 34 10 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x1f03c 37 10 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x1f050 40 10 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+0x1f07e 41 11 96 * + 3072 + []char_buffer.wong_ui= ; []main_win_data=
+
+0x1f0a1 46 13 96 * + 3072 + []char_buffer.wong_ui= ;[]main_win_data=
+11 46 13 96 * + 3072 + []fg_buffer.wong_ui=
+1 46 13 96 * + 3072 + []bg_buffer.wong_ui=
+1 47 13 96 * + 3072 + []bg_buffer.wong_ui=
+
+1 46 16 96 * +  8 1 draw_card_c_o_v_c
+6 48 16 96 * +  1 0 draw_card_c_o_v_c
+1 50 16 96 * +  11 2 draw_card_c_o_v_c
+
+12 [0]win_test=
+8 [1]win_test=
+
+blit_main.wong_ui
+flush_main.wong_ui
+
+do
+	[0]win_test_ptr 2 + [1]win_test_ptr 3 + cursor_x_y.term
+	get
+	
+	dup 0 =? if drp break ,
+	
+	96 % [0]win_test=
+	
+		blit_main.wong_ui
+		flush_main.wong_ui
+
+1 while
+
+get
+
+48 [0]win_test=
+4 [1]win_test=
+
+blit_main.wong_ui
+
+flush_main.wong_ui
+get
+
+56 [0]win_test=
+16 [1]win_test=
+
+blit_main.wong_ui
+
+flush_main.wong_ui
+get
+
+
+clear.term
+0 0 cursor_x_y.term

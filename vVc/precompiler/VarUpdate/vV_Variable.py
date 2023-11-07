@@ -54,7 +54,7 @@ class vV_Structure_Type:
 	
 	def calc_size(self):
 	
-		return content.calc_size()
+		return self.content.calc_size()
 
 
 
@@ -123,12 +123,31 @@ class vV_Iterator_Type(vV_Structure_Type):
 		self.direct = direct
 		self.skip= skip
 		
+		self.size = [2]
+		
+	def copy(self):
+	
+		return vV_Iterator_Type(self.content.copy(),self.direct,self.skip)
+		
+	def calc_size(self):
+	
+		return self.content.calc_size() + self.skip
+		
+		
+	def get_partial(self,deepness):
+	
+		
+		return self.content
+	
+		
 		
 class vV_Array_Type(vV_Structure_Type):
 
 	content = vV_Primary_Type()
 	dim = 1
 	size = []
+	
+	use_offset = False	#TODO: Handle that case better
 	
 	def __init__(self,content,dims,size):
 

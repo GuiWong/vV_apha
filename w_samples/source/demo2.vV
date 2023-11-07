@@ -1,0 +1,196 @@
+
+
+include term.vV as term
+include wong_ui.vV
+
+var byte[64][24] buffer
+
+var (byte[64])[24] lines
+
+
+var byte[64] test1
+var int 0 ptr
+
+var (byte[12]) test2
+var (byte[12]) test3
+var byte[8][8] test4
+
+(test1)test4=
+;(test4)test1=
+
+	var byte[8] palette
+	
+	11 0 []palette=
+	4 1 []palette=
+	14 2 []palette=
+	130 3 []palette=
+	56 4 []palette=
+	86 5 []palette=
+	250 6 []palette=
+	7 7 []palette=
+
+([:12]test1)test2=
+([12:24]test1)test3=
+
+(buffer)lines=
+
+var (byte[64]) u_line
+
+var byte[64] e_line
+
+
+
+def ((byte[64]) lin)fill
+
+	64 0 loop
+	
+		dup I []lin=
+	
+	for
+
+endef
+
+
+
+
+
+
+def  ((byte[64]) lin)print_line
+
+
+	64 0 loop
+	
+		I []lin cout_
+		
+	for
+	
+	flush
+
+endef
+
+def (byte[64][24] buff)fill_buff
+
+	24 0 loop
+	
+		I ([]lines)u_line=
+		(u_line)fill
+	
+	for
+
+endef
+
+def (byte[64][24] buff)print_buff
+
+	24 0 loop
+	
+		I ([]lines)u_line=
+		(u_line)print_line
+	
+	for
+
+endef
+
+def (byte[64][24] buff)print_buff_colored
+
+	24 0 loop
+	
+		I ([]lines)u_line=
+		I 8 % term_bg.term
+		(u_line)print_line
+	
+	for
+
+endef
+
+
+
+
+
+
+
+
+(e_line)u_line=
+' ' (u_line)fill
+
+'x' (buffer)fill_buff
+
+;resize_default.term
+
+;clear.term
+
+'a' cout
+init.wong_ui
+'b' cout
+
+get
+
+0 0 cursor_x_y.term
+(buffer)print_buff
+
+flush flush
+
+([0]buffer)test1=
+
+'a'
+	12 0 loop
+	
+		dup I []test2=
+	
+	for
+'b'
+	12 0 loop
+	
+		dup I []test3=
+	
+	for
+
+(test1)u_line=
+(u_line)print_line
+
+
+do
+	0 26 cursor_x_y.term
+	(e_line)u_line=
+	(u_line)print_line
+	8 26 cursor_x_y.term
+	wget
+	
+	70 8 ptr + cursor_x_y.term
+	dup wout_ 
+	'-' cout_
+	dup xout_
+	flush_
+	
+	ptr 1 + ptr=
+	'quit' =? !
+while
+
+clear.term
+0 0 cursor_x_y.term
+print_buff_colored
+
+;70 8 cursor_x_y.term
+;out_ flush_
+
+;26 8 cursor_x_y.term
+;(e_line)u_line=
+;(u_line)print_line
+
+;8 26 cursor_x_y.term
+;get
+
+
+;70 9 cursor_x_y.term
+;out_ flush_
+
+
+
+;8 26 cursor_x_y.term
+;(e_line)u_line=
+;(u_line)print_line
+
+8 26 cursor_x_y.term
+'bye ' wout get
+
+clear.term
+

@@ -1,0 +1,560 @@
+%include "vVc/assembly/w_runtime/vV_defines.asm"		
+%include "vVc/assembly/w_runtime/vV_error_code.asm"		
+%include "vVc/assembly/w_runtime/vV_runtime.asm"		
+%include "vVc/assembly/w_runtime/vV_system00.asm"		
+%include "vVc/assembly/w_runtime/vV_errors.asm"		
+%include "vVc/assembly/w_runtime/vV_system10.asm"		
+%include "vVc/assembly/w_runtime/vV_io.asm"			
+%include "vVc/assembly/w_runtime/vV_ascii.asm"		
+%include "w_samples/assembly/btest_vars.was"	
+%include "vVc/assembly/w_runtime/vV_system90.asm"		
+
+
+
+global w_entry_point
+
+
+
+segment .text 
+
+
+test:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+	sub rsp , 24	;Space for local vars	
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [0] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [i_global.a]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [1] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov rax , rsi	
+	sub rax , [vV_local_offset]	
+	mov [rdi] , eax	
+
+;OpADR: [2] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [3] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [4] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	add rax , [vV_local_offset]	
+	mov eax , [rax]	
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [5] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [6] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [7] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]
+	vV_push eax	
+;OpADR: [8] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [9] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]
+	vV_push eax	
+;OpADR: [10] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [11] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]
+	add rax , [vV_local_offset]	
+	mov eax , [rax]	
+	vV_push eax	
+;OpADR: [12] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [13] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [14] ; Var Deref assignement	
+
+		xor rax , rax
+	lea rdi , [u_global.ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov rax , rdi	
+	mov eax , [rax]	
+	add rax , [vV_local_offset]	
+	mov rdi , rax	
+	mov eax , [rsi]	
+	mov DWORD[rdi] , eax	
+
+;OpADR: [15] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [16] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [17] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	add rax , [vV_local_offset]	
+	mov eax , [rax]	
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [18] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [19] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [20] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 16]	
+	add rdi , rax	
+	mov eax , [rdi]
+	vV_push eax	
+;OpADR: [21] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [22] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]
+	vV_push eax	
+;OpADR: [23] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [24] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp - 8]	
+	add rdi , rax	
+	mov eax , [rdi]
+	add rax , [vV_local_offset]	
+	mov eax , [rax]	
+	vV_push eax	
+;OpADR: [25] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [26] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [27] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
+
+		
+
+
+
+vV_entry_point:
+
+
+	push rbp
+	mov rbp, rsp			;Setup Stack Frame
+	
+	;OpADR: [0] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [i_global.b]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [1] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [i_global.d]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ptr2]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [2] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov eax , [rdi]
+	vV_push eax	
+;OpADR: [3] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [4] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [u_global.ptr]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [5] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov eax , [rdi]
+	vV_push eax	
+;OpADR: [6] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [7] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov eax , [rdi]
+	mov eax , [rax]	
+	vV_push eax	
+;OpADR: [8] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [9] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [10] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [11] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [12] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [13] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [14] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr2]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [15] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [16] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [i_global.a]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [17] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [18] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [19] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [20] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [21] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [22] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr2]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [23] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [24] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [u_global.ptr2]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [25] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [26] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [27] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [28] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [29] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [30] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr2]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [31] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [32] ; Var Deref assignement	
+
+		xor rax , rax
+	lea rdi , [i_global.c]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov rax , rdi	
+	mov eax , [rax]	
+	mov rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [33] ; FLUSH opcode
+
+	call vV_io_flush 
+
+;OpADR: [34] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [35] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [36] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.pptr]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [37] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [38] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [u_global.ptr2]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [39] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [40] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [i_global.d]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [u_global.ptr]	
+	add rdi , rax	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+
+;OpADR: [41] ; Function Call
+
+	call test
+
+;OpADR: [42] ; PUSH opcode 
+
+	vV_push 543452773
+
+;OpADR: [43] ; BUFF_OUT opcode (9)
+
+	call vV_io_out_packed_char
+
+		
+		mov rsp , rbp
+		pop rbp
+		ret
+
+;Transpiled from vV with vVc version 0.0.4.5
+		
+		

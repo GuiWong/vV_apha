@@ -132,7 +132,7 @@ class Recursive_Importer:
 		result = []
 		
 		self.rec_parser(result,self.namespace.main_file,self.namespace.main_namespace,True)
-		
+		self.namespace.set_functions_prefixes()
 		return result
 		
 	def build_var_decl(self):

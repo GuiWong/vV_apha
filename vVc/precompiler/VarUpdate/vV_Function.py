@@ -15,7 +15,7 @@ class vV_Function:
 	referenced_vars = {}
 	local_vars = {}
 	code = []
-	
+	effective_namespace=''
 	
 	def __init__(self,name,args):			#args must be in ORDER!
 	
@@ -23,6 +23,11 @@ class vV_Function:
 		self.referenced_vars = args
 		self.local_vars = {}
 		self.code = {}
+		self.effective_namespace=''
+		
+	def set_effective_namespace(self,txt):
+	
+		self.effective_namespace=txt
 		
 	def add_local_var(self,var):
 	
@@ -73,7 +78,7 @@ class vV_Function:
 	
 		txt = ''
 		
-		txt += self.name + ":		\n"
+		txt += self.effective_namespace+self.name + ":		\n"
 		txt += "	push rbp	\n"
 		txt += "	mov rbp , rsp	\n"
 		

@@ -1,0 +1,9 @@
+ segment .bss
+	u_global:
+.buffer:resb 8 
+.u_b:resb 4 
+.u_a:resb 4 
+ segment .data
+	i_global:
+.i_b:dq 16
+.i_a:dq 8

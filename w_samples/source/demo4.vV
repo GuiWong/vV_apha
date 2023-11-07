@@ -1,0 +1,57 @@
+
+
+var int 42 a
+var int 0xacab b
+
+
+var (int) ref1			
+var (int) ref2
+
+
+var ((int)) ref_of_ref
+
+(a)ref1=
+(b)ref2=
+
+(ref2)ref_of_ref=
+
+def var_val
+	'Var:' wout
+	'a : ' wout_ a out_ flush
+	'b : ' wout_ b out_ flush
+endef
+
+def ptr_val
+	'lue:' 'r va' '  pt' wout_ wout_ wout_ flush
+	'1 : ' wout_ ref1 		out_ flush
+	'2 : ' wout_ ref2 		out_ flush
+	'(2):' wout_ ref_of_ref 	out_ flush
+endef
+
+def ptr_adr
+	'res:' 'r ad' '  pt' wout_ wout_ wout_ flush
+	'1 : ' wout_ 	ref1@ 		xout_ flush
+	'2 : ' wout_ 	ref2@ 		xout_ flush
+	'(2):' wout_ 	ref_of_ref@ 	xout_ flush
+	' 2 :' wout_ 	@ref_of_ref@	xout_ flush
+endef
+
+
+var_val ptr_val ptr_adr
+
+flush
+
+ 'r a ' 'o va' 'r2 t' 't pt'  'poin' wout_ wout_ wout_ wout_ wout_ flush
+ 
+ (ref1)ref2=
+ 
+ var_val ptr_val ptr_adr
+ 
+ (b)ref2=
+  (ref1)ref_of_ref= 	flush
+  
+ var_val ptr_val ptr_adr
+ 
+   (b)@ref_of_ref= 	flush
+  
+ var_val ptr_val ptr_adr

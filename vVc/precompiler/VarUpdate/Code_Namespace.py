@@ -37,7 +37,11 @@ class NameSpace_Manager:
 		
 		self.imported = {}
 		
-		self.system_vars['I']=vV_Variable.vV_Variable('I',204,vV_Variable.vV_Iterator_Type(vV_Variable.vV_Int_Type,2,8))
+		self.system_vars['I']=vV_Variable.vV_Variable('I',204,vV_Variable.vV_Iterator_Type(vV_Variable.vV_Int_Type(),2,96))
+		
+		#print self.system_vars['I'].var_type.content
+		
+
 	
 	def build_internal_name(self):
 	
@@ -146,7 +150,7 @@ class NameSpace_Manager:
 		
 			elif varname[0] in self.system_vars:
 		
-				return [True,'rsp',False,self.system_vars[varname[0]].var_type]
+				return [True,'[rsp+8]',False,self.system_vars[varname[0]].var_type,True]
 			
 			else:
 		

@@ -620,20 +620,15 @@ print:
 
  ;OpADR: [0]  ; PUSH opcode 
 
-	vV_push 0 
+	vV_push 11 
 
 
  ;OpADR: [1]  ; PUSH opcode 
 
-	vV_push 10 
-
-
- ;OpADR: [2]  ; PUSH opcode 
-
 	vV_push 0 
 
 
- ;OpADR: [3]  ; Loop init 					
+ ;OpADR: [2]  ; Loop init 					
 	vV_pop eax	;get index
 	push rax	
 	vV_pop eax	;get limit
@@ -645,22 +640,20 @@ print:
 ;------------------------------------------------------
 
 
- ;OpADR: [4]  ; DUP opcode (1)			
+ ;OpADR: [3]  ; Var invocation					
 
-	vV_dup 1			
+	xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
 
-
- ;OpADR: [5]  ; DUP opcode (1)			
-
-	vV_dup 1			
-
-
- ;OpADR: [6]  ; PUSH opcode 
+ ;OpADR: [4]  ; PUSH opcode 
 
 	vV_push 4 
 
 
- ;OpADR: [7]  ; MOD opcode 					
+ ;OpADR: [5]  ; MOD opcode 					
 
 	xor edx , edx				
 	mov eax , vV_2nd			
@@ -669,7 +662,7 @@ print:
 
 	sub r15 , 4				
 
- ;OpADR: [8]  ; Var invocation					
+ ;OpADR: [6]  ; Var invocation					
 
 	lea rdi , [u_global.colors]	
 	xor rax , rax	
@@ -681,11 +674,19 @@ print:
 	mov al , [rdi]	
 	vV_push eax	
 
- ;OpADR: [9]  ; Function Call					
+ ;OpADR: [7]  ; Function Call					
 
 		call term_fg			
 
- ;OpADR: [10]  ; Var invocation					
+ ;OpADR: [8]  ; Var invocation					
+
+	xor rax , rax
+	lea rdi , [rsp+8]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	vV_push eax	
+
+ ;OpADR: [9]  ; Var invocation					
 
 	lea rdi , [rbp + 16]	
 	mov edi , [rdi]	
@@ -698,31 +699,18 @@ print:
 	mov al , [rdi]	
 	vV_push eax	
 
- ;OpADR: [11]  ; BUFF_OUT opcode (8)			
+ ;OpADR: [10]  ; BUFF_OUT opcode (8)			
 
 
 	call vV_io_out_char_buffer			
 						
 
- ;OpADR: [12]  ; PUSH opcode 
-
-	vV_push 1 
-
-
- ;OpADR: [13]  ; ADD opcode 					
-
-	mov eax , vV_2nd			
-	add eax , vV_top			
-	mov vV_2nd , eax			
-
-	vV_dec_sp 1		
-
- ;OpADR: [14]  ; Loop check 					
+ ;OpADR: [11]  ; Loop check 					
 	inc DWORD[rsp + 8]
 	mov rax , [rsp + 8]	;get index
 	mov rcx , [rsp]	;get max
 	cmp eax , ecx	
-	jbe wblock_0	
+	jb wblock_0	
 
 
 	wblock_1:		
@@ -730,14 +718,14 @@ print:
 ;------------------------------------------------------
 
 
- ;OpADR: [15]  ; Loop Cleanup 					
+ ;OpADR: [12]  ; Loop Cleanup 					
 	add rsp , 16	
 
- ;OpADR: [16]  ; FLUSH opcode					
+ ;OpADR: [13]  ; FLUSH opcode					
 
 		call vV_io_flush_no_nline	
 
- ;OpADR: [17]  ; End of func opcode					
+ ;OpADR: [14]  ; End of func opcode					
 
 
 ;------Cleanup Phase
@@ -1196,11 +1184,138 @@ add rsp , 8
  ;OpADR: [56]  ; FLUSH opcode					
 
 		call vV_io_flush	
+
+ ;OpADR: [57]  ; PUSH opcode 
+
+	vV_push 5 
+
+
+ ;OpADR: [58]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [59]  ; Loop init 					
+	vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+	wblock_4:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [60]  ; PUSH opcode 
+
+	vV_push 20 
+
+
+ ;OpADR: [61]  ; PUSH opcode 
+
+	vV_push 0 
+
+
+ ;OpADR: [62]  ; Loop init 					
+	vV_pop eax	;get index
+	push rax	
+	vV_pop eax	;get limit
+	push rax	
+
+
+	wblock_2:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [63]  ; Var invocation					
+
+	lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 1	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+ ;OpADR: [64]  ; BUFF_OUT opcode (0)			
+
+	call vV_io_out_buffer_default			
+						
+
+ ;OpADR: [65]  ; PUSH opcode 
+
+	vV_push 45 
+
+
+ ;OpADR: [66]  ; BUFF_OUT opcode (8)			
+
+
+	call vV_io_out_char_buffer			
+						
+
+ ;OpADR: [67]  ; Var invocation					
+
+	lea rdi , [rsp+8]	
+	xor rax , rax	
+	mov ecx , 0	
+	cmp ecx , 2	
+	jge vV_bound_error	
+	add eax , ecx	
+	shl eax , 4	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+ ;OpADR: [68]  ; BUFF_OUT opcode (0)			
+
+	call vV_io_out_buffer_default			
+						
+
+ ;OpADR: [69]  ; FLUSH opcode					
+
+		call vV_io_flush	
+
+ ;OpADR: [70]  ; Loop check 					
+	inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_2	
+
+
+	wblock_3:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [71]  ; Loop Cleanup 					
+	add rsp , 16	
+
+ ;OpADR: [72]  ; Loop check 					
+	inc DWORD[rsp + 8]
+	mov rax , [rsp + 8]	;get index
+	mov rcx , [rsp]	;get max
+	cmp eax , ecx	
+	jb wblock_4	
+
+
+	wblock_5:		
+
+;------------------------------------------------------
+
+
+ ;OpADR: [73]  ; Loop Cleanup 					
+	add rsp , 16	
 		
 		mov rsp , rbp
 		pop rbp
 		ret
 
-;Transpiled from vV with vVc version 0.0.4
+;Transpiled from vV with vVc version 0.0.4.5
 		
 		

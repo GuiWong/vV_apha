@@ -1,0 +1,15 @@
+ segment .bss
+	u_global:
+.arptr:resb 16 
+.pptr:resb 4 
+.ptr2:resb 4 
+.tryout:resb 16 
+.array:resb 8192 
+.data:resb 4 
+.ptr:resb 4 
+ segment .data
+	i_global:
+.a:dq 12
+.c:dq 10
+.b:dq 24
+.d:dq 42

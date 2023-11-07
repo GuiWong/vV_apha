@@ -12,7 +12,19 @@ import Cleaner.Recursive_Type_Checker as T_Check
 
 import Cleaner.Global_Namespace as G_NS
 
+import Cleaner.Value_Checker as Val_Check
+
 import precompiler.Opcode as Opcode
+
+import os
+import sys
+home_path = os.path.expanduser('~') 
+
+sys.path.append(home_path+'/.local/share/vVCompiler/utilities/')
+
+import Logger
+
+
 
 
 
@@ -100,7 +112,8 @@ class One_Way_Parser:
 		else:
 			name = data[0]
 			args = {}
-			print data
+			
+			Logger.log( data , 10 , Logger.Type.DEBUG , Logger.Flag.DATA)
 			
 			
 			for a in data[1]:
@@ -141,34 +154,47 @@ class One_Way_Parser:
 								# int : scope [1:global 2:local 3:argu] Notneeded for typecheck
 				# vV_Type : Type
 		
+		
+		deref_count = 0
 
 		scope = None
 		if self.def_state == 3:
 		
 			scope = self.current_func
 			
-		for c in var_name:
+		eff_var_name = var_name	
+		while eff_var_name[0] in OP.ref_prefix:
 		
-			assert c not in OP.forbiden_chars, "Forbiden char in var invocation"
+			eff_var_name = eff_var_name[1:]
+			deref_count+=1
+			
+		for c in eff_var_name:
+		
+			assert c not in OP.forbiden_chars, "Forbiden char in var invocation: "+c+' in '+var_name
 			
 		eff_name = ''
 		namespace = None
 			
-		if '.' in var_name:
-			tmp = var_name.split('.')
+		if '.' in eff_var_name:
+			tmp = eff_var_name.split('.')
 			assert len(tmp) == 2, 'Unimplemented multi-ref-to-namespace'
 			eff_name= tmp[0]
 			namespace = tmp[1]
 			
 		else:
 		
-			eff_name = var_name
+			eff_name = eff_var_name
 			namespace = None
 			
 			
 		data = self.name_space.solve_var([eff_name],scope,namespace)
 		
 		print data
+
+
+		#if eff_name == 'I':
+		
+		#	assert False, 'Breakpoint'
 		
 		
 		if not data[0]:
@@ -203,11 +229,21 @@ class One_Way_Parser:
 			else:
 			
 				assert False , 'unreachable'
+				
+			
 		else:
 		
 			ret.append( data[0])
 			ret.append(data[3])
 			ret.append(eff_name)
+			
+			#if deref_count > 0:
+			ret.append(deref_count)
+			
+			
+		if len(data) > 4:
+		
+			ret.append(data[4])
 		
 		print '--:'
 		print ret
@@ -461,12 +497,13 @@ class One_Way_Parser:
 		elif self.var_def_state == 1:
 		
 			
-			is_val = Syntaxer.check_numeric_format(tok)
+			#is_val = Syntaxer.check_numeric_format(tok)
+			is_val = Val_Check.check_for_valid_value(tok)
 			
 			if is_val[0]:
 			
 				
-				self.current_var_type = vV_Var.vV_Int_Type()
+				self.current_var_type = is_val[2]#vV_Var.vV_Int_Type()
 				self.current_var_value = is_val[1]
 				
 				self.var_def_state = 3
@@ -482,7 +519,13 @@ class One_Way_Parser:
 		elif self.var_def_state >= 2:
 		
 			
-			is_val = Syntaxer.check_numeric_format(tok)
+			#is_val = Syntaxer.check_numeric_format(tok)
+			
+			Logger.log(tok)
+			
+			is_val = Val_Check.check_for_valid_value(tok,self.current_var_type)
+			
+			Logger.log(tok)
 			
 			if is_val[0] and self.var_def_state == 2:		#No Value
 			
@@ -495,8 +538,9 @@ class One_Way_Parser:
 				
 			else:
 			
+				Logger.log(tok)
 				var_solved = Syntaxer.solve_var(tok)
-				
+				Logger.log(var_solved)
 				
 				
 				self.check_forbidden(var_solved)
@@ -504,6 +548,15 @@ class One_Way_Parser:
 				print "var def found: " + str(var_solved)
 				
 				print '	'+str(self.current_var_scope)
+				
+				
+				if isinstance(self.current_var_type,vV_Var.vV_Array_Type):
+				
+					for s in self.current_var_type.size:
+					
+						if s == '':
+						
+							assert False , 'Array have no size'
 				
 				self.register_variable(var_solved)
 				
@@ -609,7 +662,7 @@ class One_Way_Parser:
 		opcode = Opcode.Opcode()
 		info = 0
 		
-		valu= Syntaxer.check_numeric_format(tok)
+		valu = Syntaxer.check_numeric_format(tok)
 		
 		
 		if tok in OP.direct_op.values():
@@ -772,10 +825,16 @@ class One_Way_Parser:
 						dst_arg.reverse()
 					
 					
+					if src[3] >0:
+					
+						opcode.value = OP.DEREF_ASSIGN
+						opcode.arg = [ [dst_name ,dst_arg] ,  [src[2],src_arg] , src[3]]
+					else:
+						opcode.value = OP.REF_ASSIGN
+						opcode.arg = [ [dst_name ,dst_arg] ,  [src_name,src_arg] ]
 					
 					
-					opcode.value = OP.REF_ASSIGN
-					opcode.arg = [ [dst_name ,dst_arg] ,  [src_name,src_arg] ]
+						
 					
 					
 				
@@ -783,6 +842,77 @@ class One_Way_Parser:
 				#valid = T_Check.check_valid()
 				#print T_check.check_valid()
 				#assert False, 'Var assignement not Implemented Yet'
+				
+			elif tok[-1] in OP.deref_suffix:
+			
+			
+				datt = Syntaxer.solve_var(tok[:-1])
+				
+				Logger.log(datt , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+				
+				if type(datt) == str:
+					src = self.check_scope(datt)
+					src_name = src[2]
+					tmp_arg = []
+				else:
+					src = self.check_scope(datt[0])
+					src_name = src[2]
+					tmp_arg = datt[1]
+					
+				Logger.log(src , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+
+					
+				if type(datt) != str:
+				
+					pass
+					#assert False , 'unimplemented deref of not simple var op'
+					
+				src_arg = []
+				
+				if type(tmp_arg) == str:
+				
+					tmp_arg = [tmp_arg]
+				
+				
+				for a in tmp_arg:
+				
+					if a == '':
+						
+						src_arg.append('pop')
+						
+					else:
+						
+						src_arg.append(a)
+							
+				src_arg.reverse()
+				
+				
+
+					
+				
+				
+				
+				Logger.log(str(src[1]) , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+				Logger.log(str(src_arg) , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+				
+				eff_t = T_Check.calc_eff_type_2(src[1],src_arg)
+				
+				Logger.log(str(eff_t) , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+				if not isinstance(eff_t,vV_Var.vV_Ref_Type):
+				
+					assert False , 'cant deref a non ref var'
+				
+				
+				
+				opcode.value = OP.DEREF_PUSH
+				opcode.arg = [src_name,src_arg,src[3] ]
+				
+				#if src[3] > 0:
+				
+				#	print '\n' + str(src)
+				#	assert False , 'unimplemented deref of deref op'					
+				#assert False , 'unimplemented deref op'
+			
 			else:
 			
 				print '-*-*-*-*'
@@ -855,16 +985,56 @@ class One_Way_Parser:
 							
 					src_arg.reverse()
 				'''	
-				if src[0]:
+				
+				
 				
 					
-					opcode.value = OP.PUSH_VAR
-					opcode.arg = [src_name,src_arg]
-					print 'Push var found with arg: \n'
-					print src_arg
+				
+				if src[0]:
+				
+					if len(src)>=5:
+					
+						print src_name
+						print src_arg
+						print src
+						#assert False , 'Breakpoint' 
+						
+						if src_name == 'I':
+						
+							if len(src_arg) == 0:
+								arg_val = 0
+							else:
+								arg_val = int(src_arg[0])
+							assert arg_val < self.block_manager.loop_level , 'Trying to access loop Iterator outside of a loop '
+							opcode.value = OP.PUSH_VAR
+							opcode.arg = [src_name,src_arg]
+							print 'Push var found with arg: \n'
+							print src_arg
+							
+						else:
+							assert False , 'Unimplemented System var'
+					else:
+					
+						if len(src)>=4:
+						
+							print src_name
+							print src_arg
+							print src[3]
+							print src
+							
+							if src[3] > 0 or src_name[0]=='@':
+								print 'deref'
+								assert False , 'Breakpoint' 
+						
+								
+						opcode.value = OP.PUSH_VAR
+						opcode.arg = [src_name,src_arg]
+						print 'Push var found with arg: \n'
+						print src_arg
+						
 				elif len(src)>=4:
 				
-					callarg = [src[3],[]]
+					callarg = [src_name,[]]
 					
 					for aaa in src_arg:
 					
@@ -880,7 +1050,7 @@ class One_Way_Parser:
 				
 					if src[2]:
 						opcode.value = OP.CALL
-						opcode.arg = [src[3]]
+						opcode.arg = [src_name]
 					else:
 						opcode.value = OP.CALL_W_ARG
 						print callarg

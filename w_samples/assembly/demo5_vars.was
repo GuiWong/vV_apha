@@ -1,0 +1,49 @@
+ segment .bss
+	u_global_term:
+	u_global_wong_ui:
+.main_window:resb 4 
+.string_buffer:resb 4096 
+.window_handles:resb 32 
+.actual_window:resb 4 
+.tileset:resb 768 
+.window_ptr:resb 32 
+.fg_buffer:resb 8192 
+.char_buffer:resb 32768 
+.window_data:resb 48 
+.return_window:resb 4 
+.tilemap_buffer:resb 16384 
+.bg_buffer:resb 8192 
+.corners:resb 16 
+	u_global_utf_8:
+	u_global:
+.win_test:resb 4 
+.main_win_ptr:resb 4 
+.main_win:resb 4 
+.win_test_ptr:resb 4 
+.string_test:resb 16 
+.main_win_data:resb 4 
+.tile:resb 12 
+ segment .data
+	i_global_term:
+.default_bg:dq 16
+.default_y_size:dq 32
+.default_x_size:dq 96
+.default_fg:dq 15
+	i_global_wong_ui:
+.next_window:dq 0
+.free_space_ptr:dq 0
+.is_in_window:dq 0
+.main_height:db 32
+.actual_fg:db 15
+.default_bg:db 16
+.default_fg:db 15
+.max_char_space:dq 8192
+.current_window:dq 0
+.actual_bg:db 0
+.main_width:db 96
+	i_global_utf_8:
+	i_global:
+.str2:db "test init string"
+.string_test_len:dq 11
+.arr1: db  1 , 255 , 3 , 101 , 5 , 6 
+.truc: dd  1 , 2 , 3 , 4 , 5 , 6 
