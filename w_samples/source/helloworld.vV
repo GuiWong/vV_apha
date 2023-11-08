@@ -1,13 +1,24 @@
 
-var byte[] 'Hello World' 						str
-var byte[] 'vV now support String Litterals' 				line1
+
+;include demo4.vV as demo4
+
+include demo6.vV as demo4
+
+
+global byte[] 'Hello World' 						str
+global public var byte[] 'vV now support String Litterals' 				line1
 var byte[] 'and initialized Array'					line2
 var byte[] 'next is a real String type'				line3
 var byte[] 'to allow storing different sized Stings in array'	line4
 var byte[] 'and passing string type as argument'			line5
 
-var int[6] [11,31,21,26,48,35] 	sizes
+const int[6] [11,31,21,26,48,35] 	sizes
 
+ var 12 a
+(a)truc.demo4
+a.demo4 out
+
+	b.demo4 out
 
 0 []sizes 0 loop	I []str cout_		for		flush flush
 
@@ -21,3 +32,55 @@ var int[6] [11,31,21,26,48,35] 	sizes
 
 5 []sizes 0 loop	I []line5 cout_	for		flush	
 
+
+;69 a.demo4=
+;55 b.demo4=
+
+;(a.demo4)b.demo4=
+
+ ;a.demo4 out
+
+ 
+
+var 42 b
+
+
+;b.demo4@ out
+
+
+;(b.demo4)a=
+;20 [1]sizes=
+
+
+
+(a)b=
+
+;	(truc)size:line3= out
+	
+;	ref_assign truc size:line3
+		
+;		['truc',[]]	['line3',[],['size']]
+		
+		
+;		--->   Turn to "index solving"
+		
+;		(	solved by solve_push/pop/assign
+;			before indexing, after base adress	)
+
+
+;		---> Var_type need a 'member' list, that solves to assembly code
+;		---> User declared struct will generate assembly for offset
+
+;		---> Need var protection state
+
+
+
+wget
+
+dup wout
+xout
+
+cget
+
+dup cout
+xout

@@ -59,6 +59,9 @@ class One_Way_Parser:
 	current_var_isinit = False
 	current_import_src = ''
 	
+	current_var_access = 0
+	current_var_variant = 0
+	
 	
 	
 	
@@ -135,7 +138,7 @@ class One_Way_Parser:
 		
 	def register_variable(self,name):
 	
-		varo = vV_Var.vV_Variable(name,self.current_var_scope,self.current_var_type,self.current_var_isinit,self.current_var_value)
+		varo = vV_Var.vV_Variable(name,self.current_var_scope,self.current_var_type,self.current_var_isinit,self.current_var_value,self.current_var_access,self.current_var_variant)
 		if self.current_var_scope == OP.GLOBAL:
 		
 			self.name_space.define_global(varo)
@@ -147,6 +150,58 @@ class One_Way_Parser:
 		else:
 		
 			assert False, 'Unimplemented'
+			
+	def check_variant_access(self,var_name,namespace = None):
+	
+		deref_count = 0
+
+		scope = None
+		if self.def_state == 3:
+		
+			scope = self.current_func
+			
+		eff_var_name = var_name	
+		while eff_var_name[0] in OP.ref_prefix:
+		
+			eff_var_name = eff_var_name[1:]
+			deref_count+=1
+			
+		for c in eff_var_name:
+		
+			assert c not in OP.forbiden_chars, "Forbiden char in var invocation: "+c+' in '+var_name
+			
+		eff_name = ''
+		namespace = None
+			
+		if '.' in eff_var_name:
+			tmp = eff_var_name.split('.')
+			assert len(tmp) == 2, 'Unimplemented multi-ref-to-namespace'
+			eff_name= tmp[0]
+			namespace = tmp[1]
+			
+		else:
+		
+			eff_name = eff_var_name
+			namespace = None
+			
+		Logger.log(var_name)
+		Logger.log(namespace)
+			
+		data = self.name_space.get_var([eff_name],scope,namespace)	
+		
+		Logger.log(str(data))
+		
+		
+		
+		
+		if data[0]:
+		
+			return [data[1].variant , data[1].access , eff_name , namespace]	
+	
+			
+		else:
+			Logger.log("FATAL: Could't solve var name " , 0 , Logger.Type.ERROR , Logger.Flag.TEXT)
+			assert False ,' TODO: redo errors'	
 			
 	def check_scope(self,var_name,namespacer = None):
 	
@@ -391,25 +446,87 @@ class One_Way_Parser:
 			assert self.var_def_state == 0 , "Misplaced Scope descriptor"
 			self.var_def_state = 1					#scoped, untyped
 			
-			if OP.var_define[tok] == OP.IMPLICIT:
+			#if OP.var_define[tok] == OP.IMPLICIT:
 							
+			#	if self.def_state == 0:
+								
+			#		self.current_var_scope = OP.GLOBAL
+									
+			#	elif self.def_state == 3:
+								
+			#		self.current_var_scope = OP.LOCAL
+									
+			#	else:
+								
+			#		assert False , "UNABLE TO define variable scope "
+					
+			#else:
+			
+			#	print tok + ' : '
+			#	print OP.var_define[tok]
+			self.current_var_scope = OP.var_define[tok]
+				
+		elif tok in OP.var_access:
+		
+		
+		
+			assert self.current_var_access == 0 , 'Misplaced Access descriptor'
+			assert self.current_var_variant == 0 , 'Misplaced Access descriptor'
+			assert self.var_def_state <= 1 , 'Misplaced Access descriptor'
+			
+			
+			if self.var_def_state == 0:
+			
 				if self.def_state == 0:
 								
 					self.current_var_scope = OP.GLOBAL
 									
 				elif self.def_state == 3:
 								
+					self.current_var_scope = OP.LOCAL
+					
+				else:
+				
+					assert False , "UNABLE TO define variable scope "
+				
+				self.var_def_state = 1	
+				
+					
+			self.current_var_access = OP.var_access[tok]
+			
+		elif tok in OP.var_variant:
+		
+		
+	
+			assert self.current_var_variant == 0 , 'Misplaced Variant descriptor'
+			assert self.var_def_state <= 1 , 'Misplaced Variant descriptor'
+			
+			if self.var_def_state == 0:
+			
+				if self.def_state == 0:
+								
 					self.current_var_scope = OP.GLOBAL
 									
-				else:
+				elif self.def_state == 3:
 								
+					self.current_var_scope = OP.LOCAL
+					
+				else:
+				
 					assert False , "UNABLE TO define variable scope "
 					
-			else:
+				self.var_def_state = 1	
+				
+			if self.current_var_access == 0:
 			
-				print tok + ' : '
-				print OP.var_define[tok]
-				self.current_var_scope = OP.var_define[tok]
+			
+				self.current_var_access = OP.ACCESS_PUBLIC
+					
+					
+					
+			self.current_var_variant = OP.var_variant[tok]
+			
+				
 				
 				
 	#---------------------------------------------------------------------------------
@@ -497,6 +614,21 @@ class One_Way_Parser:
 		elif self.var_def_state == 1:
 		
 			
+			
+			
+			
+			if self.current_var_access == 0:
+			
+			
+				self.current_var_access = OP.ACCESS_PUBLIC
+					
+					
+					
+			if self.current_var_variant == 0:
+			
+				self.current_var_variant = OP.VARIANT
+			
+			
 			#is_val = Syntaxer.check_numeric_format(tok)
 			is_val = Val_Check.check_for_valid_value(tok)
 			
@@ -566,6 +698,8 @@ class One_Way_Parser:
 				self.current_var_isinit = False
 				self.current_var_type = 0
 				self.current_var_scope = 0
+				self.current_var_access = 0
+				self.current_var_variant = 0
 				
 				print self.current_var_type
 				
@@ -655,7 +789,73 @@ class One_Way_Parser:
 			
 		else:
 		
-			self.main_op.append(opc)						
+			self.main_op.append(opc)	
+
+	def check_read_access(self,datt):
+	
+					
+					
+		var_info = self.check_variant_access(datt[0])
+					
+					
+		if len(var_info) != 4:
+					
+			Logger.log(str(var_info) , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+						
+			assert False , 'Bad return value from check_variant_access'
+						
+						
+		if var_info[1] in [ OP.ACCESS_PRIVATE ]:
+					
+			Logger.log('Checking Private/protected Access for pop' , 8 , Logger.Type.DEBUG , Logger.Flag.TEXT)
+						
+			if var_info[3] != None:
+						
+				
+				Logger.log('Trying to read a private var from outside file', 0 , Logger.Type.ERROR , Logger.Flag.DATA)
+				assert False , 'TODO: Redo errors'
+			#assert False , 'BP'
+				
+				
+		return True
+							
+
+			
+	def check_access(self,datt):
+	
+					
+					
+		var_info = self.check_variant_access(datt[0])
+					
+					
+		if len(var_info) != 4:
+					
+			Logger.log(str(var_info) , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+						
+			assert False , 'Bad return value from check_variant_access'
+						
+		if var_info[0] == OP.CONSTANT:
+					
+			Logger.log('Trying to set a CONSTANT var ', 0 , Logger.Type.ERROR , Logger.Flag.DATA)
+						
+			assert False , 'TODO: Redo errors'
+						
+		if var_info[1] in [ OP.ACCESS_PRIVATE ,  OP.ACCESS_PROTECTED ]:
+					
+			Logger.log('Checking Private/protected Access for pop' , 8 , Logger.Type.DEBUG , Logger.Flag.TEXT)
+						
+			if var_info[3] != None:
+						
+				acstxt = OP.var_access.keys()[OP.var_access.values().index(var_info[1])]
+				Logger.log('Trying to set a '+acstxt+' var from outside file', 0 , Logger.Type.ERROR , Logger.Flag.DATA)
+				assert False , 'TODO: Redo errors'
+				
+				
+		return True
+							
+
+							
+					
 			
 	def create_opcode(self,tok):
 	
@@ -709,6 +909,15 @@ class One_Way_Parser:
 					print 'simple var pop'
 					src_arg = []
 					scp = self.check_scope(datt[0])
+					
+					Logger.log(str(scp) )
+					
+					acc = self.check_access(datt)				
+					
+					if not acc:
+					
+						assert False, 'TODO: Redo Errors'
+										
 					if scp[0]:
 						
 						
@@ -737,7 +946,21 @@ class One_Way_Parser:
 					opcode.arg = [datt[0],src_arg]
 					
 				elif type(datt) == str:
-				
+
+
+					print 'simple var pop'
+					src_arg = []
+					scp = self.check_scope(datt)				
+					Logger.log(str(scp) )	
+							
+							
+					acc = self.check_access([datt])				
+					
+					if not acc:
+					
+						assert False, 'TODO: Redo Errors'
+
+								
 					opcode.value = OP.ASSIGN
 					opcode.arg = [datt,[]]
 					
@@ -751,20 +974,43 @@ class One_Way_Parser:
 						if type(datt[0]) == str:
 							src = self.check_scope(datt[0])
 							src_arg = []
+							acc = self.check_access( [datt[0]])
 						else:
 							src = self.check_scope(datt[0][0])
 							src_arg = datt[0][1]
-						
+							acc = self.check_access( [datt[0][0]])						
 						
 						if type(datt[1]) == str:
 							dst = self.check_scope(datt[1])
 							dst_arg = []
+							Logger.log(datt[1], 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+							accsrc = self.check_read_access([datt[1]])
+
 						else:
 							dst = self.check_scope(datt[1][0])
 							dst_arg = datt[1][1]
+							accsrc = self.check_read_access([datt[1][0]])
+
+							
+
+										
 						
 					print src , src_arg
 					print dst,dst_arg
+					
+									
+							
+									
+					
+					if not acc:
+					
+						assert False, 'TODO: Redo Errors'
+						
+					if not accsrc:
+					
+						assert False, 'TODO: Redo Errors'
+						
+
 					
 					if dst[0] and src[0]:
 					
@@ -854,13 +1100,25 @@ class One_Way_Parser:
 					src = self.check_scope(datt)
 					src_name = src[2]
 					tmp_arg = []
+					valid_read = self.check_read_access([datt])
 				else:
 					src = self.check_scope(datt[0])
 					src_name = src[2]
 					tmp_arg = datt[1]
+					valid_read = self.check_read_access([datt[0]])
 					
+				if not valid_read:
+				
+					assert False, 'TODO: Redo Errors'	
+									
 				Logger.log(src , 8 , Logger.Type.DEBUG , Logger.Flag.DATA)
+				
+				
+				if not src[0]:
 
+					Logger.log('Unsolvable var for deref push' , 8 , Logger.Type.ERROR , Logger.Flag.TEXT)
+					
+					assert False
 					
 				if type(datt) != str:
 				
@@ -924,12 +1182,15 @@ class One_Way_Parser:
 				
 				src_name = ''
 				
+				
+				
 				if type(datt) == str:
 				
 					src = self.check_scope(datt)
 					print src
 					tmp_arg = []
 					src_name = datt
+					#valid_var_read = self.check_read_access([datt])
 				
 				elif type(datt[0]) == str:
 				
@@ -938,10 +1199,17 @@ class One_Way_Parser:
 					tmp_arg = datt[1]
 					
 					src_name = datt[0]
-				
+					#valid_var_read = self.check_read_access([datt[0]])
+
+								
 				else:
 				
 					assert False, 'Not Implemented Yet'
+					
+									
+				#if not valid_var_read:
+				
+				#	assert False, 'TODO: Redo Errors'
 				
 				print src_name
 				print tmp_arg
@@ -992,6 +1260,12 @@ class One_Way_Parser:
 				
 				if src[0]:
 				
+					valid_var_read = self.check_read_access([src_name])
+					if not valid_var_read:
+					
+						assert False , 'Todo: redo errors'
+					
+				
 					if len(src)>=5:
 					
 						print src_name
@@ -1015,6 +1289,7 @@ class One_Way_Parser:
 							assert False , 'Unimplemented System var'
 					else:
 					
+						#assert False , 'Breakpoint' 
 						if len(src)>=4:
 						
 							print src_name

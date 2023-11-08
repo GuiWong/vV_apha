@@ -3,7 +3,26 @@
 
 
 Var Update	
- 			
+ 							
+ 			0.0.4.7:
+
+	
+				-var access:
+					-Public
+					-Protected
+					-Private
+					
+				-New constant Vars
+			 			
+ 			0.0.4.6:
+
+	
+			-2 new ref operations:
+				-@ prefix (dereferencing)
+				-@ suffix (pushing adress as uint_32)
+			-Support for String Literals
+			-Support for initiating array values
+							
  			0.0.4.5:
 
 	

@@ -3,6 +3,9 @@ import vV_Function
 import vV_Variable
 
 
+import vV.VM_Opcode as OP
+
+
 
 class NameSpace_Error:
 
@@ -37,7 +40,7 @@ class NameSpace_Manager:
 		
 		self.imported = {}
 		
-		self.system_vars['I']=vV_Variable.vV_Variable('I',204,vV_Variable.vV_Iterator_Type(vV_Variable.vV_Int_Type(),2,96))
+		self.system_vars['I']=vV_Variable.vV_Variable('I',204,vV_Variable.vV_Iterator_Type(vV_Variable.vV_Int_Type(),2,96),False,0, OP.ACCESS_PUBLIC ,  OP.CONSTANT)
 		
 		#print self.system_vars['I'].var_type.content
 		
@@ -107,6 +110,53 @@ class NameSpace_Manager:
 		
 			return self.imported[namespace].get_function(funcname)
 			
+	def get_var(self,varname,scope = None,namespace=None):
+
+	
+		ret_val = ''
+		
+		print 'solving var obj '+varname[0]
+		
+		if namespace==None:
+		
+			if varname[0] == 'vV_PUSH_ARG':
+		
+				#return [True,'eax',False,varname[1]]
+				
+				assert False , 'TODO: manage typeof arguments to func'
+		
+		
+			if scope in self.functions:
+		
+				f_obj = self.functions[scope].get_var_obj(varname[0])
+				if not f_obj[0]:
+				
+					assert False , 'couldnt get a var object from fuction'
+				return [True , f_obj[1]]
+			
+				
+			if varname[0] in self.global_vars:
+		
+				
+				return [True, self.global_vars[varname[0]] ]
+		
+			elif varname[0] in self.system_vars:
+		
+				return [True,self.system_vars[ varname[0]]]
+			
+			else:
+		
+				print varname
+				print namespace
+				assert False , 'Should be unreachable'
+				return [False]
+		else:
+		
+			print self.imported
+			return self.imported[namespace].get_var(varname,scope)
+			assert False,'Unimplemented '+ varname[0] +'in'+ namespace
+			
+						
 	def is_var_init(self,varname,namespace):
 	
 		if namespace == None or (self.is_main and namespace == self.internal_filename):

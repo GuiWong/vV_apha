@@ -1,7 +1,7 @@
 
 
-var int 42 a
-var int 0xacab b
+private int 42 a
+protected int 0xacab b
 
 
 var (int) ref1			

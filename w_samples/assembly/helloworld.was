@@ -18,6 +18,38 @@ global w_entry_point
 segment .text 
 
 
+demo6_truc:		
+	push rbp	
+	mov rbp , rsp	
+
+;------Setup Phase
+
+;------Init Phase
+
+.tailcall:		;Body Section	
+;OpADR: [0] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [rbp + 16]	
+	add rdi , rax	
+	mov eax , [rdi] 
+	mov eax , [rax]	
+	vV_push eax	
+
+;OpADR: [1] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [2] ; End of func opcode
+
+	
+;------Cleanup Phase
+
+;------frame restore Phase
+	mov rsp , rbp	
+	pop rbp	
+	ret	
+
 
 		
 
@@ -29,11 +61,35 @@ vV_entry_point:
 	push rbp
 	mov rbp, rsp			;Setup Stack Frame
 	
-	;OpADR: [0] ; PUSH opcode 
+	;OpADR: [0] ; Function Call with args
+
+		xor rax , rax
+	lea rdi , [i_global.a]	
+	mov rsi , rdi	
+	add rsi , rax	
+	push rax	
+	mov rdi , rsp	
+	mov  rax , rsi	
+	mov [rdi] , eax	
+	call demo6_truc
+add rsp , 8
+;OpADR: [1] ; Var invocation
+
+		xor rax , rax
+	lea rdi , [i_global_demo6.a]	
+	add rdi , rax	
+	mov eax , [rdi]	
+	vV_push eax	
+
+;OpADR: [2] ; BUFF_OUT opcode (0)
+
+	 call vV_io_out_default	
+
+;OpADR: [3] ; PUSH opcode 
 
 	vV_push 0
 
-;OpADR: [1] ; Var invocation
+;OpADR: [4] ; Var invocation
 
 		lea rdi , [i_global.sizes]	
 	xor rax , rax	
@@ -46,11 +102,11 @@ vV_entry_point:
 	mov eax , [rdi]	
 	vV_push eax	
 
-;OpADR: [2] ; PUSH opcode 
+;OpADR: [5] ; PUSH opcode 
 
 	vV_push 0
 
-;OpADR: [3] ; Loop check 
+;OpADR: [6] ; Loop check 
 
 		vV_pop eax	;get index
 	push rax	
@@ -63,7 +119,7 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [4] ; Var invocation
+;OpADR: [7] ; Var invocation
 
 		xor rax , rax
 	lea rdi , [rsp+8]	
@@ -71,7 +127,7 @@ vV_entry_point:
 	mov eax , [rdi] 
 	vV_push eax	
 
-;OpADR: [5] ; Var invocation
+;OpADR: [8] ; Var invocation
 
 		lea rdi , [i_global.str]	
 	xor rax , rax	
@@ -83,11 +139,11 @@ vV_entry_point:
 	mov al , [rdi]	
 	vV_push eax	
 
-;OpADR: [6] ; OUT opcode (8)
+;OpADR: [9] ; OUT opcode (8)
 
 	call vV_io_out_char_buffer
 
-;OpADR: [7] ; ; Loop init 
+;OpADR: [10] ; ; Loop init 
 
 		inc DWORD[rsp + 8]
 	mov rax , [rsp + 8]	;get index
@@ -101,23 +157,23 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [8] ; Loop Cleanup 
+;OpADR: [11] ; Loop Cleanup 
 
 	add rsp , 16	
 
-;OpADR: [9] ; FLUSH opcode
+;OpADR: [12] ; FLUSH opcode
 
 	call vV_io_flush 
 
-;OpADR: [10] ; FLUSH opcode
+;OpADR: [13] ; FLUSH opcode
 
 	call vV_io_flush 
 
-;OpADR: [11] ; PUSH opcode 
+;OpADR: [14] ; PUSH opcode 
 
 	vV_push 1
 
-;OpADR: [12] ; Var invocation
+;OpADR: [15] ; Var invocation
 
 		lea rdi , [i_global.sizes]	
 	xor rax , rax	
@@ -130,11 +186,11 @@ vV_entry_point:
 	mov eax , [rdi]	
 	vV_push eax	
 
-;OpADR: [13] ; PUSH opcode 
+;OpADR: [16] ; PUSH opcode 
 
 	vV_push 0
 
-;OpADR: [14] ; Loop check 
+;OpADR: [17] ; Loop check 
 
 		vV_pop eax	;get index
 	push rax	
@@ -147,7 +203,7 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [15] ; Var invocation
+;OpADR: [18] ; Var invocation
 
 		xor rax , rax
 	lea rdi , [rsp+8]	
@@ -155,7 +211,7 @@ vV_entry_point:
 	mov eax , [rdi] 
 	vV_push eax	
 
-;OpADR: [16] ; Var invocation
+;OpADR: [19] ; Var invocation
 
 		lea rdi , [i_global.line1]	
 	xor rax , rax	
@@ -167,11 +223,11 @@ vV_entry_point:
 	mov al , [rdi]	
 	vV_push eax	
 
-;OpADR: [17] ; OUT opcode (8)
+;OpADR: [20] ; OUT opcode (8)
 
 	call vV_io_out_char_buffer
 
-;OpADR: [18] ; ; Loop init 
+;OpADR: [21] ; ; Loop init 
 
 		inc DWORD[rsp + 8]
 	mov rax , [rsp + 8]	;get index
@@ -185,19 +241,19 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [19] ; Loop Cleanup 
+;OpADR: [22] ; Loop Cleanup 
 
 	add rsp , 16	
 
-;OpADR: [20] ; FLUSH opcode
+;OpADR: [23] ; FLUSH opcode
 
 	call vV_io_flush 
 
-;OpADR: [21] ; PUSH opcode 
+;OpADR: [24] ; PUSH opcode 
 
 	vV_push 2
 
-;OpADR: [22] ; Var invocation
+;OpADR: [25] ; Var invocation
 
 		lea rdi , [i_global.sizes]	
 	xor rax , rax	
@@ -210,11 +266,11 @@ vV_entry_point:
 	mov eax , [rdi]	
 	vV_push eax	
 
-;OpADR: [23] ; PUSH opcode 
+;OpADR: [26] ; PUSH opcode 
 
 	vV_push 0
 
-;OpADR: [24] ; Loop check 
+;OpADR: [27] ; Loop check 
 
 		vV_pop eax	;get index
 	push rax	
@@ -227,7 +283,7 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [25] ; Var invocation
+;OpADR: [28] ; Var invocation
 
 		xor rax , rax
 	lea rdi , [rsp+8]	
@@ -235,7 +291,7 @@ vV_entry_point:
 	mov eax , [rdi] 
 	vV_push eax	
 
-;OpADR: [26] ; Var invocation
+;OpADR: [29] ; Var invocation
 
 		lea rdi , [i_global.line2]	
 	xor rax , rax	
@@ -247,11 +303,11 @@ vV_entry_point:
 	mov al , [rdi]	
 	vV_push eax	
 
-;OpADR: [27] ; OUT opcode (8)
+;OpADR: [30] ; OUT opcode (8)
 
 	call vV_io_out_char_buffer
 
-;OpADR: [28] ; ; Loop init 
+;OpADR: [31] ; ; Loop init 
 
 		inc DWORD[rsp + 8]
 	mov rax , [rsp + 8]	;get index
@@ -265,19 +321,19 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [29] ; Loop Cleanup 
+;OpADR: [32] ; Loop Cleanup 
 
 	add rsp , 16	
 
-;OpADR: [30] ; FLUSH opcode
+;OpADR: [33] ; FLUSH opcode
 
 	call vV_io_flush 
 
-;OpADR: [31] ; PUSH opcode 
+;OpADR: [34] ; PUSH opcode 
 
 	vV_push 3
 
-;OpADR: [32] ; Var invocation
+;OpADR: [35] ; Var invocation
 
 		lea rdi , [i_global.sizes]	
 	xor rax , rax	
@@ -290,11 +346,11 @@ vV_entry_point:
 	mov eax , [rdi]	
 	vV_push eax	
 
-;OpADR: [33] ; PUSH opcode 
+;OpADR: [36] ; PUSH opcode 
 
 	vV_push 0
 
-;OpADR: [34] ; Loop check 
+;OpADR: [37] ; Loop check 
 
 		vV_pop eax	;get index
 	push rax	
@@ -307,7 +363,7 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [35] ; Var invocation
+;OpADR: [38] ; Var invocation
 
 		xor rax , rax
 	lea rdi , [rsp+8]	
@@ -315,7 +371,7 @@ vV_entry_point:
 	mov eax , [rdi] 
 	vV_push eax	
 
-;OpADR: [36] ; Var invocation
+;OpADR: [39] ; Var invocation
 
 		lea rdi , [i_global.line3]	
 	xor rax , rax	
@@ -327,11 +383,11 @@ vV_entry_point:
 	mov al , [rdi]	
 	vV_push eax	
 
-;OpADR: [37] ; OUT opcode (8)
+;OpADR: [40] ; OUT opcode (8)
 
 	call vV_io_out_char_buffer
 
-;OpADR: [38] ; ; Loop init 
+;OpADR: [41] ; ; Loop init 
 
 		inc DWORD[rsp + 8]
 	mov rax , [rsp + 8]	;get index
@@ -345,19 +401,19 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [39] ; Loop Cleanup 
+;OpADR: [42] ; Loop Cleanup 
 
 	add rsp , 16	
 
-;OpADR: [40] ; FLUSH opcode
+;OpADR: [43] ; FLUSH opcode
 
 	call vV_io_flush 
 
-;OpADR: [41] ; PUSH opcode 
+;OpADR: [44] ; PUSH opcode 
 
 	vV_push 4
 
-;OpADR: [42] ; Var invocation
+;OpADR: [45] ; Var invocation
 
 		lea rdi , [i_global.sizes]	
 	xor rax , rax	
@@ -370,11 +426,11 @@ vV_entry_point:
 	mov eax , [rdi]	
 	vV_push eax	
 
-;OpADR: [43] ; PUSH opcode 
+;OpADR: [46] ; PUSH opcode 
 
 	vV_push 0
 
-;OpADR: [44] ; Loop check 
+;OpADR: [47] ; Loop check 
 
 		vV_pop eax	;get index
 	push rax	
@@ -387,7 +443,7 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [45] ; Var invocation
+;OpADR: [48] ; Var invocation
 
 		xor rax , rax
 	lea rdi , [rsp+8]	
@@ -395,7 +451,7 @@ vV_entry_point:
 	mov eax , [rdi] 
 	vV_push eax	
 
-;OpADR: [46] ; Var invocation
+;OpADR: [49] ; Var invocation
 
 		lea rdi , [i_global.line4]	
 	xor rax , rax	
@@ -407,11 +463,11 @@ vV_entry_point:
 	mov al , [rdi]	
 	vV_push eax	
 
-;OpADR: [47] ; OUT opcode (8)
+;OpADR: [50] ; OUT opcode (8)
 
 	call vV_io_out_char_buffer
 
-;OpADR: [48] ; ; Loop init 
+;OpADR: [51] ; ; Loop init 
 
 		inc DWORD[rsp + 8]
 	mov rax , [rsp + 8]	;get index
@@ -425,19 +481,19 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [49] ; Loop Cleanup 
+;OpADR: [52] ; Loop Cleanup 
 
 	add rsp , 16	
 
-;OpADR: [50] ; FLUSH opcode
+;OpADR: [53] ; FLUSH opcode
 
 	call vV_io_flush 
 
-;OpADR: [51] ; PUSH opcode 
+;OpADR: [54] ; PUSH opcode 
 
 	vV_push 5
 
-;OpADR: [52] ; Var invocation
+;OpADR: [55] ; Var invocation
 
 		lea rdi , [i_global.sizes]	
 	xor rax , rax	
@@ -450,11 +506,11 @@ vV_entry_point:
 	mov eax , [rdi]	
 	vV_push eax	
 
-;OpADR: [53] ; PUSH opcode 
+;OpADR: [56] ; PUSH opcode 
 
 	vV_push 0
 
-;OpADR: [54] ; Loop check 
+;OpADR: [57] ; Loop check 
 
 		vV_pop eax	;get index
 	push rax	
@@ -467,7 +523,7 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [55] ; Var invocation
+;OpADR: [58] ; Var invocation
 
 		xor rax , rax
 	lea rdi , [rsp+8]	
@@ -475,7 +531,7 @@ vV_entry_point:
 	mov eax , [rdi] 
 	vV_push eax	
 
-;OpADR: [56] ; Var invocation
+;OpADR: [59] ; Var invocation
 
 		lea rdi , [i_global.line5]	
 	xor rax , rax	
@@ -487,11 +543,11 @@ vV_entry_point:
 	mov al , [rdi]	
 	vV_push eax	
 
-;OpADR: [57] ; OUT opcode (8)
+;OpADR: [60] ; OUT opcode (8)
 
 	call vV_io_out_char_buffer
 
-;OpADR: [58] ; ; Loop init 
+;OpADR: [61] ; ; Loop init 
 
 		inc DWORD[rsp + 8]
 	mov rax , [rsp + 8]	;get index
@@ -505,13 +561,61 @@ vV_entry_point:
 
 ;------------------------------------------------------
 
-;OpADR: [59] ; Loop Cleanup 
+;OpADR: [62] ; Loop Cleanup 
 
 	add rsp , 16	
 
-;OpADR: [60] ; FLUSH opcode
+;OpADR: [63] ; FLUSH opcode
 
 	call vV_io_flush 
+
+;OpADR: [64] ; Var Ref assignement	
+
+		xor rax , rax
+	lea rdi , [i_global.a]	
+	mov rsi , rdi	
+	add rsi , rax	
+	xor rax , rax
+	lea rdi , [i_global.b]	
+	add rdi , rax	
+	mov eax , [rsi]	
+	mov DWORD[rdi] , eax	
+
+;OpADR: [65] ;GET opcode (9)
+
+	; GET opcode (9)			
+
+call vV_io_get_packed_char 
+
+;OpADR: [66]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [67] ; BUFF_OUT opcode (9)
+
+	call vV_io_out_packed_char
+
+;OpADR: [68] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
+
+;OpADR: [69] ;GET opcode (8)
+
+	; GET opcode (8)			
+
+call vV_io_get_char	
+
+;OpADR: [70]  DUP opcode (1)
+	vV_dup 1
+
+;OpADR: [71] ; BUFF_OUT opcode (8)
+
+	call vV_io_out_char
+
+;OpADR: [72] ; BUFF_OUT opcode (3)
+
+	 mov r10d , vV_FORMAT_HEX	
+	call vV_io_out	
 
 		
 		mov rsp , rbp

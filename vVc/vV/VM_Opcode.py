@@ -135,7 +135,7 @@ CALL = 194
 CALL_W_ARG = 195
 RET = 196
 
-IMPLICIT = 200
+#IMPLICIT = 200
 GLOBAL = 201
 LOCAL = 202
 PASSED = 203
@@ -160,6 +160,15 @@ UINT_8 = 218
 
 STR_LITERAL = 224
 ARR_INIT = 225
+
+
+
+ACCESS_PUBLIC = 232
+ACCESS_PROTECTED = 233
+ACCESS_PRIVATE = 234
+
+VARIANT = 240
+CONSTANT = 241
 
 
 
@@ -198,7 +207,7 @@ class Opcode_descriptor:
 '''
 
 
-forbiden_chars = ["[","]","(",")","$","#","@","?","!","&","|","^","/","+","-","%","*",",",";",":", '"' , "'"]#,"."]
+forbiden_chars = ["[","]","(",")","$","#","@","?","!","&","|","^","/","+","-","%","*",",",";",";", '"' , "'"]#,"."]
 
 grouping_chars = ["[","]","(",")"]
 
@@ -261,12 +270,29 @@ ref_op = {
 	
 var_define = {
 
-	'var' : IMPLICIT ,
+	#'var' : IMPLICIT ,
 
 	'global' : GLOBAL ,
 	'local' : LOCAL
 
 	}
+	
+var_access = {
+	'public' : ACCESS_PUBLIC ,
+	'protected' : ACCESS_PROTECTED ,
+	'private' : ACCESS_PRIVATE 
+	
+	}
+	
+var_variant = {
+
+	'var' : VARIANT ,
+	'const' : CONSTANT
+	
+	
+	}
+	
+
 	
 var_type = {
 

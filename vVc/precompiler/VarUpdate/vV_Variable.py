@@ -23,6 +23,7 @@ def build_type(type_id):
 class vV_Primary_Type:
 
 	size = 0
+	members = {}
 	
 	def __str__(self):
 	
@@ -40,6 +41,8 @@ class vV_Pointer_Type:
 	content = vV_Primary_Type()
 	use_offset = False
 	
+	members = {}
+	
 	def calc_size(self):
 	
 		return self.size
@@ -51,6 +54,8 @@ class vV_Pointer_Type:
 class vV_Structure_Type:
 
 	content = vV_Primary_Type()
+	
+	members = {}
 	
 	def calc_size(self):
 	
@@ -272,6 +277,19 @@ class Scope:
 	GLOBAL = 1
 	LOCAL = 2
 	
+class Access:
+
+	PUBLIC = 1
+	PROTECTED = 2
+	PRIVATE = 4
+	
+	
+class Variant:
+
+	VARIABLE = 1
+	CONSTANT = 2
+	
+	
 
 scope_names = ["global","local"]
 type_names = ["unfound","value","pointer"]
@@ -288,17 +306,23 @@ class vV_Variable:
 	init_value = 0
 	
 	internal_id = 0	#may be usefull for argument ordering double verification
+	
+	access = Access.PUBLIC
+	variant = Variant.VARIABLE
 
 
 
 
-	def __init__(self,name,scope,vV_type,is_init=False,init_value=0):
+	def __init__(self,name,scope,vV_type,is_init=False,init_value=0, accesse = Access.PUBLIC , variante = Variant.VARIABLE):
 	
 		self.name = name
 		self.var_type = vV_type
 		self.scope = scope
 		self.is_init = is_init
 		self.init_value = init_value
+		
+		self.access = accesse
+		self.variant = variante
 		
 	def calc_size(self):
 	

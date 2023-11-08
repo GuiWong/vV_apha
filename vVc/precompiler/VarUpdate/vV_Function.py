@@ -56,6 +56,24 @@ class vV_Function:
 		
 			return [False]
 			
+	def get_var_obj(self,name):
+	
+		
+		if name in self.local_vars.keys():
+		
+			return [True,self.local_vars[name] ]
+			
+			
+		elif name in self.referenced_vars.keys():
+		
+		
+			return [True,  self.referenced_vars[name] ]	#Only for direct values
+		
+		
+		else:
+		
+			return [False]
+			
 			
 			
 	def get_arg_type(self,n):

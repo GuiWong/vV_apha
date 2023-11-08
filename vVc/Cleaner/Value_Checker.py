@@ -403,6 +403,9 @@ def check_for_value(txt,var_type=None):
 		else:
 		
 			return [True,[val[1],OP.ARR_INIT],return_type]
+			
+			
+
 		
 	
 	
